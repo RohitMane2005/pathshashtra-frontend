@@ -22,7 +22,7 @@ const Quiz = () => {
       setStep("questions");
       setCurrent(0);
       setAnswers({});
-    } catch { toast.error("Failed to start quiz. Try again."); }
+    } catch (err) { if (!err.handled) toast.error("Failed to start quiz. Try again."); }
     finally { setLoading(false); }
   };
 
@@ -39,7 +39,7 @@ const Quiz = () => {
       const res = await API.post("/quiz/submit", { sessionId, answers });
       setResult(res.data);
       setStep("result");
-    } catch { toast.error("Failed to submit quiz."); }
+    } catch (err) { if (!err.handled) toast.error("Failed to submit quiz."); }
     finally { setLoading(false); }
   };
 

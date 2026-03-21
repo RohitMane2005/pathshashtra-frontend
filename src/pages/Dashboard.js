@@ -5,8 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
 import {
   Brain, BookOpen, Code2, ArrowRight, Flame,
-  Zap, Trophy, Target, TrendingUp, Star,
-  CheckCircle, Clock, ChevronRight, Sparkles, Map
+  Zap, TrendingUp, Star, CheckCircle, Clock,
+  Sparkles, Map
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -15,8 +15,6 @@ const Dashboard = () => {
   const [todayTopics, setTodayTopics] = useState([]);
   const [problems, setProblems] = useState([]);
   const [quizResults, setQuizResults] = useState([]);
-  // FIX: streak from real backend endpoint instead of hardcoded 7
-  const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [time, setTime] = useState(new Date());
 
@@ -27,21 +25,17 @@ const Dashboard = () => {
   }, []);
 
   const fetchData = async () => {
-    try {
-      const [prog, today, probs, quiz, streakRes] = await Promise.allSettled([
-        API.get("/study/progress"),
-        API.get("/study/today"),
-        API.get("/coding/problems"),
-        API.get("/quiz/results"),
-        API.get("/users/streak"),   // FIX: real streak API call
-      ]);
-      if (prog.status === "fulfilled") setProgress(prog.value.data);
-      if (today.status === "fulfilled") setTodayTopics(today.value.data);
-      if (probs.status === "fulfilled") setProblems(probs.value.data);
-      if (quiz.status === "fulfilled") setQuizResults(quiz.value.data);
-      if (streakRes.status === "fulfilled") setStreak(streakRes.value.data.streak ?? 0);
-    } catch {}
-    finally { setLoading(false); }
+    const [prog, today, probs, quiz] = await Promise.allSettled([
+      API.get("/study/progress"),
+      API.get("/study/today"),
+      API.get("/coding/problems"),
+      API.get("/quiz/results"),
+    ]);
+    if (prog.status === "fulfilled") setProgress(prog.value.data);
+    if (today.status === "fulfilled") setTodayTopics(today.value.data);
+    if (probs.status === "fulfilled") setProblems(probs.value.data);
+    if (quiz.status === "fulfilled") setQuizResults(quiz.value.data);
+    setLoading(false);
   };
 
   const hour = time.getHours();
@@ -117,15 +111,8 @@ const Dashboard = () => {
                 <p className="text-[#7A7890] mt-1">Your AI-powered success dashboard</p>
               </div>
 
-              {/* Streak + Level */}
+              {/* Level */}
               <div className="flex items-center gap-3">
-                <div className="glass px-4 py-2.5 flex items-center gap-2">
-                  <span className="flame text-xl">🔥</span>
-                  <div>
-                    <p className="text-white font-bold text-lg leading-none">{streak}</p>
-                    <p className="text-[#7A7890] text-xs">day streak</p>
-                  </div>
-                </div>
                 <div className="glass px-4 py-2.5 flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#9B6DFF] flex items-center justify-center">
                     <span className="text-white text-xs font-bold">{level}</span>
@@ -154,8 +141,6 @@ const Dashboard = () => {
           <div className="animate-fade-up stagger-1 mb-8">
             <div className="relative overflow-hidden rounded-2xl p-5 border border-[#FF6B00]/20"
               style={{ background: "linear-gradient(135deg, rgba(255,107,0,0.08) 0%, rgba(155,109,255,0.05) 100%)" }}>
-              <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10"
-                style={{ background: "radial-gradient(circle, #FF6B00, transparent)", transform: "translate(20px,-20px)" }} />
               <div className="flex items-start gap-3 relative z-10">
                 <div className="w-9 h-9 rounded-xl bg-[#FF6B00]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Sparkles size={18} className="text-[#FF8C38]" />
@@ -165,7 +150,7 @@ const Dashboard = () => {
                   <p className="text-white text-sm leading-relaxed">
                     {progress && progress.completedTopics > 0
                       ? `You've completed ${progress.completedTopics} topics so far. ${progress.weakTopicsCount > 0 ? `Focus on your ${progress.weakTopicsCount} weak topics today.` : "Great progress — keep the momentum going!"}`
-                      : `Welcome to PathShashtra, ${firstName}! Start by taking the Career Quiz to discover your ideal path, then generate your personalized study plan. Your journey to success starts today. 🚀`
+                      : `Welcome to PathShashtra, ${firstName}! Start by taking the Career Quiz to discover your ideal path, then generate your personalized study plan. 🚀`
                     }
                   </p>
                 </div>
@@ -204,9 +189,7 @@ const Dashboard = () => {
                       {mod.icon}
                     </div>
                     <span className="badge text-[10px]" style={{
-                      background: `${mod.color}18`,
-                      color: mod.color,
-                      border: `1px solid ${mod.color}33`,
+                      background: `${mod.color}18`, color: mod.color, border: `1px solid ${mod.color}33`,
                     }}>{mod.badge}</span>
                   </div>
                   <h3 className="text-white font-bold text-base mb-1" style={{ fontFamily: "Bricolage Grotesque" }}>{mod.title}</h3>
@@ -224,10 +207,8 @@ const Dashboard = () => {
             ))}
           </div>
 
-          {/* Today's Topics + Recent Activity */}
+          {/* Today's Topics + Recent Problems */}
           <div className="grid md:grid-cols-2 gap-4 animate-fade-up stagger-4">
-
-            {/* Today's Topics */}
             <div className="glass p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
@@ -255,7 +236,6 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Recent Problems */}
             <div className="glass p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-white font-bold flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
@@ -290,7 +270,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Bottom tagline */}
           <p className="text-center text-[#3D3B52] text-xs mt-8 pb-4">
             PathShashtra · Empowering India's 38M college students 🇮🇳
           </p>

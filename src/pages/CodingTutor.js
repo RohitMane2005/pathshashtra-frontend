@@ -25,7 +25,7 @@ const CodingTutor = () => {
       const res = await API.post("/coding/problem/generate", form);
       setProblem(res.data.problem); setProblemId(res.data.problemId);
       toast.success("Problem ready! 🧩");
-    } catch { toast.error("Failed to generate problem"); }
+    } catch (err) { if (!err.handled) toast.error("Failed to generate problem"); }
     finally { setLoading(false); }
   };
 
@@ -36,7 +36,7 @@ const CodingTutor = () => {
       const res = await API.post("/coding/hint", { problemId, currentCode: code });
       setHint(res.data.hint); setHintsUsed(res.data.hintsUsed);
       toast.success(`Hint ${res.data.hintsUsed}/3 unlocked 💡`);
-    } catch { toast.error("Failed to get hint"); }
+    } catch (err) { if (!err.handled) toast.error("Failed to get hint"); }
     finally { setLoading(false); }
   };
 
@@ -46,8 +46,8 @@ const CodingTutor = () => {
     try {
       const res = await API.post("/coding/submit", { problemId, code, language: form.language });
       setFeedback(res.data);
-      toast.success(res.data.correct ? "Correct! 🎉 +50 XP" : "Reviewed! Check feedback 👇");
-    } catch { toast.error("Failed to submit"); }
+      toast.success(res.data.isCorrect ? "Correct! 🎉 +50 XP" : "Reviewed! Check feedback 👇");
+    } catch (err) { if (!err.handled) toast.error("Failed to submit"); }
     finally { setLoading(false); }
   };
 
@@ -58,7 +58,7 @@ const CodingTutor = () => {
   const fetchRoadmap = async () => {
     setLoading(true);
     try { const res = await API.get("/coding/roadmap?goal=Campus Placement"); setRoadmap(res.data.roadmap); }
-    catch { toast.error("Failed to generate roadmap"); }
+    catch (err) { if (!err.handled) toast.error("Failed to generate roadmap"); }
     finally { setLoading(false); }
   };
 

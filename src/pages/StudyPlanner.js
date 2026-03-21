@@ -36,7 +36,7 @@ const StudyPlanner = () => {
       await API.post("/study/plan/generate", { ...form, subjects: subjectsArray, dailyHours: parseInt(form.dailyHours) });
       toast.success("Study plan generated! 🎉");
       fetchPlan();
-    } catch { toast.error("Failed to generate plan"); }
+    } catch (err) { if (!err.handled) toast.error("Failed to generate plan"); }
     finally { setGenerating(false); }
   };
 

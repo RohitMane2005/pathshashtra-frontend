@@ -193,7 +193,7 @@ const Roadmap = () => {
       fetchSavedRoadmaps();
       toast.success("Roadmap generated! 🗺️");
     } catch (err) {
-      toast.error("Failed to generate roadmap");
+      if (!err.handled) toast.error("Failed to generate roadmap");
       setStep("form");
     }
   };
@@ -204,7 +204,7 @@ const Roadmap = () => {
       setRoadmap(res.data);
       setStep("result");
       setActiveTab("new");
-    } catch { toast.error("Failed to load roadmap"); }
+    } catch (err) { if (!err.handled) toast.error("Failed to load roadmap"); }
   };
 
   const phaseColors = ["#FF6B00", "#00D4C8", "#9B6DFF", "#34D399"];
