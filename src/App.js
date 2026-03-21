@@ -1,0 +1,47 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Quiz from "./pages/Quiz";
+import StudyPlanner from "./pages/StudyPlanner";
+import CodingTutor from "./pages/CodingTutor";
+import Profile from "./pages/Profile";
+import Roadmap from "./pages/Roadmap";
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#1A1A24",
+              color: "#F0EEF8",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "12px",
+              fontFamily: "DM Sans, sans-serif",
+              fontSize: "14px",
+            },
+          }}
+        />
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+          <Route path="/study" element={<ProtectedRoute><StudyPlanner /></ProtectedRoute>} />
+          <Route path="/coding" element={<ProtectedRoute><CodingTutor /></ProtectedRoute>} />
+          <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+export default App;
