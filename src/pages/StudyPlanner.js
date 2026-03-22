@@ -13,6 +13,7 @@ const StudyPlanner = () => {
   const [weakTopics, setWeakTopics] = useState([]);
   const [generating, setGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState("today");
+  const [confidence, setConfidence] = useState({});
 
   useEffect(() => { fetchPlan(); }, []);
 
@@ -40,9 +41,10 @@ const StudyPlanner = () => {
     finally { setGenerating(false); }
   };
 
-  const markTopic = async (topicId, status, score) => {
+  const markTopic = async (topicId, status, score = null) => {
+    const finalScore = score !== null ? score : (confidence[topicId] ?? 7);
     try {
-      await API.put("/study/topic/progress", { topicId, status, confidenceScore: score });
+      await API.put("/study/topic/progress", { topicId, status, confidenceScore: finalScore });
       toast.success(status === "COMPLETED" ? "✅ Topic completed! +30 XP" : "⚠️ Topic flagged for revision");
       fetchPlan();
     } catch { toast.error("Failed to update"); }
@@ -215,8 +217,18 @@ const StudyPlanner = () => {
                             <p className="text-[#3D3B52] text-xs mt-0.5">{topic.subject} · Week {topic.weekNumber}</p>
                           </div>
                           {topic.status !== "COMPLETED" ? (
-                            <div className="flex gap-2">
-                              <button onClick={() => markTopic(topic.id, "COMPLETED", 8)}
+                            <div className="flex items-center gap-2">
+                              <div className="flex flex-col items-end gap-1">
+                                <div className="flex items-center gap-1 text-xs text-[#7A7890]">
+                                  <span>Confidence:</span>
+                                  <span className="text-white font-medium w-4 text-center">{confidence[topic.id] ?? 7}</span>
+                                </div>
+                                <input type="range" min="1" max="10"
+                                  value={confidence[topic.id] ?? 7}
+                                  onChange={e => setConfidence(prev => ({...prev, [topic.id]: parseInt(e.target.value)}))}
+                                  className="w-20 h-1 accent-[#34D399]" />
+                              </div>
+                              <button onClick={() => markTopic(topic.id, "COMPLETED")}
                                 className="w-8 h-8 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/20 text-[#34D399] flex items-center justify-center transition-all" title="Mark done">
                                 <CheckCircle size={16} />
                               </button>

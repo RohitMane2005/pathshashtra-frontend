@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import {
   LayoutDashboard, Brain, BookOpen, Code2, User,
-  LogOut, Compass, Zap, Menu, X
+  LogOut, Compass, Zap, Menu, X, Trophy, Bookmark
 } from "lucide-react";
 import { useState } from "react";
 
@@ -14,6 +14,8 @@ const navItems = [
   { path: "/coding", icon: <Code2 size={18} />, label: "Coding Tutor" },
   { path: "/roadmap", icon: <Compass size={18} />, label: "Roadmap", badge: "NEW" },
   { path: "/profile", icon: <User size={18} />, label: "Profile" },
+  { path: "/leaderboard", icon: <Trophy size={18} />, label: "Leaderboard", badge: "🏆" },
+  { path: "/bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
 ];
 
 const Navbar = () => {
@@ -124,7 +126,7 @@ const Navbar = () => {
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0A0A0F]/95 backdrop-blur border-t border-white/5 flex justify-around py-2 px-2">
-        {navItems.map((item) => {
+        {navItems.filter(item => item.path !== "/roadmap").map((item) => {
           const active = location.pathname === item.path;
           return (
             <Link key={item.path} to={item.path}

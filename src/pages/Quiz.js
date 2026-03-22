@@ -11,6 +11,8 @@ const Quiz = () => {
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [shareToken, setShareToken] = useState(null);
+  const [copied, setCopied] = useState(false);
   const [current, setCurrent] = useState(0);
 
   const startQuiz = async () => {
@@ -38,6 +40,7 @@ const Quiz = () => {
     try {
       const res = await API.post("/quiz/submit", { sessionId, answers });
       setResult(res.data);
+      setShareToken(res.data.shareToken || null);
       setStep("result");
     } catch (err) { if (!err.handled) toast.error("Failed to submit quiz."); }
     finally { setLoading(false); }
@@ -163,7 +166,18 @@ const Quiz = () => {
                   <Trophy size={24} className="text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>Your Career Report</h2>
-                <p className="text-[#7A7890] text-sm">{result.summary}</p>
+                <p className="text-[#7A7890] text-sm mb-3">{result.summary}</p>
+                {shareToken && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/share/${shareToken}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-[#FF6B00]/30 text-[#FF8C38] hover:bg-[#FF6B00]/10">
+                    {copied ? "✓ Link copied!" : "🔗 Share result"}
+                  </button>
+                )}
               </div>
 
               {/* Career Matches */}

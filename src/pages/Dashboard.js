@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [todayTopics, setTodayTopics] = useState([]);
   const [problems, setProblems] = useState([]);
   const [quizResults, setQuizResults] = useState([]);
+  const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [time, setTime] = useState(new Date());
 
@@ -27,16 +28,18 @@ const Dashboard = () => {
   }, []);
 
   const fetchData = async () => {
-    const [prog, today, probs, quiz] = await Promise.allSettled([
+    const [prog, today, probs, quiz, streakRes] = await Promise.allSettled([
       API.get("/study/progress"),
       API.get("/study/today"),
       API.get("/coding/problems"),
       API.get("/quiz/results"),
+      API.get("/users/streak"),
     ]);
     if (prog.status === "fulfilled") setProgress(prog.value.data);
     if (today.status === "fulfilled") setTodayTopics(today.value.data);
     if (probs.status === "fulfilled") setProblems(probs.value.data);
     if (quiz.status === "fulfilled") setQuizResults(quiz.value.data);
+    if (streakRes.status === "fulfilled") setStreak(streakRes.value.data.streak || 0);
     setLoading(false);
   };
 
@@ -113,8 +116,17 @@ const Dashboard = () => {
                 <p className="text-[#7A7890] mt-1">Your AI-powered success dashboard</p>
               </div>
 
-              {/* Level */}
+              {/* Streak + Level */}
               <div className="flex items-center gap-3">
+                {streak > 0 && (
+                  <div className="glass px-4 py-2.5 flex items-center gap-2">
+                    <span className="flame text-xl">🔥</span>
+                    <div>
+                      <p className="text-white font-bold text-lg leading-none">{streak}</p>
+                      <p className="text-[#7A7890] text-xs">day streak</p>
+                    </div>
+                  </div>
+                )}
                 <div className="glass px-4 py-2.5 flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#9B6DFF] flex items-center justify-center">
                     <span className="text-white text-xs font-bold">{level}</span>

@@ -13,6 +13,9 @@ import StudyPlanner from "./pages/StudyPlanner";
 import CodingTutor from "./pages/CodingTutor";
 import Profile from "./pages/Profile";
 import Roadmap from "./pages/Roadmap";
+import Leaderboard from "./pages/Leaderboard";
+import Bookmarks from "./pages/Bookmarks";
+import SharedResult from "./pages/SharedResult";
 
 function App() {
   return (
@@ -45,7 +48,10 @@ function App() {
           <Route path="/study"     element={<ProtectedRoute><StudyPlanner /></ProtectedRoute>} />
           <Route path="/coding"    element={<ProtectedRoute><CodingTutor /></ProtectedRoute>} />
           <Route path="/roadmap"   element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
-          <Route path="/profile"   element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/profile"     element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+          <Route path="/bookmarks"   element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
+          <Route path="/share/:token" element={<SharedResult />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

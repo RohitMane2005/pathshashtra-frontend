@@ -18,6 +18,7 @@ const CodingTutor = () => {
   const [hintsUsed, setHintsUsed] = useState(0);
 
   useEffect(() => { if (tab === "problems") fetchProblems(); }, [tab]);
+  useEffect(() => { highlightCode(); }, [code, problem]);
 
   const generateProblem = async () => {
     setLoading(true); setProblem(null); setFeedback(null); setHint(null); setCode(""); setHintsUsed(0);
@@ -59,11 +60,27 @@ const CodingTutor = () => {
     } catch {}
   };
 
+  const retryProblem = async (id) => {
+    setLoading(true); setFeedback(null); setHint(null); setCode(""); setHintsUsed(0);
+    try {
+      const res = await API.post(`/coding/problem/${id}/retry`);
+      setProblem(res.data.problem); setProblemId(res.data.problemId);
+      toast.success("Ready to retry! 🔄");
+    } catch (err) { if (!err.handled) toast.error("Failed to retry"); }
+    finally { setLoading(false); }
+  };
+
   const fetchRoadmap = async () => {
     setLoading(true);
     try { const res = await API.get("/coding/roadmap?goal=Campus Placement"); setRoadmap(res.data.roadmap); }
     catch (err) { if (!err.handled) toast.error("Failed to generate roadmap"); }
     finally { setLoading(false); }
+  };
+
+  const langMap = { Java: "java", Python: "python", "C++": "cpp", JavaScript: "javascript", C: "c", Kotlin: "kotlin" };
+
+  const highlightCode = () => {
+    if (window.Prism) window.Prism.highlightAll();
   };
 
   const topics = ["Arrays", "Linked Lists", "Stacks", "Queues", "Binary Trees", "BST", "Graphs", "Dynamic Programming", "Sorting", "Searching", "Recursion", "Hashing"];
@@ -168,18 +185,26 @@ const CodingTutor = () => {
                   <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                     <Code2 size={16} className="text-[#9B6DFF]" /> Your Solution
                   </h3>
-                  <textarea value={code} onChange={e => setCode(e.target.value)}
-                    placeholder={`// Write your ${form.language} solution here...\n// Think about time & space complexity`}
-                    rows={10}
-                    className="w-full px-4 py-3 rounded-xl font-mono text-sm resize-none outline-none transition-all"
-                    style={{
-                      background: "rgba(0,0,0,0.4)",
-                      border: "1px solid var(--border)",
-                      color: "#E2E8F0",
-                      lineHeight: "1.6",
-                    }}
-                    onFocus={e => e.target.style.borderColor = "#9B6DFF"}
-                    onBlur={e => e.target.style.borderColor = "var(--border)"} />
+                  <div className="relative rounded-xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "rgba(0,0,0,0.5)" }}>
+                    <pre className="pointer-events-none absolute inset-0 m-0 p-4 font-mono text-sm overflow-hidden"
+                      style={{ lineHeight: "1.6", tabSize: 2 }}>
+                      <code className={`language-${langMap[form.language] || "javascript"}`}>{code || " "}</code>
+                    </pre>
+                    <textarea value={code} onChange={e => { setCode(e.target.value); highlightCode(); }}
+                      placeholder={`// Write your ${form.language} solution here...`}
+                      rows={10} spellCheck={false}
+                      className="relative w-full px-4 py-4 font-mono text-sm resize-none outline-none bg-transparent caret-white"
+                      style={{ lineHeight: "1.6", color: "transparent", caretColor: "white", tabSize: 2 }}
+                      onKeyDown={e => {
+                        if (e.key === "Tab") {
+                          e.preventDefault();
+                          const s = e.target.selectionStart;
+                          const newCode = code.substring(0, s) + "  " + code.substring(e.target.selectionEnd);
+                          setCode(newCode);
+                          setTimeout(() => e.target.setSelectionRange(s + 2, s + 2), 0);
+                        }
+                      }} />
+                  </div>
 
                   <div className="flex gap-3 mt-3">
                     <button onClick={getHint} disabled={loading || hintsUsed >= 3}
@@ -281,9 +306,17 @@ const CodingTutor = () => {
                           <p className="text-[#3D3B52] text-xs">{p.topic} · {p.language} · {p.hintsUsed} hints</p>
                         </div>
                       </div>
-                      <span className={`badge text-xs ${p.status === "SOLVED" ? "badge-green" : p.status === "REVIEWED" ? "badge-purple" : "badge-orange"}`}>
-                        {p.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`badge text-xs ${p.status === "SOLVED" ? "badge-green" : p.status === "REVIEWED" ? "badge-purple" : "badge-orange"}`}>
+                          {p.status}
+                        </span>
+                        {(p.status === "SOLVED" || p.status === "REVIEWED") && (
+                          <button onClick={() => { setTab("generate"); retryProblem(p.id); }}
+                            className="text-[#3D3B52] hover:text-[#9B6DFF] text-xs transition-colors px-2 py-1 rounded-lg hover:bg-[#9B6DFF]/10">
+                            Retry
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
