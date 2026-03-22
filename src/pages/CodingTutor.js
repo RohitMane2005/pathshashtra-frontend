@@ -52,7 +52,11 @@ const CodingTutor = () => {
   };
 
   const fetchProblems = async () => {
-    try { const res = await API.get("/coding/problems"); setProblems(res.data); } catch {}
+    try {
+      const res = await API.get("/coding/problems?page=0&size=20");
+      // Backend now returns Page<> — use content array
+      setProblems(res.data.content || res.data);
+    } catch {}
   };
 
   const fetchRoadmap = async () => {

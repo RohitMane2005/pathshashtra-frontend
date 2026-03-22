@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { User, Save, Loader, Star, Code2, BookOpen, Brain, Trophy, Zap } from "lucide-react";
+import { User, Save, Loader, Star, Code2, BookOpen, Brain, Trash2 } from "lucide-react";
+import { ProfileSkeleton } from "../components/Skeleton";
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [deleting, setDeleting] = useState(false);
   const [form, setForm] = useState({ educationLevel: "", careerGoal: "", experienceLevel: "Beginner", skills: "" });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -48,6 +52,19 @@ const Profile = () => {
       toast.success("Profile updated! ✅");
     } catch { toast.error("Failed to save profile"); }
     finally { setSaving(false); }
+  };
+
+  const deleteAccount = async () => {
+    if (!window.confirm("Are you sure? This will permanently delete your account and all data. This cannot be undone.")) return;
+    setDeleting(true);
+    try {
+      await API.delete("/users/me", { data: { confirm: "DELETE" } });
+      logout();
+      navigate("/login");
+      toast.success("Account deleted");
+    } catch (err) {
+      if (!err.handled) toast.error("Failed to delete account");
+    } finally { setDeleting(false); }
   };
 
   const xp = stats.problems * 50 + stats.topics * 30 + stats.quizzes * 100;
@@ -104,7 +121,7 @@ const Profile = () => {
             </h2>
 
             {loading ? (
-              <div className="flex justify-center py-8"><Loader size={24} className="animate-spin text-[#FF6B00]" /></div>
+              <ProfileSkeleton />
             ) : (
               <form onSubmit={saveProfile} className="space-y-4">
                 <div>
@@ -136,9 +153,24 @@ const Profile = () => {
             )}
           </div>
 
-          <p className="text-center text-[#3D3B52] text-xs mt-6 pb-4">
+          <p className="text-center text-[#3D3B52] text-xs mt-6 pb-2">
             Your profile helps AI give better recommendations 🎯
           </p>
+
+          {/* Danger zone */}
+          <div className="glass mt-4 p-5 border border-[#F87171]/20">
+            <h3 className="text-[#F87171] font-bold text-sm mb-2 flex items-center gap-2">
+              <Trash2 size={14} /> Danger Zone
+            </h3>
+            <p className="text-[#7A7890] text-xs mb-3">
+              Permanently delete your account and all data. This cannot be undone.
+            </p>
+            <button onClick={deleteAccount} disabled={deleting}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-[#F87171]/30 text-[#F87171] hover:bg-[#F87171]/10 disabled:opacity-40">
+              {deleting ? <Loader size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              Delete my account
+            </button>
+          </div>
         </div>
       </div>
     </div>

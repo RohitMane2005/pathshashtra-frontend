@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import QuotaBar from "../components/QuotaBar";
+import { StatSkeleton, CardSkeleton, ListItemSkeleton } from "../components/Skeleton";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
 import {
@@ -158,7 +160,15 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* AI Quota Bar */}
+          {!loading && <QuotaBar />}
+
           {/* Stats Row */}
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+              {[1,2,3,4].map(i => <StatSkeleton key={i} />)}
+            </div>
+          ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 animate-fade-up stagger-2">
             {[
               { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={16} />, color: "#00D4C8" },
@@ -175,8 +185,14 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+          )}
 
           {/* Module Cards */}
+          {loading ? (
+            <div className="grid md:grid-cols-2 gap-4 mb-8">
+              {[1,2,3,4].map(i => <CardSkeleton key={i} />)}
+            </div>
+          ) : (
           <div className="grid md:grid-cols-2 gap-4 mb-8 animate-fade-up stagger-3">
             {modules.map((mod, i) => (
               <div key={i} className="glass group hover:border-white/15 transition-all duration-300 overflow-hidden relative">

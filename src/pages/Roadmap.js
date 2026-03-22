@@ -177,8 +177,8 @@ const Roadmap = () => {
   const fetchSavedRoadmaps = async () => {
     setLoadingSaved(true);
     try {
-      const res = await API.get("/roadmap/my");
-      setSavedRoadmaps(res.data);
+      const res = await API.get("/roadmap/my?page=0&size=10");
+      setSavedRoadmaps(res.data.content || res.data);
     } catch {} finally { setLoadingSaved(false); }
   };
 
