@@ -222,6 +222,7 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+          )}
 
           {/* Today's Topics + Recent Problems */}
           <div className="grid md:grid-cols-2 gap-4 animate-fade-up stagger-4">
