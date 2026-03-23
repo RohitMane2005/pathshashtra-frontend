@@ -445,29 +445,35 @@ function EditorPane({
 /* ══════════════════════════════════════════════
    PROBLEMS VIEW
 ══════════════════════════════════════════════ */
-function ProblemsView({ problems, setView, onRetry }) {
+function ProblemsView({ problems, setView, onRetry, onLoad }) {
   const solved    = problems.filter(p=>p.status==="SOLVED").length;
   const attempted = problems.filter(p=>p.status==="ATTEMPTED"||p.status==="REVIEWED").length;
+  const inProgress= problems.filter(p=>p.status==="GENERATED"||p.status==="ATTEMPTED").length;
+
   return (
     <div style={{flex:1, overflowY:"auto", padding:24}}>
-      <div style={{maxWidth:680, margin:"0 auto"}}>
+      <div style={{maxWidth:720, margin:"0 auto"}}>
         <h2 style={{color:"white", fontFamily:"Bricolage Grotesque", fontSize:20, fontWeight:700, marginBottom:20}}>
           My Problems ({problems.length})
         </h2>
+
+        {/* Stats */}
         {problems.length > 0 && (
-          <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24}}>
+          <div style={{display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:24}}>
             {[
-              {label:"Solved",    count:solved,          color:"#34D399"},
-              {label:"Attempted", count:attempted,       color:"#FBBF24"},
-              {label:"Total",     count:problems.length, color:"#9B6DFF"},
+              {label:"Solved",      count:solved,      color:"#34D399"},
+              {label:"In Progress", count:inProgress,  color:"#FBBF24"},
+              {label:"Attempted",   count:attempted,   color:"#9B6DFF"},
+              {label:"Total",       count:problems.length, color:"#7A7890"},
             ].map((s,i) => (
-              <div key={i} style={{background:"rgba(255,255,255,0.03)", border:"1px solid var(--border)", borderRadius:12, padding:"14px 16px", textAlign:"center"}}>
-                <p style={{color:s.color, fontSize:26, fontWeight:800, fontFamily:"Bricolage Grotesque", margin:0}}>{s.count}</p>
-                <p style={{color:"#7A7890", fontSize:12, margin:0}}>{s.label}</p>
+              <div key={i} style={{background:"rgba(255,255,255,0.03)", border:"1px solid var(--border)", borderRadius:12, padding:"12px 14px", textAlign:"center"}}>
+                <p style={{color:s.color, fontSize:24, fontWeight:800, fontFamily:"Bricolage Grotesque", margin:0}}>{s.count}</p>
+                <p style={{color:"#7A7890", fontSize:11, margin:0}}>{s.label}</p>
               </div>
             ))}
           </div>
         )}
+
         {problems.length===0 ? (
           <div style={{textAlign:"center", padding:"60px 0"}}>
             <Code2 size={40} style={{color:"#3D3B52", margin:"0 auto 12px", display:"block"}}/>
@@ -475,32 +481,69 @@ function ProblemsView({ problems, setView, onRetry }) {
             <p style={{color:"#7A7890", fontSize:13, marginBottom:20}}>Generate your first problem to get started</p>
             <button onClick={()=>setView("practice")} style={{
               padding:"8px 20px", borderRadius:10, fontSize:13, fontWeight:600,
-              background:"linear-gradient(135deg,#9B6DFF,#C4A3FF)",
-              color:"white", border:"none", cursor:"pointer"
+              background:"linear-gradient(135deg,#9B6DFF,#C4A3FF)", color:"white", border:"none", cursor:"pointer"
             }}>Start Practicing</button>
           </div>
         ) : (
-          <>
-            <div style={{display:"grid", gridTemplateColumns:"minmax(0,1fr) 90px 90px 90px 80px", padding:"6px 14px", gap:10, color:"#3D3B52", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em"}}>
-              <span>Problem</span><span>Difficulty</span><span>Language</span><span>Status</span><span/>
+          <div style={{display:"flex", flexDirection:"column", gap:8}}>
+            {/* Header */}
+            <div style={{display:"grid", gridTemplateColumns:"minmax(0,1fr) 80px 90px 100px 110px",
+              padding:"6px 14px", gap:10, color:"#3D3B52", fontSize:10, fontWeight:700,
+              textTransform:"uppercase", letterSpacing:"0.08em"}}>
+              <span>Problem</span><span>Difficulty</span><span>Language</span><span>Status</span><span>Action</span>
             </div>
-            {problems.map((p,i) => (
-              <div key={i} style={{display:"grid", gridTemplateColumns:"minmax(0,1fr) 90px 90px 90px 80px", alignItems:"center", gap:10, background:"rgba(255,255,255,0.03)", border:"1px solid var(--border)", borderRadius:11, padding:"11px 14px", marginBottom:8, transition:"border-color 0.15s"}}
-                onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.15)"}
-                onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
-                <div style={{minWidth:0}}>
-                  <p style={{color:"white", fontWeight:600, fontSize:13, margin:"0 0 2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{p.title}</p>
-                  <p style={{color:"#3D3B52", fontSize:11, margin:0}}>{p.topic} · {p.hintsUsed} hints</p>
+
+            {problems.map((p,i) => {
+              const statusColor = p.status==="SOLVED"?"#34D399":p.status==="REVIEWED"?"#9B6DFF":p.status==="ATTEMPTED"?"#FBBF24":"#7A7890";
+              const canResume   = p.status==="GENERATED" || p.status==="ATTEMPTED";
+              const canRetry    = p.status==="SOLVED"    || p.status==="REVIEWED";
+
+              return (
+                <div key={i}
+                  onClick={() => onLoad(p.id, p.language)}
+                  style={{
+                    display:"grid", gridTemplateColumns:"minmax(0,1fr) 80px 90px 100px 110px",
+                    alignItems:"center", gap:10,
+                    background:"rgba(255,255,255,0.03)", border:"1px solid var(--border)",
+                    borderRadius:11, padding:"12px 14px", cursor:"pointer", transition:"all 0.15s"
+                  }}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(155,109,255,0.4)"; e.currentTarget.style.background="rgba(155,109,255,0.05)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)"; e.currentTarget.style.background="rgba(255,255,255,0.03)";}}>
+
+                  {/* Title + meta */}
+                  <div style={{minWidth:0}}>
+                    <p style={{color:"white", fontWeight:600, fontSize:13, margin:"0 0 3px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{p.title}</p>
+                    <div style={{display:"flex", alignItems:"center", gap:8}}>
+                      <span style={{color:"#3D3B52", fontSize:11}}>{p.topic}</span>
+                      {p.hintsUsed > 0 && <span style={{color:"#FBBF24", fontSize:10}}>💡 {p.hintsUsed} hint{p.hintsUsed!==1?"s":""} used</span>}
+                    </div>
+                  </div>
+
+                  <Badge color={DIFF_COLOR[p.difficulty]} bg={DIFF_BG[p.difficulty]}>{p.difficulty}</Badge>
+                  <Badge color="#7A7890">{p.language}</Badge>
+                  <Badge color={statusColor}>{p.status}</Badge>
+
+                  {/* Action button */}
+                  <div onClick={e=>e.stopPropagation()}>
+                    {canResume && (
+                      <button onClick={() => onLoad(p.id, p.language)} style={{
+                        padding:"5px 12px", borderRadius:7, fontSize:11, fontWeight:700,
+                        background:"rgba(255,107,0,0.12)", border:"1px solid rgba(255,107,0,0.3)",
+                        color:"#FF8C38", cursor:"pointer", whiteSpace:"nowrap", width:"100%"
+                      }}>▶ Resume</button>
+                    )}
+                    {canRetry && (
+                      <button onClick={() => onRetry(p.id)} style={{
+                        padding:"5px 12px", borderRadius:7, fontSize:11, fontWeight:700,
+                        background:"rgba(155,109,255,0.12)", border:"1px solid rgba(155,109,255,0.3)",
+                        color:"#9B6DFF", cursor:"pointer", whiteSpace:"nowrap", width:"100%"
+                      }}>↺ Retry</button>
+                    )}
+                  </div>
                 </div>
-                <Badge color={DIFF_COLOR[p.difficulty]} bg={DIFF_BG[p.difficulty]}>{p.difficulty}</Badge>
-                <Badge color="#7A7890">{p.language}</Badge>
-                <Badge color={p.status==="SOLVED"?"#34D399":p.status==="REVIEWED"?"#9B6DFF":p.status==="ATTEMPTED"?"#FBBF24":"#7A7890"}>{p.status}</Badge>
-                {(p.status==="SOLVED"||p.status==="REVIEWED")
-                  ? <button onClick={()=>onRetry(p.id)} style={{padding:"4px 10px", borderRadius:7, fontSize:11, fontWeight:600, background:"rgba(155,109,255,0.12)", border:"1px solid rgba(155,109,255,0.3)", color:"#9B6DFF", cursor:"pointer", whiteSpace:"nowrap"}}>Retry</button>
-                  : <span/>}
-              </div>
-            ))}
-          </>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
@@ -647,6 +690,26 @@ export default function CodingTutor() {
     finally { setSub(false); }
   };
 
+
+  const loadProblem = async (id, lang) => {
+    setGen(true); setFeedback(null); setHints([]); setHUsed(0);
+    setElapsed(0); setTimerOn(false); setLeftTab("description");
+    try {
+      const res = await API.get(`/coding/problem/${id}`);
+      const d = res.data;
+      setProblem(d.problem);
+      setProbId(d.problemId);
+      // restore saved code if it exists, else use boilerplate
+      setCode(d.submittedCode || BOILERPLATE[lang] || BOILERPLATE["Java"]);
+      setHUsed(d.hintsUsed || 0);
+      setForm(f => ({ ...f, language: lang }));
+      setView("practice");
+      if (d.status !== "SOLVED" && d.status !== "REVIEWED") setTimerOn(true);
+      toast.success("Problem loaded ✓");
+    } catch (err) { if (!err.handled) toast.error("Failed to load problem"); }
+    finally { setGen(false); }
+  };
+
   const retryProblem = async id => {
     setGen(true); setFeedback(null); setHints([]); setHUsed(0);
     setCode(BOILERPLATE[form.language]||""); setElapsed(0);
@@ -771,7 +834,7 @@ export default function CodingTutor() {
           </div>
         )}
 
-        {view==="problems" && <ProblemsView problems={problems} setView={setView} onRetry={retryProblem}/>}
+        {view==="problems" && <ProblemsView problems={problems} setView={setView} onRetry={retryProblem} onLoad={loadProblem}/>}
         {view==="roadmap"  && <RoadmapView roadmap={roadmap} rmLoad={rmLoad} onGenerate={fetchRoadmap} onReset={()=>setRoadmap(null)}/>}
       </div>
     </div>
