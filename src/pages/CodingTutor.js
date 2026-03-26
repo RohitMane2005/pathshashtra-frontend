@@ -524,7 +524,7 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
                   <Badge color={statusColor}>{p.status}</Badge>
 
                   {/* Action button */}
-                  <div onClick={e=>e.stopPropagation()}>
+                  <div onClick={e=>e.stopPropagation()} style={{display:"flex", flexDirection:"column", gap:4}}>
                     {canResume && (
                       <button onClick={() => onLoad(p.id, p.language)} style={{
                         padding:"5px 12px", borderRadius:7, fontSize:11, fontWeight:700,
@@ -533,7 +533,14 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
                       }}>▶ Resume</button>
                     )}
                     {canRetry && (
-                      <button onClick={() => onRetry(p.id)} style={{
+                      <button onClick={() => onLoad(p.id, p.language)} style={{
+                        padding:"5px 12px", borderRadius:7, fontSize:11, fontWeight:700,
+                        background:"rgba(0,212,200,0.1)", border:"1px solid rgba(0,212,200,0.3)",
+                        color:"#00D4C8", cursor:"pointer", whiteSpace:"nowrap", width:"100%"
+                      }}>👁 View</button>
+                    )}
+                    {canRetry && (
+                      <button onClick={() => onRetry(p.id, p.language)} style={{
                         padding:"5px 12px", borderRadius:7, fontSize:11, fontWeight:700,
                         background:"rgba(155,109,255,0.12)", border:"1px solid rgba(155,109,255,0.3)",
                         color:"#9B6DFF", cursor:"pointer", whiteSpace:"nowrap", width:"100%"
@@ -697,28 +704,49 @@ export default function CodingTutor() {
     try {
       const res = await API.get(`/coding/problem/${id}`);
       const d = res.data;
-      setProblem(d.problem);
-      setProbId(d.problemId);
-      // restore saved code if it exists, else use boilerplate
-      setCode(d.submittedCode || BOILERPLATE[lang] || BOILERPLATE["Java"]);
+      // getProblemById returns: { problemId, problem, submittedCode, hintsUsed, status }
+      const prob = d.problem || d.problemJson;
+      if (!prob) throw new Error("No problem data in response");
+      const actualId = d.problemId || id;
+      const actualLang = d.language || lang || form.language;
+      setProblem(prob);
+      setProbId(actualId);
+      setCode(d.submittedCode || BOILERPLATE[actualLang] || BOILERPLATE["Java"]);
       setHUsed(d.hintsUsed || 0);
-      setForm(f => ({ ...f, language: lang }));
+      setForm(f => ({ ...f, language: actualLang }));
+      // restore feedback tab if problem was reviewed/solved
+      if (d.feedbackJson && d.feedbackJson !== null && d.feedbackJson !== "null") {
+        try {
+          const fb = typeof d.feedbackJson === "string" ? JSON.parse(d.feedbackJson) : d.feedbackJson;
+          if (fb && fb.score !== undefined) { setFeedback(fb); setLeftTab("feedback"); }
+        } catch (e) { console.warn("Could not parse feedbackJson:", e); }
+      }
       setView("practice");
-      if (d.status !== "SOLVED" && d.status !== "REVIEWED") setTimerOn(true);
-      toast.success("Problem loaded ✓");
-    } catch (err) { if (!err.handled) toast.error("Failed to load problem"); }
+      const isDone = d.status === "SOLVED" || d.status === "REVIEWED";
+      if (!isDone) setTimerOn(true);
+      toast.success(isDone ? "Problem loaded — see feedback →" : "Problem loaded, resume coding ▶");
+    } catch (err) {
+      console.error("loadProblem error:", err);
+      if (!err.handled) toast.error(err.message || "Failed to load problem");
+    }
     finally { setGen(false); }
   };
 
-  const retryProblem = async id => {
+  const retryProblem = async (id, lang) => {
+    const useLang = lang || form.language;
     setGen(true); setFeedback(null); setHints([]); setHUsed(0);
-    setCode(BOILERPLATE[form.language]||""); setElapsed(0);
+    setCode(BOILERPLATE[useLang] || BOILERPLATE["Java"]); setElapsed(0);
     setTimerOn(false); setLeftTab("description");
     try {
       const res = await API.post(`/coding/problem/${id}/retry`);
       setProblem(res.data.problem); setProbId(res.data.problemId);
+      setForm(f => ({ ...f, language: useLang }));
       setView("practice"); setTimerOn(true);
-    } catch (err) { if (!err.handled) toast.error("Failed to retry"); }
+      toast.success("Problem reset — attempt it fresh! 🔄");
+    } catch (err) {
+      console.error("retryProblem error:", err);
+      if (!err.handled) toast.error("Failed to retry problem");
+    }
     finally { setGen(false); }
   };
 
