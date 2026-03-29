@@ -8,7 +8,7 @@ import API from "../api/axios";
 import {
   Brain, BookOpen, Code2, ArrowRight, Flame,
   Zap, TrendingUp, Star, CheckCircle, Clock,
-  Sparkles, Map
+  Sparkles, Map, Target
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -92,6 +92,16 @@ const Dashboard = () => {
       badge: "NEW ✨",
       stat: "Full Stack, ML, DevOps & more",
       cta: "Generate Roadmap",
+    },
+    {
+      icon: <Target size={22} />,
+      title: "Career AI",
+      desc: "Deep psychometric analysis — personality, salary insights & action plan",
+      path: "/career",
+      color: "#9B6DFF",
+      badge: "NEW",
+      stat: "Powered by AI",
+      cta: "Discover Your Path",
     },
   ];
 

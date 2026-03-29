@@ -9,19 +9,34 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const savedUser  = localStorage.getItem("user");
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        const parsed = JSON.parse(savedUser);
+        // FIX: only hydrate safe fields — never trust arbitrary stored objects
+        setToken(savedToken);
+        setUser({ id: parsed.id, name: parsed.name, email: parsed.email, role: parsed.role });
+      } catch {
+        // Corrupt storage — clear it
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
     setLoading(false);
   }, []);
 
   const login = (tokenValue, userData) => {
+    // FIX: only persist safe fields — never store password or sensitive server fields
+    const safeUser = {
+      id:    userData.id,
+      name:  userData.name,
+      email: userData.email,
+      role:  userData.role || "STUDENT",
+    };
     localStorage.setItem("token", tokenValue);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(safeUser));
     setToken(tokenValue);
-    setUser(userData);
+    setUser(safeUser);
   };
 
   const logout = () => {
