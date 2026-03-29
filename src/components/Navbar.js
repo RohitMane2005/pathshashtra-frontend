@@ -16,6 +16,7 @@ const navItems = [
   { path: "/profile", icon: <User size={18} />, label: "Profile" },
   { path: "/leaderboard", icon: <Trophy size={18} />, label: "Leaderboard", badge: "🏆" },
   { path: "/bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
+  { path: "/career", label: "Career" }
 ];
 
 const Navbar = () => {

@@ -16,6 +16,7 @@ import Roadmap from "./pages/Roadmap";
 import Leaderboard from "./pages/Leaderboard";
 import Bookmarks from "./pages/Bookmarks";
 import SharedResult from "./pages/SharedResult";
+import Career from "./pages/Career";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
           <Route path="/bookmarks"   element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
           <Route path="/share/:token" element={<SharedResult />} />
+          <Route path="/career" element={<ProtectedRoute><Career /></ProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
