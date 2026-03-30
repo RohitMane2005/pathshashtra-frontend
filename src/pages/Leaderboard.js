@@ -21,7 +21,7 @@ const Leaderboard = () => {
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       <Navbar />
-      <div className="main-content" style={{ paddingTop: "32px" }}>
+      <div className="main-content">
         <div className="max-w-2xl mx-auto">
 
           {/* Header */}

@@ -1,255 +1,235 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, Brain, BookOpen, Code2,
   Map, Target, Bookmark, Trophy, User,
-  LogOut, Menu, X, ChevronDown, MoreHorizontal
+  LogOut, Menu, X, ChevronLeft, ChevronRight,
+  Sparkles
 } from "lucide-react";
 
-// Primary nav — always visible on desktop
-const PRIMARY_NAV = [
-  { path: "/dashboard",   icon: <LayoutDashboard size={17} />, label: "Dashboard" },
-  { path: "/quiz",        icon: <Brain size={17} />,           label: "Career Quiz",  badge: "AI" },
-  { path: "/career",      icon: <Target size={17} />,          label: "Career AI",    badge: "NEW" },
-  { path: "/study",       icon: <BookOpen size={17} />,        label: "Study Planner" },
-  { path: "/coding",      icon: <Code2 size={17} />,           label: "Coding Tutor" },
+const NAV_ITEMS = [
+  { path: "/dashboard",   icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+  { path: "/quiz",        icon: <Brain size={18} />,           label: "Career Quiz",   badge: "AI",  badgeColor: "#FF6B00" },
+  { path: "/career",      icon: <Target size={18} />,          label: "Career AI",     badge: "NEW", badgeColor: "#00D4C8" },
+  { path: "/study",       icon: <BookOpen size={18} />,        label: "Study Planner" },
+  { path: "/coding",      icon: <Code2 size={18} />,           label: "Coding Tutor" },
+  { path: "/roadmap",     icon: <Map size={18} />,             label: "Roadmap" },
+  { path: "/leaderboard", icon: <Trophy size={18} />,          label: "Leaderboard" },
+  { path: "/bookmarks",   icon: <Bookmark size={18} />,        label: "Bookmarks" },
 ];
 
-// Secondary nav — in "More" dropdown on desktop, shown fully in mobile
-const SECONDARY_NAV = [
-  { path: "/roadmap",     icon: <Map size={17} />,     label: "Roadmap" },
-  { path: "/leaderboard", icon: <Trophy size={17} />,  label: "Leaderboard" },
-  { path: "/bookmarks",   icon: <Bookmark size={17} />, label: "Bookmarks" },
-];
-
-const ALL_NAV = [...PRIMARY_NAV, ...SECONDARY_NAV];
-
-const badgeStyle = (badge) => ({
-  background: badge === "NEW" ? "rgba(0,212,200,0.15)" : "rgba(255,107,0,0.15)",
-  color:      badge === "NEW" ? "#00D4C8"               : "#FF8C38",
-});
+// Sync sidebar collapse state to <main-content> margin
+function applyMainContentClass(collapsed) {
+  const el = document.querySelector(".main-content");
+  if (!el) return;
+  if (collapsed) el.classList.add("collapsed");
+  else el.classList.remove("collapsed");
+}
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen]   = useState(false);
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed]   = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [moreOpen, setMoreOpen]       = useState(false);
-  const moreRef = useRef(null);
 
   const isActive = (path) => location.pathname === path;
-  const secondaryActive = SECONDARY_NAV.some(i => isActive(i.path));
 
-  const handleLogout = () => { logout(); navigate("/login"); };
-
-  // Close "More" on outside click
+  // Persist collapse state
   useEffect(() => {
-    const handler = (e) => {
-      if (moreRef.current && !moreRef.current.contains(e.target)) setMoreOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    const saved = localStorage.getItem("sidebarCollapsed") === "true";
+    setCollapsed(saved);
+    applyMainContentClass(saved);
   }, []);
+
+  const toggleCollapse = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("sidebarCollapsed", next);
+    applyMainContentClass(next);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // Close mobile overlay on route change
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
   return (
     <>
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 border-b"
-        style={{
-          background: "rgba(10,10,15,0.92)",
-          backdropFilter: "blur(20px)",
-          borderColor: "rgba(255,255,255,0.07)",
-        }}
+      {/* ── Mobile top bar ── */}
+      <div
+        className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 border-b"
+        style={{ background: "rgba(10,10,15,0.95)", borderColor: "rgba(255,255,255,0.07)", backdropFilter: "blur(20px)" }}
       >
-        <div className="max-w-7xl mx-auto px-3 h-14 flex items-center gap-1">
+        <Link to="/dashboard" className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-xs"
+            style={{ background: "linear-gradient(135deg, #FF6B00, #9B6DFF)" }}>
+            PS
+          </div>
+          <span className="font-bold text-white text-sm" style={{ fontFamily: "Bricolage Grotesque" }}>
+            PathShashtra
+          </span>
+        </Link>
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="p-2 rounded-lg text-[#7A7890] hover:text-white transition-all"
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
-          {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 flex-shrink-0 mr-2">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-xs flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #FF6B00, #9B6DFF)" }}
-            >
+      {/* ── Mobile spacer ── */}
+      <div className="lg:hidden h-14" />
+
+      {/* ── Mobile overlay backdrop ── */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMobileOpen(false)} />
+      )}
+
+      {/* ── Sidebar ── */}
+      <aside
+        className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "open" : ""}`}
+        style={{ background: "var(--bg2)" }}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-between px-4 pt-5 pb-4 flex-shrink-0"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <Link to="/dashboard" className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-black text-xs flex-shrink-0"
+              style={{ background: "linear-gradient(135deg, #FF6B00, #9B6DFF)" }}>
               PS
             </div>
-            {/* Show name only on very wide screens */}
-            <span className="font-bold text-white hidden xl:block whitespace-nowrap"
-              style={{ fontFamily: "Bricolage Grotesque" }}>
-              PathShashtra
-            </span>
+            {!collapsed && (
+              <span className="font-bold text-white text-sm truncate"
+                style={{ fontFamily: "Bricolage Grotesque" }}>
+                PathShashtra
+              </span>
+            )}
           </Link>
+          {/* Collapse toggle — desktop only */}
+          <button
+            onClick={toggleCollapse}
+            className="hidden lg:flex w-6 h-6 rounded-lg items-center justify-center text-[#3D3B52] hover:text-white hover:bg-white/5 transition-all flex-shrink-0"
+          >
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        </div>
 
-          {/* Desktop primary nav — icons only on lg, icons+labels on xl */}
-          <div className="hidden lg:flex items-center gap-0.5 flex-1 min-w-0">
-            {PRIMARY_NAV.map((item) => (
+        {/* Nav items */}
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(item.path);
+            return (
               <Link
                 key={item.path}
                 to={item.path}
-                title={item.label}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-                  isActive(item.path)
-                    ? "bg-white/10 text-white"
+                title={collapsed ? item.label : undefined}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative ${
+                  active
+                    ? "text-white"
                     : "text-[#7A7890] hover:text-white hover:bg-white/5"
                 }`}
+                style={active ? {
+                  background: "rgba(255,107,0,0.12)",
+                  borderLeft: "2px solid #FF6B00",
+                } : { borderLeft: "2px solid transparent" }}
               >
-                {item.icon}
-                <span className="hidden xl:inline">{item.label}</span>
-                {item.badge && (
-                  <span className="text-[9px] font-bold px-1 py-0.5 rounded-full hidden xl:inline"
-                    style={badgeStyle(item.badge)}>
-                    {item.badge}
-                  </span>
+                {/* Icon */}
+                <span className={`flex-shrink-0 transition-colors ${active ? "text-[#FF8C38]" : "text-[#3D3B52] group-hover:text-[#7A7890]"}`}>
+                  {item.icon}
+                </span>
+
+                {/* Label + badge */}
+                {!collapsed && (
+                  <>
+                    <span className="flex-1 truncate">{item.label}</span>
+                    {item.badge && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                        style={{
+                          background: `${item.badgeColor}20`,
+                          color: item.badgeColor,
+                          border: `1px solid ${item.badgeColor}40`,
+                        }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
+                )}
+
+                {/* Collapsed tooltip */}
+                {collapsed && (
+                  <div className="absolute left-full ml-3 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"
+                    style={{ background: "#1A1A24", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    {item.label}
+                  </div>
                 )}
               </Link>
-            ))}
+            );
+          })}
+        </nav>
 
-            {/* More dropdown */}
-            <div className="relative flex-shrink-0" ref={moreRef}>
-              <button
-                onClick={() => setMoreOpen(!moreOpen)}
-                title="More pages"
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  secondaryActive || moreOpen
-                    ? "bg-white/10 text-white"
-                    : "text-[#7A7890] hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <MoreHorizontal size={17} />
-                <span className="hidden xl:inline">More</span>
-              </button>
-
-              {moreOpen && (
-                <div
-                  className="absolute left-0 top-full mt-2 w-44 rounded-xl border overflow-hidden z-50 py-1"
-                  style={{ background: "#111118", borderColor: "rgba(255,255,255,0.1)" }}
-                >
-                  {SECONDARY_NAV.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center gap-2.5 px-4 py-2.5 text-sm transition-all ${
-                        isActive(item.path)
-                          ? "text-white bg-white/8"
-                          : "text-[#7A7890] hover:text-white hover:bg-white/5"
-                      }`}
-                    >
-                      {item.icon} {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
+        {/* AI badge */}
+        {!collapsed && (
+          <div className="mx-3 mb-3 px-3 py-2.5 rounded-xl flex items-center gap-2"
+            style={{ background: "rgba(255,107,0,0.07)", border: "1px solid rgba(255,107,0,0.12)" }}>
+            <Sparkles size={13} className="text-[#FF8C38] flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-[#FF8C38] uppercase tracking-wider">Powered by AI</p>
+              <p className="text-[#3D3B52] text-[10px] truncate">Groq · LLaMA 3.3 70B</p>
             </div>
           </div>
+        )}
 
-          {/* Push profile to the right */}
-          <div className="flex-1 hidden lg:block" />
-
-          {/* Profile dropdown */}
-          <div className="relative flex-shrink-0">
+        {/* User profile footer */}
+        <div className="px-3 pb-4 pt-2 flex-shrink-0"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/7 hover:border-white/15 transition-all"
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-all ${collapsed ? "justify-center" : ""}`}
             >
-              <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                style={{ background: "linear-gradient(135deg, #FF6B00, #9B6DFF)" }}
-              >
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                style={{ background: "linear-gradient(135deg, #FF6B00, #9B6DFF)" }}>
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </div>
-              <span className="text-white text-sm hidden sm:block max-w-[72px] truncate">
-                {user?.name?.split(" ")[0]}
-              </span>
-              <ChevronDown size={13} className="text-[#7A7890]" />
+              {!collapsed && (
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-white text-sm font-medium truncate">{user?.name?.split(" ")[0]}</p>
+                  <p className="text-[#3D3B52] text-xs truncate">{user?.email}</p>
+                </div>
+              )}
             </button>
 
+            {/* Profile popup — opens upward */}
             {profileOpen && (
-              <div
-                className="absolute right-0 top-full mt-2 w-44 rounded-xl border overflow-hidden z-50"
-                style={{ background: "#111118", borderColor: "rgba(255,255,255,0.1)" }}
-              >
-                <Link
-                  to="/profile"
+              <div className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border overflow-hidden z-50"
+                style={{ background: "#111118", borderColor: "rgba(255,255,255,0.1)" }}>
+                <Link to="/profile"
                   className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#7A7890] hover:text-white hover:bg-white/5 transition-all"
-                  onClick={() => setProfileOpen(false)}
-                >
+                  onClick={() => setProfileOpen(false)}>
                   <User size={15} /> My Profile
                 </Link>
                 <div className="h-px mx-3" style={{ background: "rgba(255,255,255,0.07)" }} />
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/5 transition-all"
-                >
+                <button onClick={handleLogout}
+                  className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/5 transition-all">
                   <LogOut size={15} /> Sign Out
                 </button>
               </div>
             )}
           </div>
-
-          {/* Mobile hamburger */}
-          <button
-            className="lg:hidden p-2 rounded-lg text-[#7A7890] hover:text-white transition-all flex-shrink-0 ml-1"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
         </div>
+      </aside>
 
-        {/* Mobile full menu */}
-        {mobileOpen && (
-          <div
-            className="lg:hidden border-t"
-            style={{ background: "rgba(10,10,15,0.98)", borderColor: "rgba(255,255,255,0.07)" }}
-          >
-            <div className="px-4 py-3 space-y-0.5 max-h-[75vh] overflow-y-auto">
-              {ALL_NAV.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    isActive(item.path)
-                      ? "bg-white/10 text-white"
-                      : "text-[#7A7890] hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                  {item.badge && (
-                    <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                      style={badgeStyle(item.badge)}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              ))}
-              <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.07)" }} />
-              <Link
-                to="/profile"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-[#7A7890] hover:text-white hover:bg-white/5 transition-all"
-              >
-                <User size={17} /> My Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-red-400 hover:bg-red-400/5 transition-all"
-              >
-                <LogOut size={17} /> Sign Out
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Spacer */}
-      <div style={{ height: "56px" }} />
-
-      {/* Backdrop closes all dropdowns */}
-      {(profileOpen || moreOpen) && (
-        <div className="fixed inset-0 z-40"
-          onClick={() => { setProfileOpen(false); setMoreOpen(false); }} />
+      {/* Close profile popup on outside click */}
+      {profileOpen && (
+        <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
       )}
     </>
   );
