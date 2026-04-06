@@ -704,23 +704,38 @@ export default function CodingTutor() {
     try {
       const res = await API.get(`/coding/problem/${id}`);
       const d = res.data;
-      // getProblemById returns: { problemId, problem, submittedCode, hintsUsed, status }
-      const prob = d.problem || d.problemJson;
-      if (!prob) throw new Error("No problem data in response");
       const actualId = d.problemId || id;
       const actualLang = d.language || lang || form.language;
+
+      // FIX: Gracefully handle old problems where problemJson may be null/missing in DB.
+      // Backend returns parsed object under "problem" key; fall back to raw string "problemJson".
+      const prob = d.problem || d.problemJson;
+      if (!prob) {
+        // Problem data missing in DB — show a friendly message instead of crashing
+        toast.error("This problem's data could not be loaded. It may be from an older session. Try generating a new problem.");
+        setView("practice");
+        setGen(false);
+        return;
+      }
+
       setProblem(prob);
       setProbId(actualId);
       setCode(d.submittedCode || BOILERPLATE[actualLang] || BOILERPLATE["Java"]);
       setHUsed(d.hintsUsed || 0);
       setForm(f => ({ ...f, language: actualLang }));
-      // restore feedback tab if problem was reviewed/solved
-      if (d.feedbackJson && d.feedbackJson !== null && d.feedbackJson !== "null") {
+
+      // FIX: feedbackJson is now returned as a parsed object from the backend (not a string).
+      // Handle both object and string forms for backward compatibility.
+      if (d.feedbackJson && typeof d.feedbackJson === "object" && d.feedbackJson.score !== undefined) {
+        setFeedback(d.feedbackJson);
+        setLeftTab("feedback");
+      } else if (d.feedbackJson && typeof d.feedbackJson === "string" && d.feedbackJson !== "null") {
         try {
-          const fb = typeof d.feedbackJson === "string" ? JSON.parse(d.feedbackJson) : d.feedbackJson;
+          const fb = JSON.parse(d.feedbackJson);
           if (fb && fb.score !== undefined) { setFeedback(fb); setLeftTab("feedback"); }
-        } catch (e) { console.warn("Could not parse feedbackJson:", e); }
+        } catch (e) { console.warn("Could not parse feedbackJson string:", e); }
       }
+
       setView("practice");
       const isDone = d.status === "SOLVED" || d.status === "REVIEWED";
       if (!isDone) setTimerOn(true);
