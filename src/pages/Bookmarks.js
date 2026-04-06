@@ -17,6 +17,7 @@ const Bookmarks = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [deleting, setDeleting] = useState(new Set()); // FIX: track per-item deleting state
 
   const fetch = async () => {
     try {
@@ -28,11 +29,18 @@ const Bookmarks = () => {
   useEffect(() => { fetch(); }, []);
 
   const remove = async (type, refId) => {
+    const key = `${type}-${refId}`;
+    if (deleting.has(key)) return; // FIX: prevent double-click double-delete
+    setDeleting(prev => new Set([...prev, key]));
     try {
       await API.post("/bookmarks/toggle", { type, refId });
       setItems(prev => prev.filter(i => !(i.type === type && i.refId === refId)));
       toast.success("Bookmark removed");
-    } catch (err) { if (!err.handled) toast.error("Failed to remove"); }
+    } catch (err) {
+      if (!err.handled) toast.error("Failed to remove");
+    } finally {
+      setDeleting(prev => { const s = new Set(prev); s.delete(key); return s; });
+    }
   };
 
   const filtered = filter === "all" ? items : items.filter(i => i.type === filter);
@@ -93,9 +101,13 @@ const Bookmarks = () => {
                     className="text-xs px-3 py-1.5 rounded-xl border border-white/7 text-[#7A7890] hover:text-white hover:border-white/15 transition-all opacity-0 group-hover:opacity-100">
                     Open →
                   </Link>
-                  <button onClick={() => remove(item.type, item.refId)}
-                    className="w-8 h-8 rounded-lg text-[#3D3B52] hover:text-[#F87171] hover:bg-[#F87171]/10 flex items-center justify-center transition-all">
-                    <Trash2 size={14} />
+                  <button
+                    onClick={() => remove(item.type, item.refId)}
+                    disabled={deleting.has(`${item.type}-${item.refId}`)}
+                    className="w-8 h-8 rounded-lg text-[#3D3B52] hover:text-[#F87171] hover:bg-[#F87171]/10 flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                    {deleting.has(`${item.type}-${item.refId}`)
+                      ? <div className="w-3 h-3 border border-[#F87171]/50 border-t-[#F87171] rounded-full animate-spin" />
+                      : <Trash2 size={14} />}
                   </button>
                 </div>
               ))}

@@ -37,7 +37,7 @@ const Dashboard = () => {
     ]);
     if (prog.status === "fulfilled") setProgress(prog.value.data);
     if (today.status === "fulfilled") setTodayTopics(today.value.data);
-    if (probs.status === "fulfilled") setProblems(probs.value.data);
+    if (probs.status === "fulfilled") { const d = probs.value.data; setProblems(d.content || d); }
     if (quiz.status === "fulfilled") setQuizResults(quiz.value.data);
     if (streakRes.status === "fulfilled") setStreak(streakRes.value.data.streak || 0);
     setLoading(false);

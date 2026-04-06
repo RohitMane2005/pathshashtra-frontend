@@ -36,8 +36,12 @@ const Profile = () => {
       const [probs, prog, quiz] = await Promise.allSettled([
         API.get("/coding/problems"), API.get("/study/progress"), API.get("/quiz/results"),
       ]);
+      // FIX: /coding/problems returns a paginated Page object, not a flat array
+      const probList = probs.status === "fulfilled"
+        ? (probs.value.data.content || probs.value.data)
+        : [];
       setStats({
-        problems: probs.status === "fulfilled" ? probs.value.data.filter(p => p.status === "SOLVED").length : 0,
+        problems: probList.filter(p => p.status === "SOLVED").length,
         topics: prog.status === "fulfilled" ? prog.value.data.completedTopics || 0 : 0,
         quizzes: quiz.status === "fulfilled" ? quiz.value.data.length : 0,
       });
