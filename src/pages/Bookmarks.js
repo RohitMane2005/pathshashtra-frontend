@@ -8,10 +8,10 @@ import { Bookmark, Code2, Map, Brain, Trash2, Loader } from "lucide-react";
 const typeIcon = {
   problem: <Code2 size={14} className="text-[#9B6DFF]" />,
   roadmap: <Map size={14} className="text-[#34D399]" />,
-  quiz:    <Brain size={14} className="text-[#FF6B00]" />,
+  quiz: <Brain size={14} className="text-[#FF6B00]" />,
 };
 const typeColor = { problem: "#9B6DFF", roadmap: "#34D399", quiz: "#FF6B00" };
-const typeLink  = { problem: "/coding", roadmap: "/roadmap", quiz: "/quiz" };
+const typeLink = { problem: "/coding", roadmap: "/roadmap", quiz: "/quiz" };
 
 const Bookmarks = () => {
   const [items, setItems] = useState([]);
@@ -19,14 +19,14 @@ const Bookmarks = () => {
   const [filter, setFilter] = useState("all");
   const [deleting, setDeleting] = useState(new Set()); // FIX: track per-item deleting state
 
-  const fetch = async () => {
+  const fetchBookmarks = async () => {
     try {
       const res = await API.get("/bookmarks");
       setItems(res.data);
-    } catch {} finally { setLoading(false); }
+    } catch { } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { fetchBookmarks(); }, []);
 
   const remove = async (type, refId) => {
     const key = `${type}-${refId}`;
@@ -62,11 +62,10 @@ const Bookmarks = () => {
             <div className="flex gap-2">
               {["all", "problem", "roadmap", "quiz"].map(f => (
                 <button key={f} onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all capitalize ${
-                    filter === f
-                      ? "bg-[#FF6B00]/15 text-[#FF8C38] border border-[#FF6B00]/20"
-                      : "text-[#7A7890] border border-white/7 hover:border-white/15"
-                  }`}>
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all capitalize ${filter === f
+                    ? "bg-[#FF6B00]/15 text-[#FF8C38] border border-[#FF6B00]/20"
+                    : "text-[#7A7890] border border-white/7 hover:border-white/15"
+                    }`}>
                   {f}
                 </button>
               ))}
@@ -85,8 +84,8 @@ const Bookmarks = () => {
             </div>
           ) : (
             <div className="space-y-3 animate-fade-up">
-              {filtered.map((item, i) => (
-                <div key={i} className="glass p-4 flex items-center gap-3 hover:border-white/15 transition-all group">
+              {filtered.map((item) => (
+                <div key={`${item.type}-${item.refId}`} className="glass p-4 flex items-center gap-3 hover:border-white/15 transition-all group">
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{ background: `${typeColor[item.type]}15` }}>
                     {typeIcon[item.type]}

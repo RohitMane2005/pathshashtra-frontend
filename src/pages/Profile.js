@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { User, Save, Loader, Star, Code2, BookOpen, Brain, Trash2 } from "lucide-react";
 import { ProfileSkeleton } from "../components/Skeleton";
+import { calculateXP, calculateLevel } from "../utils/xp";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -28,7 +29,7 @@ const Profile = () => {
         experienceLevel: res.data.experienceLevel || "Beginner",
         skills: res.data.skills || "",
       });
-    } catch {} finally { setLoading(false); }
+    } catch { } finally { setLoading(false); }
   };
 
   const fetchStats = async () => {
@@ -45,7 +46,7 @@ const Profile = () => {
         topics: prog.status === "fulfilled" ? prog.value.data.completedTopics || 0 : 0,
         quizzes: quiz.status === "fulfilled" ? quiz.value.data.length : 0,
       });
-    } catch {}
+    } catch { }
   };
 
   const saveProfile = async (e) => {
@@ -71,8 +72,8 @@ const Profile = () => {
     } finally { setDeleting(false); }
   };
 
-  const xp = stats.problems * 50 + stats.topics * 30 + stats.quizzes * 100;
-  const level = Math.floor(xp / 500) + 1;
+  const xp = calculateXP({ solvedProblems: stats.problems, completedTopics: stats.topics, quizzes: stats.quizzes });
+  const level = calculateLevel(xp);
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
@@ -130,23 +131,23 @@ const Profile = () => {
               <form onSubmit={saveProfile} className="space-y-4">
                 <div>
                   <label className="block text-sm text-[#7A7890] mb-2">Education Level</label>
-                  <input value={form.educationLevel} onChange={e => setForm({...form, educationLevel: e.target.value})}
+                  <input value={form.educationLevel} onChange={e => setForm({ ...form, educationLevel: e.target.value })}
                     placeholder="e.g. B.Tech Computer Science, 3rd Year" className="input-dark" />
                 </div>
                 <div>
                   <label className="block text-sm text-[#7A7890] mb-2">Career Goal</label>
-                  <input value={form.careerGoal} onChange={e => setForm({...form, careerGoal: e.target.value})}
+                  <input value={form.careerGoal} onChange={e => setForm({ ...form, careerGoal: e.target.value })}
                     placeholder="e.g. SDE at FAANG, Data Scientist" className="input-dark" />
                 </div>
                 <div>
                   <label className="block text-sm text-[#7A7890] mb-2">Experience Level</label>
-                  <select value={form.experienceLevel} onChange={e => setForm({...form, experienceLevel: e.target.value})} className="input-dark">
+                  <select value={form.experienceLevel} onChange={e => setForm({ ...form, experienceLevel: e.target.value })} className="input-dark">
                     {["Beginner", "Intermediate", "Advanced"].map(l => <option key={l}>{l}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm text-[#7A7890] mb-2">Current Skills</label>
-                  <textarea value={form.skills} onChange={e => setForm({...form, skills: e.target.value})}
+                  <textarea value={form.skills} onChange={e => setForm({ ...form, skills: e.target.value })}
                     placeholder="Java, Python, React, SQL, Data Structures..." rows={3}
                     className="input-dark resize-none" />
                 </div>

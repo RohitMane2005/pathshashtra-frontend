@@ -10,6 +10,7 @@ import {
   Zap, TrendingUp, Star, CheckCircle, Clock,
   Sparkles, Map, Target
 } from "lucide-react";
+import { calculateXP, calculateLevel, xpInCurrentLevel } from "../utils/xp";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-    const t = setInterval(() => setTime(new Date()), 1000);
+    const t = setInterval(() => setTime(new Date()), 60000);
     return () => clearInterval(t);
   }, []);
 
@@ -48,9 +49,9 @@ const Dashboard = () => {
   const firstName = user?.name?.split(" ")[0];
 
   const solvedProblems = problems.filter(p => p.status === "SOLVED").length;
-  const xp = solvedProblems * 50 + (progress?.completedTopics || 0) * 30 + quizResults.length * 100;
-  const level = Math.floor(xp / 500) + 1;
-  const xpInLevel = xp % 500;
+  const xp = calculateXP({ solvedProblems, completedTopics: progress?.completedTopics || 0, quizzes: quizResults.length });
+  const level = calculateLevel(xp);
+  const xpInLevel = xpInCurrentLevel(xp);
 
   const modules = [
     {
@@ -173,7 +174,7 @@ const Dashboard = () => {
                   <p className="text-[#FF8C38] text-xs font-bold uppercase tracking-wider mb-1">AI Daily Brief</p>
                   <p className="text-white text-sm leading-relaxed">
                     {progress && progress.completedTopics > 0
-                      ? `You've completed ${progress.completedTopics} topics so far. ${progress.weakTopicsCount > 0 ? `Focus on your ${progress.weakTopicsCount} weak topics today.` : "Great progress — keep the momentum going!"}`
+                      ? `You've completed ${progress.completedTopics} topics so far. ${(progress.weakTopicsCount || 0) > 0 ? `Focus on your ${progress.weakTopicsCount} weak topics today.` : "Great progress — keep the momentum going!"}`
                       : `Welcome to PathShashtra, ${firstName}! Start by taking the Career Quiz to discover your ideal path, then generate your personalized study plan. 🚀`
                     }
                   </p>
@@ -188,62 +189,62 @@ const Dashboard = () => {
           {/* Stats Row */}
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-              {[1,2,3,4].map(i => <StatSkeleton key={i} />)}
+              {[1, 2, 3, 4].map(i => <StatSkeleton key={i} />)}
             </div>
           ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 animate-fade-up stagger-2">
-            {[
-              { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={16} />, color: "#00D4C8" },
-              { label: "Problems Solved", value: solvedProblems, icon: <Code2 size={16} />, color: "#9B6DFF" },
-              { label: "Top Career Match", value: quizResults[0]?.topCareer ?? "—", icon: <Brain size={16} />, color: "#FF6B00" },
-              { label: "Study Progress", value: progress ? `${progress.overallPercent}%` : "—", icon: <TrendingUp size={16} />, color: "#34D399" },
-            ].map((stat, i) => (
-              <div key={i} className="glass p-4 hover:border-white/15 transition-all">
-                <div className="flex items-center gap-2 mb-2" style={{ color: stat.color }}>
-                  {stat.icon}
-                  <span className="text-xs text-[#7A7890]">{stat.label}</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 animate-fade-up stagger-2">
+              {[
+                { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={16} />, color: "#00D4C8" },
+                { label: "Problems Solved", value: solvedProblems, icon: <Code2 size={16} />, color: "#9B6DFF" },
+                { label: "Top Career Match", value: quizResults[0]?.topCareer || quizResults[0]?.careerMatches?.[0]?.title || "—", icon: <Brain size={16} />, color: "#FF6B00" },
+                { label: "Study Progress", value: progress ? `${progress.overallPercent}%` : "—", icon: <TrendingUp size={16} />, color: "#34D399" },
+              ].map((stat, i) => (
+                <div key={i} className="glass p-4 hover:border-white/15 transition-all">
+                  <div className="flex items-center gap-2 mb-2" style={{ color: stat.color }}>
+                    {stat.icon}
+                    <span className="text-xs text-[#7A7890]">{stat.label}</span>
+                  </div>
+                  <p className="text-2xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>{stat.value}</p>
                 </div>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>{stat.value}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
 
           {/* Module Cards */}
           {loading ? (
             <div className="grid md:grid-cols-2 gap-4 mb-8">
-              {[1,2,3,4].map(i => <CardSkeleton key={i} />)}
+              {[1, 2, 3, 4].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : (
-          <div className="grid md:grid-cols-2 gap-4 mb-8 animate-fade-up stagger-3">
-            {modules.map((mod, i) => (
-              <div key={i} className="glass group hover:border-white/15 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute top-0 left-0 right-0 h-px opacity-60"
-                  style={{ background: `linear-gradient(90deg, transparent, ${mod.color}, transparent)` }} />
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{ background: `${mod.color}20`, color: mod.color }}>
-                      {mod.icon}
+            <div className="grid md:grid-cols-2 gap-4 mb-8 animate-fade-up stagger-3">
+              {modules.map((mod, i) => (
+                <div key={i} className="glass group hover:border-white/15 transition-all duration-300 overflow-hidden relative">
+                  <div className="absolute top-0 left-0 right-0 h-px opacity-60"
+                    style={{ background: `linear-gradient(90deg, transparent, ${mod.color}, transparent)` }} />
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style={{ background: `${mod.color}20`, color: mod.color }}>
+                        {mod.icon}
+                      </div>
+                      <span className="badge text-[10px]" style={{
+                        background: `${mod.color}18`, color: mod.color, border: `1px solid ${mod.color}33`,
+                      }}>{mod.badge}</span>
                     </div>
-                    <span className="badge text-[10px]" style={{
-                      background: `${mod.color}18`, color: mod.color, border: `1px solid ${mod.color}33`,
-                    }}>{mod.badge}</span>
-                  </div>
-                  <h3 className="text-white font-bold text-base mb-1" style={{ fontFamily: "Bricolage Grotesque" }}>{mod.title}</h3>
-                  <p className="text-[#7A7890] text-sm mb-4 leading-relaxed">{mod.desc}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#3D3B52]">{mod.stat}</span>
-                    <Link to={mod.path}
-                      className="flex items-center gap-1.5 text-sm font-semibold transition-all group-hover:gap-2.5"
-                      style={{ color: mod.color }}>
-                      {mod.cta} <ArrowRight size={14} />
-                    </Link>
+                    <h3 className="text-white font-bold text-base mb-1" style={{ fontFamily: "Bricolage Grotesque" }}>{mod.title}</h3>
+                    <p className="text-[#7A7890] text-sm mb-4 leading-relaxed">{mod.desc}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#3D3B52]">{mod.stat}</span>
+                      <Link to={mod.path}
+                        className="flex items-center gap-1.5 text-sm font-semibold transition-all group-hover:gap-2.5"
+                        style={{ color: mod.color }}>
+                        {mod.cta} <ArrowRight size={14} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
 
           {/* Today's Topics + Recent Problems */}
@@ -292,13 +293,11 @@ const Dashboard = () => {
                   {problems.slice(0, 4).map((p, i) => (
                     <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                       <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                          p.difficulty === "EASY" ? "bg-[#34D399]" :
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${p.difficulty === "EASY" ? "bg-[#34D399]" :
                           p.difficulty === "MEDIUM" ? "bg-[#FBBF24]" : "bg-[#F87171]"}`} />
                         <span className="text-white text-sm truncate max-w-[140px]">{p.title}</span>
                       </div>
-                      <span className={`badge text-[10px] ${
-                        p.status === "SOLVED" ? "badge-green" :
+                      <span className={`badge text-[10px] ${p.status === "SOLVED" ? "badge-green" :
                         p.status === "REVIEWED" ? "badge-purple" : "badge-orange"}`}>
                         {p.status}
                       </span>

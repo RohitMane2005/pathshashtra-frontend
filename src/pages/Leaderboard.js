@@ -14,7 +14,7 @@ const Leaderboard = () => {
   useEffect(() => {
     API.get("/users/leaderboard")
       .then(r => setBoard(r.data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,7 +40,7 @@ const Leaderboard = () => {
 
           {loading ? (
             <div className="space-y-3">
-              {[1,2,3,4,5].map(i => (
+              {[1, 2, 3, 4, 5].map(i => (
                 <div key={i} className="glass p-4 animate-pulse">
                   <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-full bg-white/5" />
@@ -62,7 +62,7 @@ const Leaderboard = () => {
           ) : (
             <div className="space-y-3 animate-fade-up">
               {board.map((entry, i) => {
-                const isMe = entry.name === user?.name;
+                const isMe = entry.email === user?.email;
                 return (
                   <div key={i}
                     className={`glass p-4 flex items-center gap-4 transition-all ${isMe ? "border-[#FF6B00]/30 bg-[#FF6B00]/5" : "hover:border-white/15"}`}>

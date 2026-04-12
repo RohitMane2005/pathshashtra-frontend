@@ -179,7 +179,7 @@ const Roadmap = () => {
     try {
       const res = await API.get("/roadmap/my?page=0&size=10");
       setSavedRoadmaps(res.data.content || res.data);
-    } catch {} finally { setLoadingSaved(false); }
+    } catch { } finally { setLoadingSaved(false); }
   };
 
   const handleGenerate = async (e) => {
@@ -230,11 +230,10 @@ const Roadmap = () => {
               { id: "saved", label: `📁 My Roadmaps (${savedRoadmaps.length})` },
             ].map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  activeTab === t.id
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === t.id
                     ? "bg-[#FF6B00]/15 text-[#FF8C38] border border-[#FF6B00]/20"
                     : "text-[#7A7890] border border-white/7 hover:border-white/15"
-                }`}>
+                  }`}>
                 {t.label}
               </button>
             ))}
@@ -253,8 +252,8 @@ const Roadmap = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {savedRoadmaps.map((r, i) => (
-                    <button key={i} onClick={() => loadSavedRoadmap(r.id)}
+                  {savedRoadmaps.map((r) => (
+                    <button key={r.id} onClick={() => loadSavedRoadmap(r.id)}
                       className="w-full glass hover:border-white/15 transition-all p-5 text-left">
                       <div className="flex items-center justify-between">
                         <div>
@@ -287,17 +286,16 @@ const Roadmap = () => {
                         <label className="block text-sm text-[#7A7890] mb-2">What is your goal?</label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
                           {GOALS.map(g => (
-                            <button key={g} type="button" onClick={() => setForm({...form, goal: g})}
-                              className={`px-3 py-2.5 rounded-xl text-xs font-medium text-left transition-all ${
-                                form.goal === g
+                            <button key={g} type="button" onClick={() => setForm({ ...form, goal: g })}
+                              className={`px-3 py-2.5 rounded-xl text-xs font-medium text-left transition-all ${form.goal === g
                                   ? "bg-[#FF6B00]/15 text-[#FF8C38] border border-[#FF6B00]/30"
                                   : "border border-white/7 text-[#7A7890] hover:border-white/15 hover:text-white"
-                              }`}>
+                                }`}>
                               {g}
                             </button>
                           ))}
                         </div>
-                        <input value={form.goal} onChange={e => setForm({...form, goal: e.target.value})}
+                        <input value={form.goal} onChange={e => setForm({ ...form, goal: e.target.value })}
                           placeholder="Or type your custom goal..." className="input-dark text-sm" />
                       </div>
 
@@ -306,12 +304,11 @@ const Roadmap = () => {
                         <label className="block text-sm text-[#7A7890] mb-2">Focus Area</label>
                         <div className="flex flex-wrap gap-2">
                           {FOCUS_AREAS.map(f => (
-                            <button key={f} type="button" onClick={() => setForm({...form, focusArea: f})}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                                form.focusArea === f
+                            <button key={f} type="button" onClick={() => setForm({ ...form, focusArea: f })}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${form.focusArea === f
                                   ? "bg-[#9B6DFF]/15 text-[#9B6DFF] border border-[#9B6DFF]/30"
                                   : "border border-white/7 text-[#7A7890] hover:border-white/15"
-                              }`}>
+                                }`}>
                               {f}
                             </button>
                           ))}
@@ -321,13 +318,13 @@ const Roadmap = () => {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm text-[#7A7890] mb-2">Current Level</label>
-                          <select value={form.currentLevel} onChange={e => setForm({...form, currentLevel: e.target.value})} className="input-dark">
+                          <select value={form.currentLevel} onChange={e => setForm({ ...form, currentLevel: e.target.value })} className="input-dark">
                             {["Beginner", "Intermediate", "Advanced"].map(l => <option key={l}>{l}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-sm text-[#7A7890] mb-2">Timeframe</label>
-                          <select value={form.timeframe} onChange={e => setForm({...form, timeframe: e.target.value})} className="input-dark">
+                          <select value={form.timeframe} onChange={e => setForm({ ...form, timeframe: e.target.value })} className="input-dark">
                             {["1 month", "3 months", "6 months", "1 year"].map(t => <option key={t}>{t}</option>)}
                           </select>
                         </div>
@@ -335,7 +332,7 @@ const Roadmap = () => {
 
                       <div>
                         <label className="block text-sm text-[#7A7890] mb-2">Current Skills (optional)</label>
-                        <input value={form.currentSkills} onChange={e => setForm({...form, currentSkills: e.target.value})}
+                        <input value={form.currentSkills} onChange={e => setForm({ ...form, currentSkills: e.target.value })}
                           placeholder="e.g. HTML, CSS, basic Python, C programming..." className="input-dark" />
                       </div>
 

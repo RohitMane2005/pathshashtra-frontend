@@ -9,14 +9,14 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { path: "/dashboard",   icon: <LayoutDashboard size={18} />, label: "Dashboard" },
-  { path: "/quiz",        icon: <Brain size={18} />,           label: "Career Quiz",   badge: "AI",  badgeColor: "#FF6B00" },
-  { path: "/career",      icon: <Target size={18} />,          label: "Career AI",     badge: "NEW", badgeColor: "#00D4C8" },
-  { path: "/study",       icon: <BookOpen size={18} />,        label: "Study Planner" },
-  { path: "/coding",      icon: <Code2 size={18} />,           label: "Coding Tutor" },
-  { path: "/roadmap",     icon: <Map size={18} />,             label: "Roadmap" },
-  { path: "/leaderboard", icon: <Trophy size={18} />,          label: "Leaderboard" },
-  { path: "/bookmarks",   icon: <Bookmark size={18} />,        label: "Bookmarks" },
+  { path: "/dashboard", icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+  { path: "/quiz", icon: <Brain size={18} />, label: "Career Quiz", badge: "AI", badgeColor: "#FF6B00" },
+  { path: "/career", icon: <Target size={18} />, label: "Career AI", badge: "NEW", badgeColor: "#00D4C8" },
+  { path: "/study", icon: <BookOpen size={18} />, label: "Study Planner" },
+  { path: "/coding", icon: <Code2 size={18} />, label: "Coding Tutor" },
+  { path: "/roadmap", icon: <Map size={18} />, label: "Roadmap" },
+  { path: "/leaderboard", icon: <Trophy size={18} />, label: "Leaderboard" },
+  { path: "/bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
 ];
 
 // Sync sidebar collapse state to <main-content> margin
@@ -33,7 +33,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed]   = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
@@ -131,11 +131,10 @@ const Navbar = () => {
                 key={item.path}
                 to={item.path}
                 title={collapsed ? item.label : undefined}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative ${
-                  active
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative ${active
                     ? "text-white"
                     : "text-[#7A7890] hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
                 style={active ? {
                   background: "rgba(255,107,0,0.12)",
                   borderLeft: "2px solid #FF6B00",
@@ -229,7 +228,7 @@ const Navbar = () => {
 
       {/* Close profile popup on outside click */}
       {profileOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+        <div className="fixed inset-0 z-[45]" onClick={() => setProfileOpen(false)} />
       )}
     </>
   );

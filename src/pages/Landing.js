@@ -146,7 +146,7 @@ export default function Landing() {
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl"
             style={{ background: "radial-gradient(circle, #FF6B00, transparent)" }} />
-          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full opacity-8 blur-3xl"
+          <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full opacity-[0.08] blur-3xl"
             style={{ background: "radial-gradient(circle, #9B6DFF, transparent)" }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-5 blur-3xl"
             style={{ background: "radial-gradient(circle, #00D4C8, transparent)" }} />

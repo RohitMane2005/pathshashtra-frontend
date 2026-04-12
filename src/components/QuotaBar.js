@@ -11,11 +11,14 @@ const QuotaBar = () => {
 
   if (!quota) return null;
 
+  const safe = (obj) => ({ limit: obj?.limit ?? 0, remaining: obj?.remaining ?? 0 });
+  const rm = safe(quota.roadmap), qz = safe(quota.quiz), cg = safe(quota.codingGen), sp = safe(quota.studyPlan);
+
   const items = [
-    { label: "Roadmaps", used: quota.roadmap.limit - quota.roadmap.remaining, limit: quota.roadmap.limit, color: "#FF6B00" },
-    { label: "Quizzes", used: quota.quiz.limit - quota.quiz.remaining, limit: quota.quiz.limit, color: "#9B6DFF" },
-    { label: "Problems", used: quota.codingGen.limit - quota.codingGen.remaining, limit: quota.codingGen.limit, color: "#00D4C8" },
-    { label: "Study Plans", used: quota.studyPlan.limit - quota.studyPlan.remaining, limit: quota.studyPlan.limit, color: "#34D399" },
+    { label: "Roadmaps", used: rm.limit - rm.remaining, limit: rm.limit, color: "#FF6B00" },
+    { label: "Quizzes", used: qz.limit - qz.remaining, limit: qz.limit, color: "#9B6DFF" },
+    { label: "Problems", used: cg.limit - cg.remaining, limit: cg.limit, color: "#00D4C8" },
+    { label: "Study Plans", used: sp.limit - sp.remaining, limit: sp.limit, color: "#34D399" },
   ];
 
   const allFull = items.every(i => i.used >= i.limit);

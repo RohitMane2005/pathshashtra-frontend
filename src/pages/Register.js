@@ -124,7 +124,7 @@ const Register = () => {
             </div>
 
             <button type="submit"
-              disabled={loading || (form.password.length > 0 && !passwordValid)}
+              disabled={loading || !form.name.trim() || !form.email.trim() || !passwordValid}
               className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50">
               {loading
                 ? <Loader size={16} className="animate-spin" />

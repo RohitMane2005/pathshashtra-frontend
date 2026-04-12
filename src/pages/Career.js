@@ -185,7 +185,7 @@ const Career = () => {
     try {
       const res = await API.get("/career/my");
       setHistory(res.data);
-    } catch {} finally { setLoadingHistory(false); }
+    } catch { } finally { setLoadingHistory(false); }
   };
 
   const startAssessment = async () => {
@@ -217,7 +217,7 @@ const Career = () => {
       return;
     }
     setStep("submitting");
-    const orderedAnswers = questions.map((_, i) => answers[i] || "A");
+    const orderedAnswers = questions.map((_, i) => answers[i]);
     try {
       const res = await API.post("/career/submit", { answers: orderedAnswers });
       setResult(res.data);
@@ -264,11 +264,10 @@ const Career = () => {
                 { id: "history", label: `📋 My Results (${history.length})` },
               ].map(t => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                    activeTab === t.id
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === t.id
                       ? "bg-[#9B6DFF]/15 text-[#9B6DFF] border border-[#9B6DFF]/20"
                       : "text-[#7A7890] border border-white/7 hover:border-white/15"
-                  }`}>
+                    }`}>
                   {t.label}
                 </button>
               ))}
@@ -404,16 +403,14 @@ const Career = () => {
                     const isSelected = answers[currentQ] === option.charAt(0);
                     return (
                       <button key={i} onClick={() => selectAnswer(currentQ, option)}
-                        className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${
-                          isSelected
+                        className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${isSelected
                             ? "border-[#9B6DFF]/40 text-white"
                             : "border-white/7 text-[#7A7890] hover:border-white/20 hover:text-white"
-                        }`}
+                          }`}
                         style={isSelected ? { background: "rgba(155,109,255,0.1)" } : {}}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                            isSelected ? "border-[#9B6DFF]" : "border-[#3D3B52]"
-                          }`}>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${isSelected ? "border-[#9B6DFF]" : "border-[#3D3B52]"
+                            }`}>
                             {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#9B6DFF]" />}
                           </div>
                           <span className="text-sm leading-relaxed">{option}</span>
