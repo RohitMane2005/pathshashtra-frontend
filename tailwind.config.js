@@ -4,17 +4,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        bg: "#0A0A0F",
-        bg2: "#111118",
-        bg3: "#1A1A24",
-        accent: "#FF6B00",
-        accent2: "#00D4C8",
-        accent3: "#9B6DFF",
-        muted: "#7A7890",
+        bg: "#09090b",
+        bg2: "#0f0f12",
+        bg3: "#18181b",
+        accent: "#f59e0b",
+        accent2: "#10b981",
+        accent3: "#8b5cf6",
+        muted: "#a1a1aa",
       },
       fontFamily: {
-        display: ["Bricolage Grotesque", "sans-serif"],
-        sans: ["DM Sans", "sans-serif"],
+        display: ["Space Grotesk", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
       },
     },
   },

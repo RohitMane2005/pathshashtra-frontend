@@ -10,7 +10,7 @@ import {
 import CodeEditor, { BOILERPLATE } from "../components/CodeEditor";
 
 /* ─── constants ──────────────────────────────── */
-const DIFF_COLOR = { EASY: "#34D399", MEDIUM: "#FBBF24", HARD: "#F87171" };
+const DIFF_COLOR = { EASY: "#34d399", MEDIUM: "#fbbf24", HARD: "#f43f5e" };
 const DIFF_BG = { EASY: "rgba(52,211,153,0.12)", MEDIUM: "rgba(251,191,36,0.12)", HARD: "rgba(248,113,113,0.12)" };
 const TOPICS = [
   "Arrays", "Linked Lists", "Stacks", "Queues", "Binary Trees", "BST", "Graphs",
@@ -23,7 +23,7 @@ function fmtTime(s) {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
-const Badge = ({ children, color = "#7A7890", bg }) => (
+const Badge = ({ children, color = "#71717a", bg }) => (
   <span style={{
     display: "inline-flex", alignItems: "center", padding: "2px 10px",
     borderRadius: 100, fontSize: 11, fontWeight: 700,
@@ -71,7 +71,7 @@ function GenBar({ form, setForm, generating, onGenerate }) {
           border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
           color: "white", fontSize: 12, padding: "6px 10px", outline: "none", cursor: "pointer"
         }}>
-        {TOPICS.map(t => <option key={t} style={{ background: "#111118" }}>{t}</option>)}
+        {TOPICS.map(t => <option key={t} style={{ background: "#0f0f12" }}>{t}</option>)}
       </select>
 
       <div style={{ display: "flex", gap: 5 }}>
@@ -90,13 +90,13 @@ function GenBar({ form, setForm, generating, onGenerate }) {
           background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
           borderRadius: 8, color: "white", fontSize: 12, padding: "6px 10px", outline: "none", cursor: "pointer"
         }}>
-        {LANGS.map(l => <option key={l} style={{ background: "#111118" }}>{l}</option>)}
+        {LANGS.map(l => <option key={l} style={{ background: "#0f0f12" }}>{l}</option>)}
       </select>
 
       <button onClick={onGenerate} disabled={generating} style={{
         display: "flex", alignItems: "center", gap: 6, padding: "7px 18px",
         borderRadius: 8, fontSize: 13, fontWeight: 700, border: "none", whiteSpace: "nowrap",
-        background: generating ? "rgba(255,107,0,0.5)" : "linear-gradient(135deg,#FF6B00,#FF8C38)",
+        background: generating ? "rgba(255,107,0,0.5)" : "linear-gradient(135deg,#f59e0b,#fbbf24)",
         color: "white", cursor: generating ? "not-allowed" : "pointer"
       }}>
         {generating
@@ -127,9 +127,9 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
           <button key={t.id} onClick={() => setLeftTab(t.id)} style={{
             display: "flex", alignItems: "center", gap: 5, padding: "6px 12px",
             background: "transparent", border: "none",
-            borderBottom: leftTab === t.id ? "2px solid #9B6DFF" : "2px solid transparent",
+            borderBottom: leftTab === t.id ? "2px solid #8b5cf6" : "2px solid transparent",
             borderRadius: "6px 6px 0 0", fontSize: 12, fontWeight: 600, cursor: "pointer",
-            color: leftTab === t.id ? "#9B6DFF" : "#7A7890", transition: "color 0.15s"
+            color: leftTab === t.id ? "#8b5cf6" : "#71717a", transition: "color 0.15s"
           }}>{t.icon} {t.label}</button>
         ))}
       </div>
@@ -144,44 +144,44 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                 width: 64, height: 64, borderRadius: 16, margin: "0 auto 16px",
                 background: "rgba(155,109,255,0.1)", border: "1px solid rgba(155,109,255,0.2)",
                 display: "flex", alignItems: "center", justifyContent: "center"
-              }}><Code2 size={28} style={{ color: "#9B6DFF" }} /></div>
-              <p style={{ color: "white", fontWeight: 700, fontSize: 18, fontFamily: "Bricolage Grotesque", marginBottom: 6 }}>
+              }}><Code2 size={28} style={{ color: "#8b5cf6" }} /></div>
+              <p style={{ color: "white", fontWeight: 700, fontSize: 18, fontFamily: "Space Grotesk", marginBottom: 6 }}>
                 Ready to practice?
               </p>
-              <p style={{ color: "#7A7890", fontSize: 13, lineHeight: 1.6 }}>
-                Pick a topic and difficulty above,<br />then hit <strong style={{ color: "#FF8C38" }}>Generate Problem</strong>
+              <p style={{ color: "#71717a", fontSize: 13, lineHeight: 1.6 }}>
+                Pick a topic and difficulty above,<br />then hit <strong style={{ color: "#fbbf24" }}>Generate Problem</strong>
               </p>
             </div>
           )}
 
           {generating && (
             <div style={{ textAlign: "center", paddingTop: 64 }}>
-              <Loader size={32} style={{ color: "#9B6DFF", margin: "0 auto 16px", display: "block", animation: "spin 0.8s linear infinite" }} />
-              <p style={{ color: "#7A7890", fontSize: 14 }}>AI is crafting your problem...</p>
+              <Loader size={32} style={{ color: "#8b5cf6", margin: "0 auto 16px", display: "block", animation: "spin 0.8s linear infinite" }} />
+              <p style={{ color: "#71717a", fontSize: 14 }}>AI is crafting your problem...</p>
             </div>
           )}
 
           {problem && !generating && (
             <div>
-              <h2 style={{ color: "white", fontSize: 19, fontWeight: 700, fontFamily: "Bricolage Grotesque", marginBottom: 10 }}>
+              <h2 style={{ color: "white", fontSize: 19, fontWeight: 700, fontFamily: "Space Grotesk", marginBottom: 10 }}>
                 {problem.title}
               </h2>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 16 }}>
                 <Badge color={DIFF_COLOR[problem.difficulty]} bg={DIFF_BG[problem.difficulty]}>{problem.difficulty}</Badge>
-                <Badge color="#9B6DFF">{problem.language}</Badge>
-                <Badge color="#7A7890">{problem.topic || form.topic}</Badge>
+                <Badge color="#8b5cf6">{problem.language}</Badge>
+                <Badge color="#71717a">{problem.topic || form.topic}</Badge>
               </div>
-              <p style={{ color: "#B0AEC8", fontSize: 14, lineHeight: 1.75, marginBottom: 16 }}>{problem.problemStatement}</p>
+              <p style={{ color: "#a1a1aa", fontSize: 14, lineHeight: 1.75, marginBottom: 16 }}>{problem.problemStatement}</p>
               {problem.inputFormat && (
                 <div style={{ marginBottom: 12 }}>
                   <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Input Format</p>
-                  <p style={{ color: "#7A7890", fontSize: 13 }}>{problem.inputFormat}</p>
+                  <p style={{ color: "#71717a", fontSize: 13 }}>{problem.inputFormat}</p>
                 </div>
               )}
               {problem.outputFormat && (
                 <div style={{ marginBottom: 12 }}>
                   <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Output Format</p>
-                  <p style={{ color: "#7A7890", fontSize: 13 }}>{problem.outputFormat}</p>
+                  <p style={{ color: "#71717a", fontSize: 13 }}>{problem.outputFormat}</p>
                 </div>
               )}
               {problem.constraints?.length > 0 && (
@@ -189,8 +189,8 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                   <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Constraints</p>
                   {problem.constraints.map((c, i) => (
                     <div key={i} style={{ display: "flex", gap: 8, marginBottom: 5 }}>
-                      <span style={{ color: "#9B6DFF", flexShrink: 0 }}>•</span>
-                      <span style={{ color: "#7A7890", fontSize: 13 }}>{c}</span>
+                      <span style={{ color: "#8b5cf6", flexShrink: 0 }}>•</span>
+                      <span style={{ color: "#71717a", fontSize: 13 }}>{c}</span>
                     </div>
                   ))}
                 </div>
@@ -205,15 +205,15 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                       fontFamily: "'JetBrains Mono',monospace", fontSize: 13
                     }}>
                       <div style={{ marginBottom: 5 }}>
-                        <span style={{ color: "#3D3B52" }}>Input: </span>
+                        <span style={{ color: "#52525b" }}>Input: </span>
                         <span style={{ color: "#E2E8F0" }}>{ex.input}</span>
                       </div>
                       <div style={{ marginBottom: ex.explanation ? 5 : 0 }}>
-                        <span style={{ color: "#3D3B52" }}>Output: </span>
-                        <span style={{ color: "#34D399" }}>{ex.output}</span>
+                        <span style={{ color: "#52525b" }}>Output: </span>
+                        <span style={{ color: "#34d399" }}>{ex.output}</span>
                       </div>
                       {ex.explanation && (
-                        <div style={{ color: "#7A7890", fontSize: 12, marginTop: 6, lineHeight: 1.5 }}>
+                        <div style={{ color: "#71717a", fontSize: 12, marginTop: 6, lineHeight: 1.5 }}>
                           Explanation: {ex.explanation}
                         </div>
                       )}
@@ -223,12 +223,12 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
               )}
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 {problem.expectedTimeComplexity && (
-                  <span style={{ color: "#00D4C8", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ color: "#10b981", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
                     <Clock size={12} /> {problem.expectedTimeComplexity}
                   </span>
                 )}
                 {problem.expectedSpaceComplexity && (
-                  <span style={{ color: "#9B6DFF", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ color: "#8b5cf6", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
                     <HardDrive size={12} /> {problem.expectedSpaceComplexity}
                   </span>
                 )}
@@ -242,8 +242,8 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
           <div>
             {hints.length === 0 ? (
               <div style={{ textAlign: "center", paddingTop: 48 }}>
-                <Lightbulb size={36} style={{ color: "#3D3B52", margin: "0 auto 12px", display: "block" }} />
-                <p style={{ color: "#7A7890", fontSize: 13 }}>
+                <Lightbulb size={36} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
+                <p style={{ color: "#71717a", fontSize: 13 }}>
                   {problem ? "Click \"Hint\" below when you're stuck" : "Generate a problem first"}
                 </p>
               </div>
@@ -255,10 +255,10 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                     borderRadius: 12, padding: 16
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <Lightbulb size={14} style={{ color: "#FBBF24" }} />
-                      <span style={{ color: "#FBBF24", fontWeight: 700, fontSize: 13 }}>Hint {i + 1} of 3</span>
+                      <Lightbulb size={14} style={{ color: "#fbbf24" }} />
+                      <span style={{ color: "#fbbf24", fontWeight: 700, fontSize: 13 }}>Hint {i + 1} of 3</span>
                     </div>
-                    <p style={{ color: "#B0AEC8", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{h.hint}</p>
+                    <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{h.hint}</p>
                     {h.encouragement && (
                       <p style={{ color: "rgba(251,191,36,0.55)", fontSize: 12, marginTop: 8, fontStyle: "italic", marginBottom: 0 }}>
                         {h.encouragement}
@@ -267,7 +267,7 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                   </div>
                 ))}
                 {hintsUsed < 3 && problem && (
-                  <p style={{ color: "#3D3B52", fontSize: 12, textAlign: "center" }}>{3 - hintsUsed} hint{3 - hintsUsed !== 1 ? "s" : ""} remaining</p>
+                  <p style={{ color: "#52525b", fontSize: 12, textAlign: "center" }}>{3 - hintsUsed} hint{3 - hintsUsed !== 1 ? "s" : ""} remaining</p>
                 )}
               </div>
             )}
@@ -279,8 +279,8 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
           <div>
             {!feedback ? (
               <div style={{ textAlign: "center", paddingTop: 48 }}>
-                <CheckCircle size={36} style={{ color: "#3D3B52", margin: "0 auto 12px", display: "block" }} />
-                <p style={{ color: "#7A7890", fontSize: 13 }}>Submit your code to see AI feedback</p>
+                <CheckCircle size={36} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
+                <p style={{ color: "#71717a", fontSize: 13 }}>Submit your code to see AI feedback</p>
               </div>
             ) : (
               <div>
@@ -292,29 +292,29 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                   borderRadius: 12
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    {feedback.isCorrect ? <CheckCircle size={20} style={{ color: "#34D399" }} /> : <XCircle size={20} style={{ color: "#F87171" }} />}
+                    {feedback.isCorrect ? <CheckCircle size={20} style={{ color: "#34d399" }} /> : <XCircle size={20} style={{ color: "#f43f5e" }} />}
                     <div>
-                      <p style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Bricolage Grotesque", margin: 0 }}>
+                      <p style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Space Grotesk", margin: 0 }}>
                         {feedback.isCorrect ? "Accepted ✓" : "Needs Work"}
                       </p>
-                      <p style={{ color: "#7A7890", fontSize: 11, margin: 0 }}>AI Code Review</p>
+                      <p style={{ color: "#71717a", fontSize: 11, margin: 0 }}>AI Code Review</p>
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <span style={{
-                      fontSize: 30, fontWeight: 800, fontFamily: "Bricolage Grotesque",
-                      color: feedback.score >= 80 ? "#34D399" : feedback.score >= 60 ? "#FBBF24" : "#F87171"
+                      fontSize: 30, fontWeight: 800, fontFamily: "Space Grotesk",
+                      color: feedback.score >= 80 ? "#34d399" : feedback.score >= 60 ? "#fbbf24" : "#f43f5e"
                     }}>{feedback.score}</span>
-                    <span style={{ color: "#3D3B52", fontSize: 13 }}>/100</span>
+                    <span style={{ color: "#52525b", fontSize: 13 }}>/100</span>
                   </div>
                 </div>
-                <p style={{ color: "#B0AEC8", fontSize: 13, lineHeight: 1.7, marginBottom: 16 }}>{feedback.overallFeedback}</p>
+                <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.7, marginBottom: 16 }}>{feedback.overallFeedback}</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 16 }}>
                   {[
-                    { label: "Your Time", value: feedback.timeComplexity, color: "#00D4C8" },
-                    { label: "Optimal Time", value: feedback.suggestedTimeComplexity, color: "#34D399" },
-                    { label: "Your Space", value: feedback.spaceComplexity, color: "#9B6DFF" },
-                    { label: "Optimal Space", value: feedback.suggestedSpaceComplexity, color: "#34D399" },
+                    { label: "Your Time", value: feedback.timeComplexity, color: "#10b981" },
+                    { label: "Optimal Time", value: feedback.suggestedTimeComplexity, color: "#34d399" },
+                    { label: "Your Space", value: feedback.spaceComplexity, color: "#8b5cf6" },
+                    { label: "Optimal Space", value: feedback.suggestedSpaceComplexity, color: "#34d399" },
                   ].map((item, i) => (
                     <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px" }}>
                       <p style={{ color: item.color, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>{item.label}</p>
@@ -324,20 +324,20 @@ function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
                 </div>
                 {feedback.strengths?.length > 0 && (
                   <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 10, padding: 14, marginBottom: 12 }}>
-                    <p style={{ color: "#34D399", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>✅ STRENGTHS</p>
-                    {feedback.strengths.map((s, i) => <p key={i} style={{ color: "#B0AEC8", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
+                    <p style={{ color: "#34d399", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>✅ STRENGTHS</p>
+                    {feedback.strengths.map((s, i) => <p key={i} style={{ color: "#a1a1aa", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
                   </div>
                 )}
                 {feedback.improvements?.length > 0 && (
                   <div style={{ background: "rgba(255,140,56,0.06)", border: "1px solid rgba(255,140,56,0.2)", borderRadius: 10, padding: 14, marginBottom: 12 }}>
-                    <p style={{ color: "#FF8C38", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>💡 IMPROVEMENTS</p>
-                    {feedback.improvements.map((s, i) => <p key={i} style={{ color: "#B0AEC8", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
+                    <p style={{ color: "#fbbf24", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>💡 IMPROVEMENTS</p>
+                    {feedback.improvements.map((s, i) => <p key={i} style={{ color: "#a1a1aa", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
                   </div>
                 )}
                 {feedback.optimizedApproach && (
                   <div style={{ background: "rgba(155,109,255,0.06)", border: "1px solid rgba(155,109,255,0.2)", borderRadius: 10, padding: 14 }}>
-                    <p style={{ color: "#9B6DFF", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>🚀 OPTIMAL APPROACH</p>
-                    <p style={{ color: "#B0AEC8", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{feedback.optimizedApproach}</p>
+                    <p style={{ color: "#8b5cf6", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>🚀 OPTIMAL APPROACH</p>
+                    <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{feedback.optimizedApproach}</p>
                   </div>
                 )}
               </div>
@@ -372,18 +372,18 @@ function EditorPane({
             background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
             borderRadius: 7, color: "white", fontSize: 12, padding: "4px 9px", outline: "none", cursor: "pointer"
           }}>
-          {LANGS.map(l => <option key={l} style={{ background: "#111118" }}>{l}</option>)}
+          {LANGS.map(l => <option key={l} style={{ background: "#0f0f12" }}>{l}</option>)}
         </select>
 
         {/* Timer */}
         {problem && (
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-            <span style={{ fontFamily: "monospace", fontSize: 12, color: elapsed > 1800 ? "#F87171" : "#7A7890", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontFamily: "monospace", fontSize: 12, color: elapsed > 1800 ? "#f43f5e" : "#71717a", display: "flex", alignItems: "center", gap: 4 }}>
               <Clock size={12} /> {fmtTime(elapsed)}
             </span>
             <button onClick={() => setTimerOn(t => !t)} style={{
               background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)",
-              borderRadius: 5, padding: "2px 7px", color: "#7A7890", fontSize: 11, cursor: "pointer"
+              borderRadius: 5, padding: "2px 7px", color: "#71717a", fontSize: 11, cursor: "pointer"
             }}>{timerOn ? "⏸" : "▶"}</button>
           </div>
         )}
@@ -393,11 +393,11 @@ function EditorPane({
           <button onClick={onReset} disabled={!problem} title="Reset to boilerplate" style={{
             width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center",
             background: "transparent", border: "1px solid var(--border)",
-            color: problem ? "#7A7890" : "#3D3B52", cursor: problem ? "pointer" : "not-allowed"
+            color: problem ? "#71717a" : "#52525b", cursor: problem ? "pointer" : "not-allowed"
           }}><RotateCcw size={12} /></button>
           <button onClick={() => setFullEd(f => !f)} title="Toggle fullscreen" style={{
             width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "transparent", border: "1px solid var(--border)", color: "#7A7890", cursor: "pointer"
+            background: "transparent", border: "1px solid var(--border)", color: "#71717a", cursor: "pointer"
           }}>{fullEd ? <Minimize2 size={12} /> : <Maximize2 size={12} />}</button>
         </div>
       </div>
@@ -426,7 +426,7 @@ function EditorPane({
           display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
           borderRadius: 9, fontSize: 13, fontWeight: 600,
           background: "transparent", border: "1px solid var(--border)",
-          color: (!problem || hintsUsed >= 3) ? "#3D3B52" : "#FBBF24",
+          color: (!problem || hintsUsed >= 3) ? "#52525b" : "#fbbf24",
           cursor: (!problem || hintsUsed >= 3) ? "not-allowed" : "pointer",
           opacity: (!problem || hintsUsed >= 3) ? 0.5 : 1
         }}>
@@ -436,7 +436,7 @@ function EditorPane({
         <button onClick={onSubmit} disabled={!problem || submitting || !code.trim()} style={{
           display: "flex", alignItems: "center", gap: 7, padding: "8px 20px",
           borderRadius: 9, fontSize: 13, fontWeight: 700, border: "none",
-          background: (!problem || !code.trim()) ? "rgba(155,109,255,0.3)" : "linear-gradient(135deg,#9B6DFF,#C4A3FF)",
+          background: (!problem || !code.trim()) ? "rgba(155,109,255,0.3)" : "linear-gradient(135deg,#8b5cf6,#a78bfa)",
           color: "white", cursor: (!problem || !code.trim()) ? "not-allowed" : "pointer"
         }}>
           {submitting ? <Loader size={13} style={{ animation: "spin 0.8s linear infinite" }} /> : <Play size={13} />}
@@ -458,7 +458,7 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
       <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        <h2 style={{ color: "white", fontFamily: "Bricolage Grotesque", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
+        <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
           My Problems ({problems.length})
         </h2>
 
@@ -466,14 +466,14 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
         {problems.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
             {[
-              { label: "Solved", count: solved, color: "#34D399" },
-              { label: "In Progress", count: inProgress, color: "#FBBF24" },
-              { label: "Attempted", count: attempted, color: "#9B6DFF" },
-              { label: "Total", count: problems.length, color: "#7A7890" },
+              { label: "Solved", count: solved, color: "#34d399" },
+              { label: "In Progress", count: inProgress, color: "#fbbf24" },
+              { label: "Attempted", count: attempted, color: "#8b5cf6" },
+              { label: "Total", count: problems.length, color: "#71717a" },
             ].map((s, i) => (
               <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 12, padding: "12px 14px", textAlign: "center" }}>
-                <p style={{ color: s.color, fontSize: 24, fontWeight: 800, fontFamily: "Bricolage Grotesque", margin: 0 }}>{s.count}</p>
-                <p style={{ color: "#7A7890", fontSize: 11, margin: 0 }}>{s.label}</p>
+                <p style={{ color: s.color, fontSize: 24, fontWeight: 800, fontFamily: "Space Grotesk", margin: 0 }}>{s.count}</p>
+                <p style={{ color: "#71717a", fontSize: 11, margin: 0 }}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -481,12 +481,12 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
 
         {problems.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <Code2 size={40} style={{ color: "#3D3B52", margin: "0 auto 12px", display: "block" }} />
+            <Code2 size={40} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
             <p style={{ color: "white", fontWeight: 600, marginBottom: 6 }}>No problems yet</p>
-            <p style={{ color: "#7A7890", fontSize: 13, marginBottom: 20 }}>Generate your first problem to get started</p>
+            <p style={{ color: "#71717a", fontSize: 13, marginBottom: 20 }}>Generate your first problem to get started</p>
             <button onClick={() => setView("practice")} style={{
               padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-              background: "linear-gradient(135deg,#9B6DFF,#C4A3FF)", color: "white", border: "none", cursor: "pointer"
+              background: "linear-gradient(135deg,#8b5cf6,#a78bfa)", color: "white", border: "none", cursor: "pointer"
             }}>Start Practicing</button>
           </div>
         ) : (
@@ -494,14 +494,14 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
             {/* Header */}
             <div style={{
               display: "grid", gridTemplateColumns: "minmax(0,1fr) 80px 90px 100px 110px",
-              padding: "6px 14px", gap: 10, color: "#3D3B52", fontSize: 10, fontWeight: 700,
+              padding: "6px 14px", gap: 10, color: "#52525b", fontSize: 10, fontWeight: 700,
               textTransform: "uppercase", letterSpacing: "0.08em"
             }}>
               <span>Problem</span><span>Difficulty</span><span>Language</span><span>Status</span><span>Action</span>
             </div>
 
             {problems.map((p, i) => {
-              const statusColor = p.status === "SOLVED" ? "#34D399" : p.status === "REVIEWED" ? "#9B6DFF" : p.status === "ATTEMPTED" ? "#FBBF24" : "#7A7890";
+              const statusColor = p.status === "SOLVED" ? "#34d399" : p.status === "REVIEWED" ? "#8b5cf6" : p.status === "ATTEMPTED" ? "#fbbf24" : "#71717a";
               const canResume = p.status === "GENERATED" || p.status === "ATTEMPTED";
               const canRetry = p.status === "SOLVED" || p.status === "REVIEWED";
 
@@ -521,13 +521,13 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
                   <div style={{ minWidth: 0 }}>
                     <p style={{ color: "white", fontWeight: 600, fontSize: 13, margin: "0 0 3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ color: "#3D3B52", fontSize: 11 }}>{p.topic}</span>
-                      {p.hintsUsed > 0 && <span style={{ color: "#FBBF24", fontSize: 10 }}>💡 {p.hintsUsed} hint{p.hintsUsed !== 1 ? "s" : ""} used</span>}
+                      <span style={{ color: "#52525b", fontSize: 11 }}>{p.topic}</span>
+                      {p.hintsUsed > 0 && <span style={{ color: "#fbbf24", fontSize: 10 }}>💡 {p.hintsUsed} hint{p.hintsUsed !== 1 ? "s" : ""} used</span>}
                     </div>
                   </div>
 
                   <Badge color={DIFF_COLOR[p.difficulty]} bg={DIFF_BG[p.difficulty]}>{p.difficulty}</Badge>
-                  <Badge color="#7A7890">{p.language}</Badge>
+                  <Badge color="#71717a">{p.language}</Badge>
                   <Badge color={statusColor}>{p.status}</Badge>
 
                   {/* Action button */}
@@ -536,21 +536,21 @@ function ProblemsView({ problems, setView, onRetry, onLoad }) {
                       <button onClick={() => onLoad(p.id, p.language)} style={{
                         padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
                         background: "rgba(255,107,0,0.12)", border: "1px solid rgba(255,107,0,0.3)",
-                        color: "#FF8C38", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
+                        color: "#fbbf24", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
                       }}>▶ Resume</button>
                     )}
                     {canRetry && (
                       <button onClick={() => onLoad(p.id, p.language)} style={{
                         padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
                         background: "rgba(0,212,200,0.1)", border: "1px solid rgba(0,212,200,0.3)",
-                        color: "#00D4C8", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
+                        color: "#10b981", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
                       }}>👁 View</button>
                     )}
                     {canRetry && (
                       <button onClick={() => onRetry(p.id, p.language)} style={{
                         padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
                         background: "rgba(155,109,255,0.12)", border: "1px solid rgba(155,109,255,0.3)",
-                        color: "#9B6DFF", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
+                        color: "#8b5cf6", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
                       }}>↺ Retry</button>
                     )}
                   </div>
@@ -574,11 +574,11 @@ function RoadmapView({ roadmap, rmLoad, onGenerate, onReset }) {
         {!roadmap ? (
           <div style={{ textAlign: "center", paddingTop: 64 }}>
             <div style={{ width: 64, height: 64, borderRadius: 16, margin: "0 auto 16px", background: "rgba(155,109,255,0.1)", border: "1px solid rgba(155,109,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Map size={28} style={{ color: "#9B6DFF" }} />
+              <Map size={28} style={{ color: "#8b5cf6" }} />
             </div>
-            <h2 style={{ color: "white", fontFamily: "Bricolage Grotesque", fontSize: 22, fontWeight: 700, marginBottom: 8 }}>DSA Roadmap</h2>
-            <p style={{ color: "#7A7890", fontSize: 14, marginBottom: 24 }}>Personalized path for campus placements</p>
-            <button onClick={onGenerate} disabled={rmLoad} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14, border: "none", background: "linear-gradient(135deg,#9B6DFF,#C4A3FF)", color: "white", cursor: rmLoad ? "not-allowed" : "pointer" }}>
+            <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 22, fontWeight: 700, marginBottom: 8 }}>DSA Roadmap</h2>
+            <p style={{ color: "#71717a", fontSize: 14, marginBottom: 24 }}>Personalized path for campus placements</p>
+            <button onClick={onGenerate} disabled={rmLoad} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14, border: "none", background: "linear-gradient(135deg,#8b5cf6,#a78bfa)", color: "white", cursor: rmLoad ? "not-allowed" : "pointer" }}>
               {rmLoad ? <Loader size={15} style={{ animation: "spin 0.8s linear infinite" }} /> : <Map size={15} />}
               {rmLoad ? "Generating..." : "Generate Roadmap"}
             </button>
@@ -586,37 +586,37 @@ function RoadmapView({ roadmap, rmLoad, onGenerate, onReset }) {
         ) : (
           <div>
             <div style={{ marginBottom: 20 }}>
-              <h2 style={{ color: "white", fontFamily: "Bricolage Grotesque", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{roadmap.roadmapTitle}</h2>
-              <p style={{ color: "#7A7890", fontSize: 13 }}>⏱ {roadmap.estimatedDuration} · 🎯 {roadmap.dailyPracticeGoal}</p>
+              <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{roadmap.roadmapTitle}</h2>
+              <p style={{ color: "#71717a", fontSize: 13 }}>⏱ {roadmap.estimatedDuration} · 🎯 {roadmap.dailyPracticeGoal}</p>
             </div>
             {roadmap.phases?.map((phase, i) => (
               <div key={i} style={{ display: "flex", gap: 14, marginBottom: 22 }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: "50%", flexShrink: 0, background: "rgba(155,109,255,0.15)", border: "1px solid rgba(155,109,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#9B6DFF", fontSize: 13, fontWeight: 800 }}>{phase.phase}</div>
+                  <div style={{ width: 34, height: 34, borderRadius: "50%", flexShrink: 0, background: "rgba(155,109,255,0.15)", border: "1px solid rgba(155,109,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#8b5cf6", fontSize: 13, fontWeight: 800 }}>{phase.phase}</div>
                   {i < roadmap.phases.length - 1 && <div style={{ width: 1, flex: 1, background: "rgba(155,109,255,0.2)", marginTop: 8 }} />}
                 </div>
                 <div style={{ paddingBottom: 6 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
                     <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>{phase.title}</span>
-                    <span style={{ color: "#3D3B52", fontSize: 12 }}>({phase.duration})</span>
-                    <Badge color="#9B6DFF">{phase.practiceProblems} problems</Badge>
+                    <span style={{ color: "#52525b", fontSize: 12 }}>({phase.duration})</span>
+                    <Badge color="#8b5cf6">{phase.practiceProblems} problems</Badge>
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
                     {phase.topics?.map((t, j) => (
-                      <span key={j} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", borderRadius: 7, padding: "3px 9px", fontSize: 12, color: "#7A7890" }}>{t}</span>
+                      <span key={j} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", borderRadius: 7, padding: "3px 9px", fontSize: 12, color: "#71717a" }}>{t}</span>
                     ))}
                   </div>
-                  <p style={{ color: "#00D4C8", fontSize: 12, margin: 0 }}>✓ {phase.milestone}</p>
+                  <p style={{ color: "#10b981", fontSize: 12, margin: 0 }}>✓ {phase.milestone}</p>
                 </div>
               </div>
             ))}
             {roadmap.recommendedResources?.length > 0 && (
               <div style={{ background: "rgba(155,109,255,0.06)", border: "1px solid rgba(155,109,255,0.2)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                <p style={{ color: "#9B6DFF", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>📚 RESOURCES</p>
-                {roadmap.recommendedResources.map((r, i) => <p key={i} style={{ color: "#7A7890", fontSize: 13, margin: "0 0 5px" }}>• {r}</p>)}
+                <p style={{ color: "#8b5cf6", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>📚 RESOURCES</p>
+                {roadmap.recommendedResources.map((r, i) => <p key={i} style={{ color: "#71717a", fontSize: 13, margin: "0 0 5px" }}>• {r}</p>)}
               </div>
             )}
-            <button onClick={onReset} style={{ width: "100%", padding: "9px", borderRadius: 10, fontSize: 13, fontWeight: 600, background: "transparent", border: "1px solid var(--border)", color: "#7A7890", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <button onClick={onReset} style={{ width: "100%", padding: "9px", borderRadius: 10, fontSize: 13, fontWeight: 600, background: "transparent", border: "1px solid var(--border)", color: "#71717a", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               <RefreshCw size={13} /> Regenerate
             </button>
           </div>
@@ -809,7 +809,7 @@ export default function CodingTutor() {
         flexDirection: "column", alignItems: "center", paddingTop: 14, gap: 6, flexShrink: 0
       }}>
         <Link to="/dashboard" title="Dashboard" style={{ width: 36, height: 36, borderRadius: 10, marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,107,0,0.15)" }}>
-          <Compass size={18} style={{ color: "#FF8C38" }} />
+          <Compass size={18} style={{ color: "#fbbf24" }} />
         </Link>
         {[
           { id: "practice", icon: <Code2 size={18} />, tip: "Practice" },
@@ -820,7 +820,7 @@ export default function CodingTutor() {
             width: 36, height: 36, borderRadius: 10, border: "none", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
             background: view === item.id ? "rgba(155,109,255,0.2)" : "transparent",
-            color: view === item.id ? "#9B6DFF" : "#3D3B52",
+            color: view === item.id ? "#8b5cf6" : "#52525b",
             outline: view === item.id ? "1px solid rgba(155,109,255,0.4)" : "none",
             transition: "all 0.15s"
           }}>{item.icon}</button>
@@ -837,12 +837,12 @@ export default function CodingTutor() {
           borderBottom: "1px solid var(--border)", flexShrink: 0
         }}>
           <Link to="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#FF6B00,#FF9A3C)" }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
               <Compass size={13} style={{ color: "white" }} />
             </div>
-            <span style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Bricolage Grotesque" }}>Coding Tutor</span>
+            <span style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Space Grotesk" }}>Coding Tutor</span>
           </Link>
-          <button onClick={() => setNavOpen(o => !o)} style={{ background: "none", border: "none", color: "#7A7890", cursor: "pointer" }}>
+          <button onClick={() => setNavOpen(o => !o)} style={{ background: "none", border: "none", color: "#71717a", cursor: "pointer" }}>
             {navOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -852,7 +852,7 @@ export default function CodingTutor() {
           <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.65)" }} onClick={() => setNavOpen(false)}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, background: "var(--bg2)", borderBottom: "1px solid var(--border)", padding: "56px 12px 12px" }} onClick={e => e.stopPropagation()}>
               {[["practice", "🧩 Practice"], ["problems", "📋 My Problems"], ["roadmap", "🗺️ Roadmap"]].map(([id, label]) => (
-                <button key={id} onClick={() => { setView(id); setNavOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600, background: view === id ? "rgba(155,109,255,0.15)" : "transparent", color: view === id ? "#9B6DFF" : "#7A7890", border: "none", cursor: "pointer", marginBottom: 3 }}>{label}</button>
+                <button key={id} onClick={() => { setView(id); setNavOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600, background: view === id ? "rgba(155,109,255,0.15)" : "transparent", color: view === id ? "#8b5cf6" : "#71717a", border: "none", cursor: "pointer", marginBottom: 3 }}>{label}</button>
               ))}
             </div>
           </div>
@@ -872,7 +872,7 @@ export default function CodingTutor() {
                   <LeftPane problem={problem} generating={generating} leftTab={leftTab} setLeftTab={setLeftTab} hints={hints} hintsUsed={hintsUsed} feedback={feedback} form={form} />
                 </div>
                 <div onMouseDown={onDivDown} style={{ width: 4, flexShrink: 0, cursor: "col-resize", background: "var(--border)", transition: "background 0.15s", position: "relative" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#9B6DFF"}
+                  onMouseEnter={e => e.currentTarget.style.background = "#8b5cf6"}
                   onMouseLeave={e => e.currentTarget.style.background = "var(--border)"}>
                   <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 10, height: 28, borderRadius: 5, background: "rgba(255,255,255,0.1)", pointerEvents: "none" }} />
                 </div>

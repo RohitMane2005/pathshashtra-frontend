@@ -14,14 +14,14 @@ import {
 
 const TraitBadge = ({ trait }) => (
   <span className="px-3 py-1.5 rounded-xl text-xs font-semibold border"
-    style={{ background: "rgba(155,109,255,0.08)", color: "#C4A3FF", borderColor: "rgba(155,109,255,0.2)" }}>
+    style={{ background: "rgba(155,109,255,0.08)", color: "#a78bfa", borderColor: "rgba(155,109,255,0.2)" }}>
     {trait}
   </span>
 );
 
 const CareerCard = ({ career, rank }) => {
-  const colors = ["#FF6B00", "#00D4C8", "#9B6DFF"];
-  const color = colors[rank] || "#7A7890";
+  const colors = ["#f59e0b", "#10b981", "#8b5cf6"];
+  const color = colors[rank] || "#71717a";
   const rankLabels = ["🥇 Best Match", "🥈 Great Fit", "🥉 Also Suits"];
 
   return (
@@ -32,15 +32,15 @@ const CareerCard = ({ career, rank }) => {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <span className="text-xs font-bold mb-1 block" style={{ color }}>{rankLabels[rank]}</span>
-            <h3 className="text-white font-bold text-lg" style={{ fontFamily: "Bricolage Grotesque" }}>
+            <h3 className="text-white font-bold text-lg" style={{ fontFamily: "Space Grotesk" }}>
               {career.title}
             </h3>
           </div>
           <div className="flex-shrink-0 text-right">
-            <div className="text-3xl font-black" style={{ color, fontFamily: "Bricolage Grotesque" }}>
+            <div className="text-3xl font-black" style={{ color, fontFamily: "Space Grotesk" }}>
               {career.matchPercent}%
             </div>
-            <div className="text-xs text-[#7A7890]">match</div>
+            <div className="text-xs text-[#71717a]">match</div>
           </div>
         </div>
 
@@ -51,7 +51,7 @@ const CareerCard = ({ career, rank }) => {
         </div>
 
         {/* Why it fits */}
-        <p className="text-[#7A7890] text-sm mb-4 leading-relaxed">{career.whyItFits}</p>
+        <p className="text-[#71717a] text-sm mb-4 leading-relaxed">{career.whyItFits}</p>
 
         {/* Key skills */}
         <div className="mb-3">
@@ -69,12 +69,12 @@ const CareerCard = ({ career, rank }) => {
         {/* Market + Companies */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
           <div className="flex items-start gap-2 p-3 rounded-xl border border-white/7">
-            <TrendingUp size={13} className="text-[#34D399] mt-0.5 flex-shrink-0" />
-            <p className="text-[#7A7890] text-xs leading-relaxed">{career.indianMarketOutlook}</p>
+            <TrendingUp size={13} className="text-[#34d399] mt-0.5 flex-shrink-0" />
+            <p className="text-[#71717a] text-xs leading-relaxed">{career.indianMarketOutlook}</p>
           </div>
           <div className="flex items-start gap-2 p-3 rounded-xl border border-white/7">
-            <Building2 size={13} className="text-[#FBBF24] mt-0.5 flex-shrink-0" />
-            <p className="text-[#7A7890] text-xs leading-relaxed">{career.topCompanies}</p>
+            <Building2 size={13} className="text-[#fbbf24] mt-0.5 flex-shrink-0" />
+            <p className="text-[#71717a] text-xs leading-relaxed">{career.topCompanies}</p>
           </div>
         </div>
       </div>
@@ -84,44 +84,44 @@ const CareerCard = ({ career, rank }) => {
 
 const SalaryCard = ({ salary }) => (
   <div className="glass p-5">
-    <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-      <DollarSign size={16} className="text-[#34D399]" /> Salary Insights — {salary.role}
+    <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
+      <DollarSign size={16} className="text-[#34d399]" /> Salary Insights — {salary.role}
     </h3>
     <div className="grid grid-cols-3 gap-3 mb-4">
       {[
-        { label: "Entry Level", value: salary.entryLevel, color: "#34D399" },
-        { label: "Mid Level", value: salary.midLevel, color: "#FBBF24" },
-        { label: "Senior Level", value: salary.seniorLevel, color: "#FF6B00" },
+        { label: "Entry Level", value: salary.entryLevel, color: "#34d399" },
+        { label: "Mid Level", value: salary.midLevel, color: "#fbbf24" },
+        { label: "Senior Level", value: salary.seniorLevel, color: "#f59e0b" },
       ].map(({ label, value, color }) => (
         <div key={label} className="p-3 rounded-xl border border-white/7 text-center">
-          <p className="text-xs text-[#7A7890] mb-1">{label}</p>
-          <p className="font-bold text-sm" style={{ color, fontFamily: "Bricolage Grotesque" }}>{value}</p>
+          <p className="text-xs text-[#71717a] mb-1">{label}</p>
+          <p className="font-bold text-sm" style={{ color, fontFamily: "Space Grotesk" }}>{value}</p>
         </div>
       ))}
     </div>
     <div className="flex items-start gap-2 p-3 rounded-xl border border-white/7 mb-2">
-      <TrendingUp size={13} className="text-[#34D399] mt-0.5 flex-shrink-0" />
-      <p className="text-[#7A7890] text-sm">{salary.growthOutlook}</p>
+      <TrendingUp size={13} className="text-[#34d399] mt-0.5 flex-shrink-0" />
+      <p className="text-[#71717a] text-sm">{salary.growthOutlook}</p>
     </div>
     <div className="flex items-center gap-2 text-sm">
-      <MapPin size={13} className="text-[#9B6DFF]" />
-      <span className="text-[#7A7890] text-xs">{salary.topHiringCities}</span>
+      <MapPin size={13} className="text-[#8b5cf6]" />
+      <span className="text-[#71717a] text-xs">{salary.topHiringCities}</span>
     </div>
   </div>
 );
 
 const NextStepCard = ({ step }) => {
   const timeColors = {
-    "This week": "#34D399",
-    "Next month": "#FBBF24",
-    "In 3 months": "#FF6B00",
+    "This week": "#34d399",
+    "Next month": "#fbbf24",
+    "In 3 months": "#f59e0b",
   };
-  const color = Object.entries(timeColors).find(([k]) => step.timeframe?.includes(k.split(" ")[1]))?.[1] || "#7A7890";
+  const color = Object.entries(timeColors).find(([k]) => step.timeframe?.includes(k.split(" ")[1]))?.[1] || "#71717a";
 
   return (
     <div className="flex gap-4 p-4 glass hover:border-white/15 transition-all">
       <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-        style={{ background: "rgba(155,109,255,0.15)", color: "#9B6DFF" }}>
+        style={{ background: "rgba(155,109,255,0.15)", color: "#8b5cf6" }}>
         {step.step}
       </div>
       <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ const NextStepCard = ({ step }) => {
             {step.timeframe}
           </span>
         </div>
-        <p className="text-[#7A7890] text-sm leading-relaxed">{step.description}</p>
+        <p className="text-[#71717a] text-sm leading-relaxed">{step.description}</p>
       </div>
     </div>
   );
@@ -146,22 +146,22 @@ const PastAssessmentCard = ({ assessment, onView }) => (
     <div className="flex items-center justify-between">
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <Trophy size={14} className="text-[#FF6B00]" />
+          <Trophy size={14} className="text-[#f59e0b]" />
           <p className="text-white font-semibold">{assessment.topCareer || "Career Assessment"}</p>
           {assessment.topMatchScore && (
-            <span className="badge text-xs" style={{ background: "rgba(255,107,0,0.1)", color: "#FF8C38", border: "1px solid rgba(255,107,0,0.2)" }}>
+            <span className="badge text-xs" style={{ background: "rgba(255,107,0,0.1)", color: "#fbbf24", border: "1px solid rgba(255,107,0,0.2)" }}>
               {assessment.topMatchScore}% match
             </span>
           )}
         </div>
-        <p className="text-[#7A7890] text-sm line-clamp-2">{assessment.personalitySummary}</p>
-        <p className="text-[#3D3B52] text-xs mt-1">
+        <p className="text-[#71717a] text-sm line-clamp-2">{assessment.personalitySummary}</p>
+        <p className="text-[#52525b] text-xs mt-1">
           {assessment.completedAt ? new Date(assessment.completedAt).toLocaleDateString("en-IN", {
             day: "numeric", month: "short", year: "numeric"
           }) : ""}
         </p>
       </div>
-      <ArrowRight size={16} className="text-[#3D3B52] flex-shrink-0 ml-3" />
+      <ArrowRight size={16} className="text-[#52525b] flex-shrink-0 ml-3" />
     </div>
   </button>
 );
@@ -250,10 +250,10 @@ const Career = () => {
 
           {/* Header */}
           <div className="mb-6 animate-fade-up">
-            <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>
+            <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
               AI Career Guidance
             </h1>
-            <p className="text-[#7A7890] mt-1">Discover your ideal career path through psychometric assessment</p>
+            <p className="text-[#71717a] mt-1">Discover your ideal career path through psychometric assessment</p>
           </div>
 
           {/* Tabs */}
@@ -265,8 +265,8 @@ const Career = () => {
               ].map(t => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === t.id
-                      ? "bg-[#9B6DFF]/15 text-[#9B6DFF] border border-[#9B6DFF]/20"
-                      : "text-[#7A7890] border border-white/7 hover:border-white/15"
+                      ? "bg-[#8b5cf6]/15 text-[#8b5cf6] border border-[#8b5cf6]/20"
+                      : "text-[#71717a] border border-white/7 hover:border-white/15"
                     }`}>
                   {t.label}
                 </button>
@@ -279,13 +279,13 @@ const Career = () => {
             <div className="animate-fade-up">
               {loadingHistory ? (
                 <div className="flex justify-center py-12">
-                  <Loader size={24} className="animate-spin text-[#9B6DFF]" />
+                  <Loader size={24} className="animate-spin text-[#8b5cf6]" />
                 </div>
               ) : history.length === 0 ? (
                 <div className="glass-bright p-12 text-center">
                   <p className="text-4xl mb-3">🧠</p>
                   <p className="text-white font-semibold">No assessments yet</p>
-                  <p className="text-[#7A7890] text-sm mt-1">Take your first career assessment above</p>
+                  <p className="text-[#71717a] text-sm mt-1">Take your first career assessment above</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -301,19 +301,19 @@ const Career = () => {
           {activeTab === "new" && step === "home" && (
             <div className="animate-fade-up space-y-5">
               {/* Hero card */}
-              <div className="relative overflow-hidden rounded-2xl p-8 border border-[#9B6DFF]/20"
+              <div className="relative overflow-hidden rounded-2xl p-8 border border-[#8b5cf6]/20"
                 style={{ background: "linear-gradient(135deg, rgba(155,109,255,0.08), rgba(0,212,200,0.05))" }}>
                 <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
-                  style={{ background: "radial-gradient(circle, #9B6DFF, transparent)", transform: "translate(30px,-30px)" }} />
+                  style={{ background: "radial-gradient(circle, #8b5cf6, transparent)", transform: "translate(30px,-30px)" }} />
                 <div className="relative z-10">
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 animate-float"
                     style={{ background: "rgba(155,109,255,0.15)" }}>
-                    <Brain size={28} className="text-[#9B6DFF]" />
+                    <Brain size={28} className="text-[#8b5cf6]" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>
+                  <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>
                     Discover Your Perfect Career
                   </h2>
-                  <p className="text-[#7A7890] leading-relaxed mb-6">
+                  <p className="text-[#71717a] leading-relaxed mb-6">
                     Answer 12 science-backed psychometric questions. Our AI will analyze your personality,
                     strengths, and preferences to match you with the best career paths in the Indian job market.
                   </p>
@@ -326,17 +326,17 @@ const Career = () => {
 
               {/* What you'll get */}
               <div className="glass p-6">
-                <h3 className="text-white font-bold mb-4" style={{ fontFamily: "Bricolage Grotesque" }}>
+                <h3 className="text-white font-bold mb-4" style={{ fontFamily: "Space Grotesk" }}>
                   What you'll get
                 </h3>
                 <div className="grid md:grid-cols-2 gap-3">
                   {[
-                    { icon: <Target size={16} />, color: "#FF6B00", title: "Top 3 Career Matches", desc: "Ranked by how well they suit your personality" },
-                    { icon: <Brain size={16} />, color: "#9B6DFF", title: "Personality Profile", desc: "Understand your unique traits and work style" },
-                    { icon: <DollarSign size={16} />, color: "#34D399", title: "Salary Insights", desc: "Entry to senior level salary data for India" },
-                    { icon: <Zap size={16} />, color: "#FBBF24", title: "Actionable Next Steps", desc: "Concrete steps to start your career journey" },
-                    { icon: <BarChart3 size={16} />, color: "#00D4C8", title: "Skill Gap Analysis", desc: "Know exactly what to learn next" },
-                    { icon: <MapPin size={16} />, color: "#FF6B00", title: "Indian Market Data", desc: "Top hiring cities and companies in India" },
+                    { icon: <Target size={16} />, color: "#f59e0b", title: "Top 3 Career Matches", desc: "Ranked by how well they suit your personality" },
+                    { icon: <Brain size={16} />, color: "#8b5cf6", title: "Personality Profile", desc: "Understand your unique traits and work style" },
+                    { icon: <DollarSign size={16} />, color: "#34d399", title: "Salary Insights", desc: "Entry to senior level salary data for India" },
+                    { icon: <Zap size={16} />, color: "#fbbf24", title: "Actionable Next Steps", desc: "Concrete steps to start your career journey" },
+                    { icon: <BarChart3 size={16} />, color: "#10b981", title: "Skill Gap Analysis", desc: "Know exactly what to learn next" },
+                    { icon: <MapPin size={16} />, color: "#f59e0b", title: "Indian Market Data", desc: "Top hiring cities and companies in India" },
                   ].map(({ icon, color, title, desc }) => (
                     <div key={title} className="flex items-start gap-3 p-3 rounded-xl border border-white/7">
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -345,7 +345,7 @@ const Career = () => {
                       </div>
                       <div>
                         <p className="text-white font-semibold text-sm">{title}</p>
-                        <p className="text-[#7A7890] text-xs mt-0.5">{desc}</p>
+                        <p className="text-[#71717a] text-xs mt-0.5">{desc}</p>
                       </div>
                     </div>
                   ))}
@@ -357,13 +357,13 @@ const Career = () => {
           {/* ── LOADING QUESTIONS ── */}
           {step === "loading-q" && (
             <div className="glass-bright p-16 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-2xl bg-[#9B6DFF]/15 flex items-center justify-center mx-auto mb-5 animate-float">
-                <Brain size={30} className="text-[#9B6DFF]" />
+              <div className="w-16 h-16 rounded-2xl bg-[#8b5cf6]/15 flex items-center justify-center mx-auto mb-5 animate-float">
+                <Brain size={30} className="text-[#8b5cf6]" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>
+              <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>
                 Personalizing your assessment...
               </h2>
-              <p className="text-[#7A7890] text-sm">Crafting questions based on your profile</p>
+              <p className="text-[#71717a] text-sm">Crafting questions based on your profile</p>
             </div>
           )}
 
@@ -373,12 +373,12 @@ const Career = () => {
               {/* Progress bar */}
               <div className="mb-6">
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-[#7A7890]">Question {currentQ + 1} of {questions.length}</span>
-                  <span className="text-[#9B6DFF] font-semibold">{answeredCount}/{questions.length} answered</span>
+                  <span className="text-[#71717a]">Question {currentQ + 1} of {questions.length}</span>
+                  <span className="text-[#8b5cf6] font-semibold">{answeredCount}/{questions.length} answered</span>
                 </div>
                 <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
                   <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%`, background: "linear-gradient(90deg, #9B6DFF, #00D4C8)" }} />
+                    style={{ width: `${progress}%`, background: "linear-gradient(90deg, #8b5cf6, #10b981)" }} />
                 </div>
               </div>
 
@@ -387,13 +387,13 @@ const Career = () => {
                 {/* Category badge */}
                 {questions[currentQ]?.category && (
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 border"
-                    style={{ background: "rgba(155,109,255,0.1)", color: "#9B6DFF", borderColor: "rgba(155,109,255,0.2)" }}>
+                    style={{ background: "rgba(155,109,255,0.1)", color: "#8b5cf6", borderColor: "rgba(155,109,255,0.2)" }}>
                     {questions[currentQ].category}
                   </span>
                 )}
 
                 <h2 className="text-white font-bold text-xl mb-6 leading-snug"
-                  style={{ fontFamily: "Bricolage Grotesque" }}>
+                  style={{ fontFamily: "Space Grotesk" }}>
                   {questions[currentQ]?.question}
                 </h2>
 
@@ -404,14 +404,14 @@ const Career = () => {
                     return (
                       <button key={i} onClick={() => selectAnswer(currentQ, option)}
                         className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${isSelected
-                            ? "border-[#9B6DFF]/40 text-white"
-                            : "border-white/7 text-[#7A7890] hover:border-white/20 hover:text-white"
+                            ? "border-[#8b5cf6]/40 text-white"
+                            : "border-white/7 text-[#71717a] hover:border-white/20 hover:text-white"
                           }`}
                         style={isSelected ? { background: "rgba(155,109,255,0.1)" } : {}}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${isSelected ? "border-[#9B6DFF]" : "border-[#3D3B52]"
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${isSelected ? "border-[#8b5cf6]" : "border-[#52525b]"
                             }`}>
-                            {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#9B6DFF]" />}
+                            {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-[#8b5cf6]" />}
                           </div>
                           <span className="text-sm leading-relaxed">{option}</span>
                         </div>
@@ -434,7 +434,7 @@ const Career = () => {
                     <button key={i} onClick={() => setCurrentQ(i)}
                       className="w-2 h-2 rounded-full transition-all"
                       style={{
-                        background: i === currentQ ? "#9B6DFF" : answers[i] ? "rgba(155,109,255,0.4)" : "rgba(255,255,255,0.1)"
+                        background: i === currentQ ? "#8b5cf6" : answers[i] ? "rgba(155,109,255,0.4)" : "rgba(255,255,255,0.1)"
                       }} />
                   ))}
                 </div>
@@ -456,7 +456,7 @@ const Career = () => {
               {/* Skip to submit if all answered */}
               {answeredCount === questions.length && currentQ < questions.length - 1 && (
                 <div className="mt-4 flex justify-center">
-                  <button onClick={handleSubmit} className="text-[#9B6DFF] text-sm flex items-center gap-1.5 hover:underline">
+                  <button onClick={handleSubmit} className="text-[#8b5cf6] text-sm flex items-center gap-1.5 hover:underline">
                     <CheckCircle2 size={14} /> All answered — Submit now
                   </button>
                 </div>
@@ -467,19 +467,19 @@ const Career = () => {
           {/* ── SUBMITTING ── */}
           {step === "submitting" && (
             <div className="glass-bright p-16 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-2xl bg-[#9B6DFF]/15 flex items-center justify-center mx-auto mb-5 animate-float">
-                <Sparkles size={30} className="text-[#9B6DFF]" />
+              <div className="w-16 h-16 rounded-2xl bg-[#8b5cf6]/15 flex items-center justify-center mx-auto mb-5 animate-float">
+                <Sparkles size={30} className="text-[#8b5cf6]" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>
+              <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>
                 Analyzing your answers...
               </h2>
-              <p className="text-[#7A7890] text-sm mb-6">Building your personalized career report</p>
+              <p className="text-[#71717a] text-sm mb-6">Building your personalized career report</p>
               <div className="flex justify-center gap-2">
                 {["Reading personality", "Matching careers", "Calculating salaries", "Finalizing report"].map((s, i) => (
                   <div key={i} className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#9B6DFF] animate-pulse"
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] animate-pulse"
                       style={{ animationDelay: `${i * 0.3}s` }} />
-                    <span className="text-[#3D3B52] text-xs hidden md:block">{s}</span>
+                    <span className="text-[#52525b] text-xs hidden md:block">{s}</span>
                   </div>
                 ))}
               </div>
@@ -499,16 +499,16 @@ const Career = () => {
               </div>
 
               {/* Personality overview */}
-              <div className="relative overflow-hidden rounded-2xl p-6 border border-[#9B6DFF]/20"
+              <div className="relative overflow-hidden rounded-2xl p-6 border border-[#8b5cf6]/20"
                 style={{ background: "linear-gradient(135deg, rgba(155,109,255,0.08), rgba(0,212,200,0.04))" }}>
                 <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl pointer-events-none"
-                  style={{ background: "radial-gradient(circle, #9B6DFF, transparent)", transform: "translate(20px,-20px)" }} />
+                  style={{ background: "radial-gradient(circle, #8b5cf6, transparent)", transform: "translate(20px,-20px)" }} />
                 <div className="relative z-10">
-                  <span className="badge mb-3 inline-block" style={{ background: "rgba(155,109,255,0.1)", color: "#9B6DFF", border: "1px solid rgba(155,109,255,0.2)" }}>
+                  <span className="badge mb-3 inline-block" style={{ background: "rgba(155,109,255,0.1)", color: "#8b5cf6", border: "1px solid rgba(155,109,255,0.2)" }}>
                     🧠 Your Personality Profile
                   </span>
                   <p className="text-white text-base leading-relaxed mb-3">{result.personalitySummary}</p>
-                  <p className="text-[#7A7890] text-sm leading-relaxed mb-4">{result.strengthsOverview}</p>
+                  <p className="text-[#71717a] text-sm leading-relaxed mb-4">{result.strengthsOverview}</p>
                   {result.personalityTraits?.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {result.personalityTraits.map((t, i) => <TraitBadge key={i} trait={t} />)}
@@ -519,8 +519,8 @@ const Career = () => {
 
               {/* Top Careers */}
               <div>
-                <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                  <Target size={16} className="text-[#FF6B00]" /> Your Career Matches
+                <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
+                  <Target size={16} className="text-[#f59e0b]" /> Your Career Matches
                 </h3>
                 <div className="space-y-4">
                   {result.topCareers?.map((career, i) => (
@@ -532,13 +532,13 @@ const Career = () => {
               {/* Skill Gaps */}
               {result.skillGaps?.length > 0 && (
                 <div className="glass p-5">
-                  <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                    <BookOpen size={16} className="text-[#FBBF24]" /> Skills to Develop
+                  <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
+                    <BookOpen size={16} className="text-[#fbbf24]" /> Skills to Develop
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {result.skillGaps.map((gap, i) => (
                       <span key={i} className="px-3 py-1.5 rounded-xl text-sm border"
-                        style={{ background: "rgba(251,191,36,0.08)", color: "#FBBF24", borderColor: "rgba(251,191,36,0.2)" }}>
+                        style={{ background: "rgba(251,191,36,0.08)", color: "#fbbf24", borderColor: "rgba(251,191,36,0.2)" }}>
                         {gap}
                       </span>
                     ))}
@@ -552,8 +552,8 @@ const Career = () => {
               {/* Next Steps */}
               {result.nextSteps?.length > 0 && (
                 <div className="glass p-5">
-                  <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                    <Lightbulb size={16} className="text-[#34D399]" /> Your Action Plan
+                  <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
+                    <Lightbulb size={16} className="text-[#34d399]" /> Your Action Plan
                   </h3>
                   <div className="space-y-3">
                     {result.nextSteps.map((s, i) => <NextStepCard key={i} step={s} />)}

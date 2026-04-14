@@ -54,7 +54,7 @@ const Profile = () => {
     setSaving(true);
     try {
       await API.post("/profile", form);
-      toast.success("Profile updated! ✅");
+      toast.success("Profile updated");
     } catch { toast.error("Failed to save profile"); }
     finally { setSaving(false); }
   };
@@ -82,47 +82,45 @@ const Profile = () => {
         <div className="max-w-2xl mx-auto animate-fade-up">
 
           {/* Profile Header */}
-          <div className="glass-bright p-6 mb-5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 blur-2xl pointer-events-none"
-              style={{ background: "radial-gradient(circle, #FF6B00, transparent)", transform: "translate(20px,-20px)" }} />
+          <div className="card p-6 mb-4 relative overflow-hidden">
             <div className="flex items-center gap-5 relative z-10">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#9B6DFF] flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
-                style={{ fontFamily: "Bricolage Grotesque" }}>
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
+                style={{ fontFamily: "Space Grotesk" }}>
                 {user?.name?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1">
-                <h1 className="text-xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>{user?.name}</h1>
-                <p className="text-[#7A7890] text-sm">{user?.email}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="badge badge-orange">{user?.role || "STUDENT"}</span>
-                  <span className="badge badge-purple flex items-center gap-1">
-                    <Star size={10} /> Level {level}
+                <h1 className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>{user?.name}</h1>
+                <p className="text-[#71717a] text-sm">{user?.email}</p>
+                <div className="flex items-center gap-2 mt-2.5">
+                  <span className="badge badge-amber text-[10px]">{user?.role || "STUDENT"}</span>
+                  <span className="badge badge-violet text-[10px] flex items-center gap-1">
+                    Level {level}
                   </span>
-                  <span className="badge badge-teal">{xp} XP</span>
+                  <span className="badge badge-green text-[10px]">{xp} XP</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-3 gap-3 mb-4">
             {[
-              { icon: <Code2 size={18} />, label: "Problems Solved", value: stats.problems, color: "#9B6DFF" },
-              { icon: <BookOpen size={18} />, label: "Topics Done", value: stats.topics, color: "#00D4C8" },
-              { icon: <Brain size={18} />, label: "Assessments", value: stats.quizzes, color: "#FF6B00" },
+              { icon: <Code2 size={16} />, label: "Problems Solved", value: stats.problems, color: "#8b5cf6" },
+              { icon: <BookOpen size={16} />, label: "Topics Done", value: stats.topics, color: "#10b981" },
+              { icon: <Brain size={16} />, label: "Assessments", value: stats.quizzes, color: "#f59e0b" },
             ].map((s, i) => (
-              <div key={i} className="glass p-4 text-center">
+              <div key={i} className="card p-4 text-center">
                 <div className="flex justify-center mb-2" style={{ color: s.color }}>{s.icon}</div>
-                <p className="text-2xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>{s.value}</p>
-                <p className="text-[#3D3B52] text-xs mt-0.5">{s.label}</p>
+                <p className="text-xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>{s.value}</p>
+                <p className="text-[#52525b] text-xs mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
 
           {/* Form */}
-          <div className="glass-bright p-6">
-            <h2 className="text-white font-bold mb-5 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-              <User size={16} className="text-[#FF8C38]" /> Edit Profile
+          <div className="card p-6">
+            <h2 className="text-white font-semibold mb-5 flex items-center gap-2 text-sm" style={{ fontFamily: "Space Grotesk" }}>
+              <User size={14} className="text-amber-500" /> Edit Profile
             </h2>
 
             {loading ? (
@@ -130,49 +128,50 @@ const Profile = () => {
             ) : (
               <form onSubmit={saveProfile} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-[#7A7890] mb-2">Education Level</label>
+                  <label className="block text-sm text-[#a1a1aa] mb-2 font-medium">Education Level</label>
                   <input value={form.educationLevel} onChange={e => setForm({ ...form, educationLevel: e.target.value })}
                     placeholder="e.g. B.Tech Computer Science, 3rd Year" className="input-dark" />
                 </div>
                 <div>
-                  <label className="block text-sm text-[#7A7890] mb-2">Career Goal</label>
+                  <label className="block text-sm text-[#a1a1aa] mb-2 font-medium">Career Goal</label>
                   <input value={form.careerGoal} onChange={e => setForm({ ...form, careerGoal: e.target.value })}
                     placeholder="e.g. SDE at FAANG, Data Scientist" className="input-dark" />
                 </div>
                 <div>
-                  <label className="block text-sm text-[#7A7890] mb-2">Experience Level</label>
+                  <label className="block text-sm text-[#a1a1aa] mb-2 font-medium">Experience Level</label>
                   <select value={form.experienceLevel} onChange={e => setForm({ ...form, experienceLevel: e.target.value })} className="input-dark">
                     {["Beginner", "Intermediate", "Advanced"].map(l => <option key={l}>{l}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-[#7A7890] mb-2">Current Skills</label>
+                  <label className="block text-sm text-[#a1a1aa] mb-2 font-medium">Current Skills</label>
                   <textarea value={form.skills} onChange={e => setForm({ ...form, skills: e.target.value })}
                     placeholder="Java, Python, React, SQL, Data Structures..." rows={3}
                     className="input-dark resize-none" />
                 </div>
-                <button type="submit" disabled={saving} className="btn-primary w-full flex items-center justify-center gap-2">
-                  {saving ? <Loader size={16} className="animate-spin" /> : <><Save size={16} /> Save Profile</>}
+                <button type="submit" disabled={saving} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
+                  {saving ? <Loader size={15} className="animate-spin" /> : <><Save size={15} /> Save Profile</>}
                 </button>
               </form>
             )}
           </div>
 
-          <p className="text-center text-[#3D3B52] text-xs mt-6 pb-2">
-            Your profile helps AI give better recommendations 🎯
+          <p className="text-center text-[#27272a] text-xs mt-5 pb-2">
+            Your profile helps AI give better recommendations
           </p>
 
           {/* Danger zone */}
-          <div className="glass mt-4 p-5 border border-[#F87171]/20">
-            <h3 className="text-[#F87171] font-bold text-sm mb-2 flex items-center gap-2">
-              <Trash2 size={14} /> Danger Zone
+          <div className="card mt-4 p-5" style={{ borderColor: "var(--rose-border)" }}>
+            <h3 className="text-rose-500 font-semibold text-sm mb-2 flex items-center gap-2">
+              <Trash2 size={13} /> Danger Zone
             </h3>
-            <p className="text-[#7A7890] text-xs mb-3">
+            <p className="text-[#71717a] text-xs mb-3">
               Permanently delete your account and all data. This cannot be undone.
             </p>
             <button onClick={deleteAccount} disabled={deleting}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border border-[#F87171]/30 text-[#F87171] hover:bg-[#F87171]/10 disabled:opacity-40">
-              {deleting ? <Loader size={14} className="animate-spin" /> : <Trash2 size={14} />}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border text-rose-400 hover:bg-rose-400/5 disabled:opacity-40"
+              style={{ borderColor: "var(--rose-border)" }}>
+              {deleting ? <Loader size={13} className="animate-spin" /> : <Trash2 size={13} />}
               Delete my account
             </button>
           </div>

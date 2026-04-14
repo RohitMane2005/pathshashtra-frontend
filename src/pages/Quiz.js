@@ -58,37 +58,35 @@ const Quiz = () => {
           {/* INTRO */}
           {step === "intro" && (
             <div className="animate-fade-up">
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-[#FF6B00]/15 border border-[#FF6B00]/20 flex items-center justify-center mx-auto mb-4 animate-float">
-                  <Brain size={32} className="text-[#FF8C38]" />
-                </div>
-                <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                  AI Career Assessment
+              <div className="mb-8">
+                <p className="text-amber-500 text-sm font-semibold uppercase tracking-wider mb-2">Assessment</p>
+                <h1 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>
+                  AI Career Quiz
                 </h1>
-                <p className="text-[#7A7890]">Discover your ideal career path in 5 minutes</p>
+                <p className="text-[#71717a] text-sm">Discover your ideal career path in under 5 minutes</p>
               </div>
 
-              <div className="glass-bright p-6 mb-6">
+              <div className="card p-6 mb-5">
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   {[
-                    { icon: "🧠", label: "10 Questions", desc: "Psychometric" },
-                    { icon: "⚡", label: "5 Minutes", desc: "Quick & precise" },
-                    { icon: "🎯", label: "AI Analysis", desc: "Deep insights" },
+                    { num: "10", label: "Questions", desc: "Psychometric" },
+                    { num: "5", label: "Minutes", desc: "Quick & precise" },
+                    { num: "AI", label: "Analysis", desc: "Deep insights" },
                   ].map((f, i) => (
-                    <div key={i} className="glass p-4 text-center">
-                      <p className="text-2xl mb-2">{f.icon}</p>
-                      <p className="text-white font-semibold text-sm">{f.label}</p>
-                      <p className="text-[#7A7890] text-xs">{f.desc}</p>
+                    <div key={i} className="text-center p-4 rounded-xl" style={{ background: "var(--bg3)" }}>
+                      <p className="text-white font-bold text-lg mb-0.5" style={{ fontFamily: "Space Grotesk" }}>{f.num}</p>
+                      <p className="text-[#a1a1aa] text-sm font-medium">{f.label}</p>
+                      <p className="text-[#52525b] text-xs mt-0.5">{f.desc}</p>
                     </div>
                   ))}
                 </div>
 
-                <p className="text-[#7A7890] text-sm text-center mb-6">
-                  You'll receive top career matches, skill gap analysis, salary projections, and a personalized roadmap.
+                <p className="text-[#71717a] text-sm text-center mb-6">
+                  You'll receive career matches, skill gap analysis, salary projections, and a personalized roadmap.
                 </p>
 
-                <button onClick={startQuiz} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 text-base">
-                  {loading ? <Loader size={18} className="animate-spin" /> : <><Sparkles size={18} /> Start Assessment</>}
+                <button onClick={startQuiz} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3 text-base">
+                  {loading ? <Loader size={17} className="animate-spin" /> : <><Sparkles size={17} /> Start Assessment</>}
                 </button>
               </div>
             </div>
@@ -98,9 +96,9 @@ const Quiz = () => {
           {step === "questions" && questions.length > 0 && (
             <div className="animate-fade-up">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <span className="badge badge-orange">Question {current + 1} of {questions.length}</span>
-                <span className="text-[#7A7890] text-sm">{answered} answered</span>
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-sm font-medium text-[#a1a1aa]">Question {current + 1} of {questions.length}</span>
+                <span className="text-[#52525b] text-sm">{answered} answered</span>
               </div>
 
               {/* Progress */}
@@ -109,26 +107,26 @@ const Quiz = () => {
               </div>
 
               {/* Question */}
-              <div className="glass-bright p-6 mb-4">
-                <h2 className="text-white text-lg font-semibold leading-relaxed" style={{ fontFamily: "Bricolage Grotesque" }}>
+              <div className="card p-6 mb-5">
+                <h2 className="text-white text-lg font-medium leading-relaxed" style={{ fontFamily: "Space Grotesk" }}>
                   {questions[current].question}
                 </h2>
               </div>
 
               {/* Options */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-2.5 mb-6">
                 {questions[current].options.map((option, i) => {
                   const letter = option.charAt(0);
                   const selected = answers[questions[current].number] === letter;
                   return (
                     <button key={i} onClick={() => selectAnswer(questions[current].number, option)}
-                      className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 text-sm ${
+                      className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-150 text-sm ${
                         selected
-                          ? "border-[#FF6B00]/50 bg-[#FF6B00]/10 text-white"
-                          : "border-white/7 bg-white/3 text-[#7A7890] hover:border-white/15 hover:text-white hover:bg-white/5"
+                          ? "border-amber-500/40 bg-amber-500/[0.06] text-white"
+                          : "border-white/[0.06] bg-[#111114] text-[#a1a1aa] hover:border-white/10 hover:text-white"
                       }`}>
-                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-lg text-xs font-bold mr-3 ${
-                        selected ? "bg-[#FF6B00] text-white" : "bg-white/5 text-[#3D3B52]"}`}>
+                      <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md text-xs font-semibold mr-3 ${
+                        selected ? "bg-amber-500 text-black" : "bg-white/5 text-[#52525b]"}`}>
                         {letter}
                       </span>
                       {option.substring(3)}
@@ -139,18 +137,18 @@ const Quiz = () => {
 
               {/* Nav */}
               <div className="flex justify-between">
-                <button onClick={() => setCurrent(Math.max(0, current - 1))} disabled={current === 0} className="btn-ghost">
+                <button onClick={() => setCurrent(Math.max(0, current - 1))} disabled={current === 0} className="btn-ghost disabled:opacity-30">
                   ← Previous
                 </button>
                 {current === questions.length - 1 ? (
                   <button onClick={submitQuiz} disabled={loading || answered < questions.length}
                     className="btn-primary flex items-center gap-2">
-                    {loading ? <Loader size={16} className="animate-spin" /> : <><Trophy size={16} /> Get My Results</>}
+                    {loading ? <Loader size={15} className="animate-spin" /> : <><Trophy size={15} /> Get Results</>}
                   </button>
                 ) : (
                   <button onClick={() => setCurrent(current + 1)} disabled={!answers[questions[current].number]}
                     className="btn-primary flex items-center gap-2">
-                    Next <ChevronRight size={16} />
+                    Next <ChevronRight size={15} />
                   </button>
                 )}
               </div>
@@ -161,12 +159,12 @@ const Quiz = () => {
           {step === "result" && result && (
             <div className="animate-fade-up space-y-4">
               {/* Header */}
-              <div className="glass-bright p-6 text-center">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#9B6DFF] flex items-center justify-center mx-auto mb-3">
-                  <Trophy size={24} className="text-white" />
+              <div className="card p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/15 flex items-center justify-center mx-auto mb-3">
+                  <Trophy size={20} className="text-amber-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Bricolage Grotesque" }}>Your Career Report</h2>
-                <p className="text-[#7A7890] text-sm mb-3">{result.summary}</p>
+                <h2 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>Your Career Report</h2>
+                <p className="text-[#71717a] text-sm mb-3">{result.summary}</p>
                 {shareToken && (
                   <button
                     onClick={() => {
@@ -174,48 +172,49 @@ const Quiz = () => {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-[#FF6B00]/30 text-[#FF8C38] hover:bg-[#FF6B00]/10">
-                    {copied ? "✓ Link copied!" : "🔗 Share result"}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all border text-amber-500 hover:bg-amber-500/5"
+                    style={{ borderColor: "var(--amber-border)" }}>
+                    {copied ? "✓ Link copied!" : "Share result →"}
                   </button>
                 )}
               </div>
 
               {/* Career Matches */}
-              <div className="glass p-5">
-                <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                  <Trophy size={16} className="text-[#FF8C38]" /> Top Career Matches
+              <div className="card p-5">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2 text-sm" style={{ fontFamily: "Space Grotesk" }}>
+                  <Trophy size={14} className="text-amber-500" /> Top Career Matches
                 </h3>
                 {result.careerMatches?.map((career, i) => (
                   <div key={i} className="mb-4 last:mb-0">
                     <div className="flex justify-between mb-1.5">
-                      <span className="text-white font-semibold text-sm">{career.title}</span>
-                      <span className="text-[#FF8C38] font-bold text-sm">{career.matchPercent}%</span>
+                      <span className="text-white font-medium text-sm">{career.title}</span>
+                      <span className="text-amber-500 font-semibold text-sm">{career.matchPercent}%</span>
                     </div>
-                    <div className="progress-bar mb-1">
+                    <div className="progress-bar mb-1.5">
                       <div className="progress-fill" style={{ width: `${career.matchPercent}%` }} />
                     </div>
-                    <p className="text-[#7A7890] text-xs">{career.reason}</p>
+                    <p className="text-[#52525b] text-xs">{career.reason}</p>
                   </div>
                 ))}
               </div>
 
               {/* Skill Gaps */}
-              <div className="glass p-5">
-                <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                  <AlertCircle size={16} className="text-yellow-400" /> Skills to Build
+              <div className="card p-5">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2 text-sm" style={{ fontFamily: "Space Grotesk" }}>
+                  <AlertCircle size={14} className="text-amber-400" /> Skills to Build
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {result.skillGaps?.map((gap, i) => (
-                    <span key={i} className="badge badge-orange">{gap}</span>
+                    <span key={i} className="badge badge-amber">{gap}</span>
                   ))}
                 </div>
               </div>
 
               {/* Salary */}
               {result.salaryInfo && (
-                <div className="glass p-5">
-                  <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                    <TrendingUp size={16} className="text-[#00D4C8]" /> Salary Outlook
+                <div className="card p-5">
+                  <h3 className="text-white font-semibold mb-4 flex items-center gap-2 text-sm" style={{ fontFamily: "Space Grotesk" }}>
+                    <TrendingUp size={14} className="text-emerald-500" /> Salary Outlook
                   </h3>
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     {[
@@ -223,35 +222,35 @@ const Quiz = () => {
                       { label: "Mid", value: result.salaryInfo.midLevel },
                       { label: "Senior", value: result.salaryInfo.seniorLevel },
                     ].map((s, i) => (
-                      <div key={i} className="glass p-3 text-center">
-                        <p className="text-[#00D4C8] font-bold text-sm">{s.value}</p>
-                        <p className="text-[#7A7890] text-xs mt-0.5">{s.label}</p>
+                      <div key={i} className="p-3 text-center rounded-xl" style={{ background: "var(--bg3)" }}>
+                        <p className="text-emerald-500 font-semibold text-sm">{s.value}</p>
+                        <p className="text-[#52525b] text-xs mt-0.5">{s.label}</p>
                       </div>
                     ))}
                   </div>
-                  <p className="text-[#7A7890] text-xs">{result.salaryInfo.growthOutlook}</p>
+                  <p className="text-[#71717a] text-xs">{result.salaryInfo.growthOutlook}</p>
                 </div>
               )}
 
               {/* Roadmap */}
-              <div className="glass p-5">
-                <h3 className="text-white font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Bricolage Grotesque" }}>
-                  <Map size={16} className="text-[#9B6DFF]" /> Your Roadmap
+              <div className="card p-5">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2 text-sm" style={{ fontFamily: "Space Grotesk" }}>
+                  <Map size={14} className="text-violet-400" /> Your Roadmap
                 </h3>
                 {result.roadmap?.map((phase, i) => (
                   <div key={i} className="flex gap-4 mb-5 last:mb-0">
                     <div className="flex flex-col items-center">
-                      <div className="w-7 h-7 rounded-full bg-[#9B6DFF]/20 border border-[#9B6DFF]/30 text-[#9B6DFF] flex items-center justify-center text-xs font-bold flex-shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center text-xs font-semibold flex-shrink-0">
                         {phase.phase}
                       </div>
-                      {i < result.roadmap.length - 1 && <div className="w-px flex-1 bg-white/7 mt-2" />}
+                      {i < result.roadmap.length - 1 && <div className="w-px flex-1 bg-white/[0.04] mt-2" />}
                     </div>
                     <div className="pb-4">
-                      <p className="text-white font-semibold text-sm">{phase.title} <span className="text-[#3D3B52] font-normal">({phase.duration})</span></p>
-                      <ul className="mt-1 space-y-1">
+                      <p className="text-white font-medium text-sm">{phase.title} <span className="text-[#52525b] font-normal">({phase.duration})</span></p>
+                      <ul className="mt-1.5 space-y-1">
                         {phase.actions?.map((a, j) => (
-                          <li key={j} className="text-[#7A7890] text-xs flex items-start gap-1.5">
-                            <span className="text-[#9B6DFF] mt-0.5">→</span>{a}
+                          <li key={j} className="text-[#71717a] text-xs flex items-start gap-1.5">
+                            <span className="text-violet-400 mt-0.5">→</span>{a}
                           </li>
                         ))}
                       </ul>
@@ -262,7 +261,7 @@ const Quiz = () => {
 
               <button onClick={() => { setStep("intro"); setResult(null); }}
                 className="btn-ghost w-full flex items-center justify-center gap-2">
-                <RotateCcw size={16} /> Retake Assessment
+                <RotateCcw size={15} /> Retake Assessment
               </button>
             </div>
           )}

@@ -118,7 +118,7 @@ const pathTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor: "#1a1a2e",
     borderRight: "1px solid rgba(255,255,255,0.07)",
-    color: "#3d3b52",
+    color: "#52525b",
     minWidth: "48px",
   },
   ".cm-lineNumbers .cm-gutterElement": {
@@ -154,7 +154,7 @@ const pathTheme = EditorView.theme({
     },
   },
   ".cm-placeholder": {
-    color: "#3d3b52",
+    color: "#52525b",
   },
 }, { dark: true });
 

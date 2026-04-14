@@ -15,21 +15,21 @@ const QuotaBar = () => {
   const rm = safe(quota.roadmap), qz = safe(quota.quiz), cg = safe(quota.codingGen), sp = safe(quota.studyPlan);
 
   const items = [
-    { label: "Roadmaps", used: rm.limit - rm.remaining, limit: rm.limit, color: "#FF6B00" },
-    { label: "Quizzes", used: qz.limit - qz.remaining, limit: qz.limit, color: "#9B6DFF" },
-    { label: "Problems", used: cg.limit - cg.remaining, limit: cg.limit, color: "#00D4C8" },
-    { label: "Study Plans", used: sp.limit - sp.remaining, limit: sp.limit, color: "#34D399" },
+    { label: "Roadmaps", used: rm.limit - rm.remaining, limit: rm.limit, color: "#f59e0b" },
+    { label: "Quizzes", used: qz.limit - qz.remaining, limit: qz.limit, color: "#8b5cf6" },
+    { label: "Problems", used: cg.limit - cg.remaining, limit: cg.limit, color: "#10b981" },
+    { label: "Study Plans", used: sp.limit - sp.remaining, limit: sp.limit, color: "#38bdf8" },
   ];
 
   const allFull = items.every(i => i.used >= i.limit);
 
   return (
-    <div className="glass p-4 mb-6 animate-fade-up">
+    <div className="card p-4 mb-6 animate-fade-up">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white text-xs font-bold flex items-center gap-1.5" style={{ fontFamily: "Bricolage Grotesque" }}>
-          <Zap size={13} className="text-[#FF8C38]" /> Today's AI Usage
+        <h3 className="text-white text-xs font-semibold flex items-center gap-1.5" style={{ fontFamily: "Space Grotesk" }}>
+          <Zap size={12} className="text-amber-500" /> Daily Usage
         </h3>
-        {allFull && <span className="badge badge-orange text-[10px]">All limits reached · Resets tomorrow</span>}
+        {allFull && <span className="badge badge-amber text-[10px]">Limits reached · Resets tomorrow</span>}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {items.map((item, i) => {
@@ -37,16 +37,16 @@ const QuotaBar = () => {
           const remaining = item.limit - item.used;
           return (
             <div key={i}>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#7A7890]">{item.label}</span>
-                <span style={{ color: remaining === 0 ? "#F87171" : item.color }}>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="text-[#71717a]">{item.label}</span>
+                <span style={{ color: remaining === 0 ? "#f43f5e" : item.color }} className="font-medium">
                   {remaining}/{item.limit}
                 </span>
               </div>
-              <div className="progress-bar" style={{ height: "3px" }}>
+              <div className="progress-bar">
                 <div className="h-full rounded-full transition-all" style={{
                   width: `${pct}%`,
-                  background: remaining === 0 ? "#F87171" : item.color,
+                  background: remaining === 0 ? "#f43f5e" : item.color,
                 }} />
               </div>
             </div>

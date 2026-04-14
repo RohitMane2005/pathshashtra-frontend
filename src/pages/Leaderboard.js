@@ -25,75 +25,73 @@ const Leaderboard = () => {
         <div className="max-w-2xl mx-auto">
 
           {/* Header */}
-          <div className="text-center mb-8 animate-fade-up">
-            <div className="w-16 h-16 rounded-2xl bg-[#FF6B00]/15 border border-[#FF6B00]/20 flex items-center justify-center mx-auto mb-4 animate-float">
-              <Trophy size={30} className="text-[#FF8C38]" />
-            </div>
-            <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "Bricolage Grotesque" }}>
+          <div className="mb-8 animate-fade-up">
+            <p className="text-amber-500 text-sm font-semibold uppercase tracking-wider mb-2">Rankings</p>
+            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
               Leaderboard
             </h1>
-            <p className="text-[#7A7890] mt-1">Top students ranked by XP earned</p>
-            <p className="text-[#3D3B52] text-xs mt-2">
+            <p className="text-[#71717a] mt-1 text-sm">Top students ranked by XP earned</p>
+            <p className="text-[#27272a] text-xs mt-2">
               XP = solved problems × 50 + study topics × 30 + quizzes × 100
             </p>
           </div>
 
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="glass p-4 animate-pulse">
+                <div key={i} className="card p-4 animate-pulse">
                   <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-full bg-white/5" />
                     <div className="flex-1">
-                      <div className="h-4 bg-white/5 rounded w-32 mb-1" />
-                      <div className="h-3 bg-white/5 rounded w-24" />
+                      <div className="h-3.5 bg-white/5 rounded w-32 mb-1.5" />
+                      <div className="h-2.5 bg-white/5 rounded w-24" />
                     </div>
-                    <div className="h-6 bg-white/5 rounded w-20" />
+                    <div className="h-5 bg-white/5 rounded w-16" />
                   </div>
                 </div>
               ))}
             </div>
           ) : board.length === 0 ? (
-            <div className="glass-bright p-12 text-center">
-              <p className="text-4xl mb-3">🏆</p>
-              <p className="text-white font-semibold">No entries yet</p>
-              <p className="text-[#7A7890] text-sm mt-1">Be the first to earn XP!</p>
+            <div className="card p-12 text-center">
+              <Trophy size={28} className="text-[#27272a] mx-auto mb-3" />
+              <p className="text-white font-medium">No entries yet</p>
+              <p className="text-[#52525b] text-sm mt-1">Be the first to earn XP</p>
             </div>
           ) : (
-            <div className="space-y-3 animate-fade-up">
+            <div className="space-y-2 animate-fade-up">
               {board.map((entry, i) => {
                 const isMe = entry.email === user?.email;
                 return (
                   <div key={i}
-                    className={`glass p-4 flex items-center gap-4 transition-all ${isMe ? "border-[#FF6B00]/30 bg-[#FF6B00]/5" : "hover:border-white/15"}`}>
+                    className={`card p-4 flex items-center gap-4 transition-all ${isMe ? "border-amber-500/20 bg-amber-500/[0.03]" : ""}`}>
 
                     {/* Rank */}
-                    <div className="w-10 text-center flex-shrink-0">
+                    <div className="w-8 text-center flex-shrink-0">
                       {i < 3 ? (
-                        <span className="text-xl">{medal[i]}</span>
+                        <span className="text-lg">{medal[i]}</span>
                       ) : (
-                        <span className="text-[#3D3B52] font-bold text-sm">#{i + 1}</span>
+                        <span className="text-[#52525b] font-semibold text-sm">#{i + 1}</span>
                       )}
                     </div>
 
                     {/* Avatar */}
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B00] to-[#9B6DFF] flex items-center justify-center text-white font-bold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
                       {entry.name?.charAt(0)?.toUpperCase()}
                     </div>
 
                     {/* Name */}
                     <div className="flex-1 min-w-0">
-                      <p className={`font-semibold text-sm truncate ${isMe ? "text-[#FF8C38]" : "text-white"}`}>
-                        {entry.name} {isMe && <span className="text-xs font-normal">(you)</span>}
+                      <p className={`font-medium text-sm truncate ${isMe ? "text-amber-500" : "text-white"}`}>
+                        {entry.name} {isMe && <span className="text-xs font-normal text-[#71717a]">(you)</span>}
                       </p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        <span className="flex items-center gap-1 text-[#9B6DFF] text-xs">
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="flex items-center gap-1 text-[#8b5cf6] text-xs">
                           <Code2 size={10} /> {entry.problems}
                         </span>
-                        <span className="flex items-center gap-1 text-[#00D4C8] text-xs">
+                        <span className="flex items-center gap-1 text-[#10b981] text-xs">
                           <BookOpen size={10} /> {entry.topics}
                         </span>
-                        <span className="flex items-center gap-1 text-[#FF6B00] text-xs">
+                        <span className="flex items-center gap-1 text-[#f59e0b] text-xs">
                           <Brain size={10} /> {entry.quizzes}
                         </span>
                       </div>
@@ -101,11 +99,11 @@ const Leaderboard = () => {
 
                     {/* XP */}
                     <div className="text-right flex-shrink-0">
-                      <p className="text-white font-bold text-lg" style={{ fontFamily: "Bricolage Grotesque" }}>
+                      <p className="text-white font-bold text-base" style={{ fontFamily: "Space Grotesk" }}>
                         {entry.xp.toLocaleString()}
                       </p>
-                      <p className="text-[#3D3B52] text-xs flex items-center gap-1 justify-end">
-                        <Zap size={10} /> XP
+                      <p className="text-[#27272a] text-xs flex items-center gap-1 justify-end">
+                        <Zap size={9} /> XP
                       </p>
                     </div>
                   </div>
@@ -114,8 +112,8 @@ const Leaderboard = () => {
             </div>
           )}
 
-          <p className="text-center text-[#3D3B52] text-xs mt-8 pb-4">
-            Updates in real-time · Keep solving to climb the ranks 🚀
+          <p className="text-center text-[#27272a] text-xs mt-8 pb-4">
+            Updates in real-time · Keep solving to climb
           </p>
         </div>
       </div>
