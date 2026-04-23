@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Compass, ArrowRight, Loader, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import API from "../api/axios";
 import toast from "react-hot-toast";
 
@@ -21,45 +21,37 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div style={{ background: "var(--bg)", minHeight: "100vh" }} className="flex items-center justify-center p-6">
-      <div className="w-full max-w-md animate-fade-up relative z-10">
-        <div className="flex items-center gap-2.5 justify-center mb-10">
-          <div className="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center">
-            <Compass size={17} className="text-black" />
-          </div>
-          <span className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>PathShashtra</span>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", padding: 20 }}>
+      <div style={{ width: "100%", maxWidth: 400 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "#2cbb5d", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 12 }}>P</div>
         </div>
 
-        <div className="card p-8">
+        <div className="lc-card" style={{ padding: 24 }}>
           {sent ? (
-            <div className="text-center py-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center mx-auto mb-4">
-                <Mail size={20} className="text-emerald-500" />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>Check your inbox</h2>
-              <p className="text-[#71717a] text-sm mb-6">
-                If an account with <span className="text-white font-medium">{email}</span> exists, we've sent a reset link valid for 30 minutes.
+            <div style={{ textAlign: "center", padding: "16px 0" }}>
+              <Mail size={32} style={{ color: "var(--green)", marginBottom: 12 }} />
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>Check your inbox</h2>
+              <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>
+                If an account with <strong style={{ color: "var(--text)" }}>{email}</strong> exists, we've sent a reset link valid for 30 minutes.
               </p>
-              <Link to="/login" className="text-amber-500 font-medium hover:text-amber-400 text-sm transition-colors">← Back to sign in</Link>
+              <Link to="/login" style={{ color: "var(--blue)", fontSize: 14, textDecoration: "none" }}>← Back to sign in</Link>
             </div>
           ) : (
             <>
-              <h1 className="text-2xl font-bold text-white mb-1.5" style={{ fontFamily: "Space Grotesk" }}>Forgot password?</h1>
-              <p className="text-[#71717a] text-sm mb-7">Enter your email and we'll send a reset link</p>
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-[#a1a1aa] mb-2">Email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    placeholder="you@college.edu" required className="input-dark" />
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>Forgot password?</h1>
+              <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>Enter your email and we'll send a reset link</p>
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Email</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@college.edu" required className="lc-input" />
                 </div>
-                <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
-                  {loading ? <Loader size={15} className="animate-spin" /> : <><span>Send Reset Link</span><ArrowRight size={15} /></>}
+                <button type="submit" disabled={loading} className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 20px" }}>
+                  {loading ? <div style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> : "Send Reset Link"}
                 </button>
               </form>
-
-              <p className="text-center text-sm text-[#71717a] mt-7">
-                Remembered it? <Link to="/login" className="text-amber-500 font-semibold hover:text-amber-400 transition-colors">Sign in</Link>
+              <p style={{ textAlign: "center", fontSize: 13, color: "var(--text-muted)", marginTop: 20 }}>
+                Remembered it? <Link to="/login" style={{ color: "var(--green)", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
               </p>
             </>
           )}

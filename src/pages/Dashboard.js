@@ -2,14 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import QuotaBar from "../components/QuotaBar";
-import { StatSkeleton, CardSkeleton, ListItemSkeleton } from "../components/Skeleton";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
-import {
-  Brain, BookOpen, Code2, ArrowRight, Flame,
-  Zap, TrendingUp, Star, CheckCircle, Clock,
-  Sparkles, Map, Target, ArrowUpRight
-} from "lucide-react";
+import { Brain, BookOpen, Code2, ArrowRight, Map, Target, CheckCircle, TrendingUp } from "lucide-react";
 import { calculateXP, calculateLevel, xpInCurrentLevel } from "../utils/xp";
 
 const Dashboard = () => {
@@ -20,21 +15,13 @@ const Dashboard = () => {
   const [quizResults, setQuizResults] = useState([]);
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [time, setTime] = useState(new Date());
 
-  useEffect(() => {
-    fetchData();
-    const t = setInterval(() => setTime(new Date()), 60000);
-    return () => clearInterval(t);
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     const [prog, today, probs, quiz, streakRes] = await Promise.allSettled([
-      API.get("/study/progress"),
-      API.get("/study/today"),
-      API.get("/coding/problems"),
-      API.get("/quiz/results"),
-      API.get("/users/streak"),
+      API.get("/study/progress"), API.get("/study/today"), API.get("/coding/problems"),
+      API.get("/quiz/results"), API.get("/users/streak"),
     ]);
     if (prog.status === "fulfilled") setProgress(prog.value.data);
     if (today.status === "fulfilled") setTodayTopics(today.value.data);
@@ -44,256 +31,141 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const hour = time.getHours();
+  const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = user?.name?.split(" ")[0];
-
   const solvedProblems = problems.filter(p => p.status === "SOLVED").length;
   const xp = calculateXP({ solvedProblems, completedTopics: progress?.completedTopics || 0, quizzes: quizResults.length });
   const level = calculateLevel(xp);
   const xpInLevel = xpInCurrentLevel(xp);
 
   const modules = [
-    {
-      icon: <Brain size={20} />,
-      title: "Career Quiz",
-      desc: "AI psychometric career assessment",
-      path: "/quiz",
-      color: "#f59e0b",
-      stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now",
-      cta: quizResults.length > 0 ? "Retake" : "Begin",
-    },
-    {
-      icon: <BookOpen size={20} />,
-      title: "Study Planner",
-      desc: "Adaptive AI-generated schedule",
-      path: "/study",
-      color: "#10b981",
-      stat: progress ? `${progress.completedTopics}/${progress.totalTopics}` : "No plan",
-      cta: progress ? "Continue" : "Create",
-    },
-    {
-      icon: <Code2 size={20} />,
-      title: "Coding Tutor",
-      desc: "DSA practice with AI review",
-      path: "/coding",
-      color: "#8b5cf6",
-      stat: `${solvedProblems} solved`,
-      cta: "Practice",
-    },
-    {
-      icon: <Map size={20} />,
-      title: "Roadmap",
-      desc: "Step-by-step learning path",
-      path: "/roadmap",
-      color: "#38bdf8",
-      stat: "Any goal",
-      cta: "Generate",
-    },
-    {
-      icon: <Target size={20} />,
-      title: "Career AI",
-      desc: "Deep psychometric analysis",
-      path: "/career",
-      color: "#a78bfa",
-      stat: "NEW",
-      cta: "Explore",
-    },
+    { icon: <Brain size={18} />, title: "Career Quiz", desc: "AI psychometric assessment", path: "/quiz", stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now" },
+    { icon: <BookOpen size={18} />, title: "Study Planner", desc: "Adaptive study schedule", path: "/study", stat: progress ? `${progress.completedTopics}/${progress.totalTopics}` : "No plan" },
+    { icon: <Code2 size={18} />, title: "Coding Tutor", desc: "DSA practice with AI review", path: "/coding", stat: `${solvedProblems} solved` },
+    { icon: <Map size={18} />, title: "Roadmap", desc: "Step-by-step learning path", path: "/roadmap", stat: "Any goal" },
+    { icon: <Target size={18} />, title: "Career AI", desc: "Deep career analysis", path: "/career", stat: "Explore" },
   ];
 
-  return (
-    <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
+  if (loading) return (
+    <div style={{ background: "var(--bg-secondary)", minHeight: "100vh" }}>
       <Navbar />
-      <div className="main-content">
-        <div className="max-w-5xl mx-auto">
+      <div className="page-content"><div className="page-inner" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300 }}>
+        <div style={{ width: 24, height: 24, border: "3px solid #e5e5e5", borderTopColor: "var(--green)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      </div></div>
+    </div>
+  );
+
+  return (
+    <div style={{ background: "var(--bg-secondary)", minHeight: "100vh" }}>
+      <Navbar />
+      <div className="page-content">
+        <div className="page-inner" style={{ maxWidth: 900 }}>
 
           {/* Header */}
-          <div className="animate-fade-up mb-8">
-            <div className="flex items-start justify-between flex-wrap gap-4">
-              <div>
-                <p className="text-[#52525b] text-sm mb-1.5">
-                  {time.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
-                </p>
-                <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>
-                  {greeting}, {firstName}
-                </h1>
-              </div>
-
-              {/* Streak + Level */}
-              <div className="flex items-center gap-2.5">
-                {streak > 0 && (
-                  <div className="card px-3.5 py-2 flex items-center gap-2">
-                    <span className="flame text-lg">🔥</span>
-                    <div>
-                      <p className="text-white font-bold text-sm leading-none">{streak}</p>
-                      <p className="text-[#52525b] text-[10px]">day streak</p>
-                    </div>
-                  </div>
-                )}
-                <div className="card px-3.5 py-2 flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                    <span className="text-amber-500 text-[10px] font-bold">{level}</span>
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-none">{xp}</p>
-                    <p className="text-[#52525b] text-[10px]">XP earned</p>
-                  </div>
-                </div>
-              </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+            <div>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>{greeting}, {firstName}</h1>
+              <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+                {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+              </p>
             </div>
-
-            {/* XP Progress */}
-            <div className="mt-5 card p-4">
-              <div className="flex justify-between text-xs text-[#71717a] mb-2.5">
-                <span className="flex items-center gap-1.5">Level {level}</span>
-                <span>{xpInLevel}/500 XP to next</span>
-              </div>
-              <div className="progress-bar">
-                <div className="xp-bar h-full rounded-full" style={{ width: `${(xpInLevel / 500) * 100}%` }} />
+            <div style={{ display: "flex", gap: 12 }}>
+              {streak > 0 && (
+                <div className="lc-card" style={{ padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 16 }}>🔥</span>
+                  <div><p style={{ fontWeight: 700, fontSize: 14, lineHeight: 1 }}>{streak}</p><p style={{ fontSize: 11, color: "var(--text-muted)" }}>day streak</p></div>
+                </div>
+              )}
+              <div className="lc-card" style={{ padding: "8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--green-bg)", border: "1px solid var(--green-border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "var(--green)" }}>{level}</div>
+                <div><p style={{ fontWeight: 700, fontSize: 14, lineHeight: 1 }}>{xp}</p><p style={{ fontSize: 11, color: "var(--text-muted)" }}>XP</p></div>
               </div>
             </div>
           </div>
 
-          {/* AI Brief */}
-          <div className="animate-fade-up stagger-1 mb-6">
-            <div className="card p-5 stripe-top">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Sparkles size={15} className="text-amber-500" />
-                </div>
-                <div>
-                  <p className="text-amber-500 text-[11px] font-semibold uppercase tracking-wider mb-1">Daily Brief</p>
-                  <p className="text-[#a1a1aa] text-sm leading-relaxed">
-                    {progress && progress.completedTopics > 0
-                      ? `You've completed ${progress.completedTopics} topics so far. ${(progress.weakTopicsCount || 0) > 0 ? `Focus on your ${progress.weakTopicsCount} weak topics today.` : "Great progress — keep going."}`
-                      : `Welcome, ${firstName}. Start with the Career Quiz to discover your ideal path, then generate your study plan.`
-                    }
-                  </p>
-                </div>
-              </div>
+          {/* XP Progress */}
+          <div className="lc-card" style={{ marginBottom: 20, padding: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>
+              <span>Level {level}</span><span>{xpInLevel}/500 XP to next</span>
             </div>
+            <div className="lc-progress"><div className="lc-progress-fill" style={{ width: `${(xpInLevel / 500) * 100}%` }} /></div>
           </div>
 
-          {/* AI Quota Bar */}
-          {!loading && <QuotaBar />}
+          <QuotaBar />
 
-          {/* Stats Row */}
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-              {[1, 2, 3, 4].map(i => <StatSkeleton key={i} />)}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 animate-fade-up stagger-2">
-              {[
-                { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={14} />, color: "#10b981" },
-                { label: "Problems Solved", value: solvedProblems, icon: <Code2 size={14} />, color: "#8b5cf6" },
-                { label: "Top Match", value: quizResults[0]?.topCareer || quizResults[0]?.careerMatches?.[0]?.title || "—", icon: <Brain size={14} />, color: "#f59e0b" },
-                { label: "Study Progress", value: progress ? `${progress.overallPercent}%` : "—", icon: <TrendingUp size={14} />, color: "#38bdf8" },
-              ].map((stat, i) => (
-                <div key={i} className="card p-4">
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <span style={{ color: stat.color }}>{stat.icon}</span>
-                    <span className="text-[11px] text-[#52525b] font-medium">{stat.label}</span>
-                  </div>
-                  <p className="text-xl font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>{stat.value}</p>
+          {/* Stats */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+            {[
+              { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={14} />, color: "var(--green)" },
+              { label: "Problems Solved", value: solvedProblems, icon: <Code2 size={14} />, color: "var(--purple)" },
+              { label: "Top Match", value: quizResults[0]?.topCareer || quizResults[0]?.careerMatches?.[0]?.title || "—", icon: <Brain size={14} />, color: "var(--orange)" },
+              { label: "Study Progress", value: progress ? `${progress.overallPercent}%` : "—", icon: <TrendingUp size={14} />, color: "var(--blue)" },
+            ].map((s, i) => (
+              <div key={i} className="stat-card" style={{ textAlign: "left", padding: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <span style={{ color: s.color }}>{s.icon}</span>
+                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{s.label}</span>
                 </div>
-              ))}
-            </div>
-          )}
+                <p style={{ fontSize: 20, fontWeight: 700 }}>{s.value}</p>
+              </div>
+            ))}
+          </div>
 
-          {/* Module Cards */}
-          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-              {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6 animate-fade-up stagger-3">
-              {modules.map((mod, i) => (
-                <Link key={i} to={mod.path} className="card group p-5 hover:border-white/10 transition-all duration-200 block">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-                      style={{ background: `${mod.color}12`, color: mod.color }}>
-                      {mod.icon}
-                    </div>
-                    <ArrowUpRight size={14} className="text-[#27272a] group-hover:text-[#52525b] transition-colors" />
-                  </div>
-                  <h3 className="text-white font-semibold text-sm mb-1" style={{ fontFamily: "Space Grotesk" }}>{mod.title}</h3>
-                  <p className="text-[#52525b] text-xs mb-4">{mod.desc}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-medium" style={{ color: mod.color }}>{mod.stat}</span>
-                    <span className="text-xs text-[#71717a] font-medium group-hover:text-white transition-colors flex items-center gap-1">
-                      {mod.cta} <ArrowRight size={12} />
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+          {/* Modules */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+            {modules.map((mod, i) => (
+              <Link key={i} to={mod.path} className="lc-card" style={{ textDecoration: "none", display: "block", transition: "border-color 0.15s" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <span style={{ color: "var(--text-muted)" }}>{mod.icon}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{mod.title}</span>
+                </div>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>{mod.desc}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "var(--green)" }}>{mod.stat}</span>
+                  <ArrowRight size={14} style={{ color: "var(--text-light)" }} />
+                </div>
+              </Link>
+            ))}
+          </div>
 
-          {/* Today's Topics + Recent Problems */}
-          <div className="grid md:grid-cols-2 gap-3 animate-fade-up stagger-4">
-            <div className="card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
-                  <Clock size={14} className="text-emerald-500" /> Today's Topics
-                </h3>
-                <Link to="/study" className="text-xs text-[#52525b] hover:text-white transition-colors">View all →</Link>
+          {/* Today + Recent */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div className="lc-card">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                <span style={{ fontSize: 14, fontWeight: 600 }}>Today's Topics</span>
+                <Link to="/study" style={{ fontSize: 12, color: "var(--blue)", textDecoration: "none" }}>View all →</Link>
               </div>
               {todayTopics.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-[#52525b] text-sm">No topics for today</p>
-                  <Link to="/study" className="text-emerald-500 text-xs mt-2 block hover:underline">Create a study plan →</Link>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: 20 }}>No topics for today. <Link to="/study" style={{ color: "var(--blue)" }}>Create a plan →</Link></p>
+              ) : todayTopics.slice(0, 4).map((t, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 3 ? "1px solid #f0f0f0" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: t.status === "COMPLETED" ? "var(--green)" : "#d9d9d9" }} />
+                    <span style={{ fontSize: 13, color: t.status === "COMPLETED" ? "var(--text-muted)" : "var(--text)", textDecoration: t.status === "COMPLETED" ? "line-through" : "none" }}>{t.topicName}</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: "var(--text-light)" }}>{t.subject}</span>
                 </div>
-              ) : (
-                <div className="space-y-1">
-                  {todayTopics.slice(0, 4).map((t, i) => (
-                    <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/[0.04] last:border-0">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.status === "COMPLETED" ? "bg-emerald-500" : "bg-[#27272a]"}`} />
-                        <span className={`text-sm ${t.status === "COMPLETED" ? "text-[#52525b] line-through" : "text-[#a1a1aa]"}`}>{t.topicName}</span>
-                      </div>
-                      <span className="text-xs text-[#27272a]">{t.subject}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
-
-            <div className="card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "Space Grotesk" }}>
-                  <Code2 size={14} className="text-violet-400" /> Recent Problems
-                </h3>
-                <Link to="/coding" className="text-xs text-[#52525b] hover:text-white transition-colors">View all →</Link>
+            <div className="lc-card">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                <span style={{ fontSize: 14, fontWeight: 600 }}>Recent Problems</span>
+                <Link to="/coding" style={{ fontSize: 12, color: "var(--blue)", textDecoration: "none" }}>View all →</Link>
               </div>
               {problems.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-[#52525b] text-sm">No problems yet</p>
-                  <Link to="/coding" className="text-violet-400 text-xs mt-2 block hover:underline">Start practicing →</Link>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: 20 }}>No problems yet. <Link to="/coding" style={{ color: "var(--blue)" }}>Start practicing →</Link></p>
+              ) : problems.slice(0, 4).map((p, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 3 ? "1px solid #f0f0f0" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: p.difficulty === "EASY" ? "var(--green)" : p.difficulty === "MEDIUM" ? "var(--orange)" : "var(--red)" }} />
+                    <span style={{ fontSize: 13, color: "var(--text)", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>
+                  </div>
+                  <span className={`lc-tag lc-tag-${p.status === "SOLVED" ? "green" : p.status === "REVIEWED" ? "purple" : "orange"}`} style={{ fontSize: 11 }}>{p.status}</span>
                 </div>
-              ) : (
-                <div className="space-y-1">
-                  {problems.slice(0, 4).map((p, i) => (
-                    <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/[0.04] last:border-0">
-                      <div className="flex items-center gap-2.5">
-                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${p.difficulty === "EASY" ? "bg-emerald-500" :
-                          p.difficulty === "MEDIUM" ? "bg-amber-500" : "bg-rose-500"}`} />
-                        <span className="text-[#a1a1aa] text-sm truncate max-w-[160px]">{p.title}</span>
-                      </div>
-                      <span className={`badge text-[10px] ${p.status === "SOLVED" ? "badge-green" :
-                        p.status === "REVIEWED" ? "badge-violet" : "badge-amber"}`}>
-                        {p.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
           </div>
-
-          <p className="text-center text-[#27272a] text-xs mt-8 pb-4">
-            PathShashtra · Built for India's students
-          </p>
         </div>
       </div>
     </div>

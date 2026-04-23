@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
-import { Zap } from "lucide-react";
 
 const QuotaBar = () => {
   const [quota, setQuota] = useState(null);
@@ -15,39 +14,31 @@ const QuotaBar = () => {
   const rm = safe(quota.roadmap), qz = safe(quota.quiz), cg = safe(quota.codingGen), sp = safe(quota.studyPlan);
 
   const items = [
-    { label: "Roadmaps", used: rm.limit - rm.remaining, limit: rm.limit, color: "#f59e0b" },
-    { label: "Quizzes", used: qz.limit - qz.remaining, limit: qz.limit, color: "#8b5cf6" },
-    { label: "Problems", used: cg.limit - cg.remaining, limit: cg.limit, color: "#10b981" },
-    { label: "Study Plans", used: sp.limit - sp.remaining, limit: sp.limit, color: "#38bdf8" },
+    { label: "Roadmaps", used: rm.limit - rm.remaining, limit: rm.limit, color: "var(--orange)" },
+    { label: "Quizzes", used: qz.limit - qz.remaining, limit: qz.limit, color: "var(--purple)" },
+    { label: "Problems", used: cg.limit - cg.remaining, limit: cg.limit, color: "var(--green)" },
+    { label: "Study Plans", used: sp.limit - sp.remaining, limit: sp.limit, color: "var(--blue)" },
   ];
 
-  const allFull = items.every(i => i.used >= i.limit);
-
   return (
-    <div className="card p-4 mb-6 animate-fade-up">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white text-xs font-semibold flex items-center gap-1.5" style={{ fontFamily: "Space Grotesk" }}>
-          <Zap size={12} className="text-amber-500" /> Daily Usage
-        </h3>
-        {allFull && <span className="badge badge-amber text-[10px]">Limits reached · Resets tomorrow</span>}
+    <div className="lc-card" style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Daily Usage</span>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
         {items.map((item, i) => {
           const pct = Math.min((item.used / item.limit) * 100, 100);
           const remaining = item.limit - item.used;
           return (
             <div key={i}>
-              <div className="flex justify-between text-xs mb-1.5">
-                <span className="text-[#71717a]">{item.label}</span>
-                <span style={{ color: remaining === 0 ? "#f43f5e" : item.color }} className="font-medium">
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
+                <span style={{ color: "var(--text-muted)" }}>{item.label}</span>
+                <span style={{ color: remaining === 0 ? "var(--red)" : item.color, fontWeight: 500 }}>
                   {remaining}/{item.limit}
                 </span>
               </div>
-              <div className="progress-bar">
-                <div className="h-full rounded-full transition-all" style={{
-                  width: `${pct}%`,
-                  background: remaining === 0 ? "#f43f5e" : item.color,
-                }} />
+              <div className="lc-progress">
+                <div className="lc-progress-fill" style={{ width: `${pct}%`, background: remaining === 0 ? "var(--red)" : item.color }} />
               </div>
             </div>
           );

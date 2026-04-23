@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Compass, ArrowRight, Loader, Check, X } from "lucide-react";
+import { Eye, EyeOff, Check, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
 import toast from "react-hot-toast";
@@ -11,17 +11,6 @@ const PASSWORD_RULES = [
   { label: "One number", test: (p) => /\d/.test(p) },
 ];
 
-const PasswordRule = ({ label, met }) => (
-  <div className="flex items-center gap-1.5 text-xs">
-    {met ? (
-      <Check size={11} className="text-emerald-500 flex-shrink-0" />
-    ) : (
-      <X size={11} className="text-[#27272a] flex-shrink-0" />
-    )}
-    <span className={met ? "text-emerald-500" : "text-[#52525b]"}>{label}</span>
-  </div>
-);
-
 const Register = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -30,31 +19,18 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
   const passwordValid = PASSWORD_RULES.every((r) => r.test(form.password));
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (!passwordValid) {
-      toast.error("Please meet all password requirements");
-      return;
-    }
-    const trimmedForm = {
-      ...form,
-      name: form.name.trim(),
-      email: form.email.trim().toLowerCase(),
-    };
-    if (!trimmedForm.name) {
-      toast.error("Name cannot be blank");
-      return;
-    }
+    if (!passwordValid) { toast.error("Please meet all password requirements"); return; }
+    const trimmedForm = { ...form, name: form.name.trim(), email: form.email.trim().toLowerCase() };
+    if (!trimmedForm.name) { toast.error("Name cannot be blank"); return; }
     setLoading(true);
     try {
       const res = await API.post("/auth/register", trimmedForm);
       const token = res.data.token;
-      const userRes = await API.get("/users/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const userRes = await API.get("/users/me", { headers: { Authorization: `Bearer ${token}` } });
       login(token, userRes.data);
       toast.success(`Welcome, ${userRes.data.name}!`);
       navigate("/dashboard");
@@ -63,77 +39,62 @@ const Register = () => {
       const msg = err.response?.data?.error;
       if (status === 409) toast.error("Email already registered — sign in instead");
       else toast.error(msg || "Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div style={{ background: "var(--bg)", minHeight: "100vh" }} className="flex items-center justify-center p-6">
-      {/* Subtle ambient glow */}
-      <div className="fixed top-1/4 left-1/3 w-96 h-96 rounded-full opacity-[0.03] blur-3xl pointer-events-none"
-        style={{ background: "radial-gradient(circle, #f59e0b, transparent)" }} />
-
-      <div className="w-full max-w-md animate-fade-up relative z-10">
-        <div className="flex items-center gap-2.5 justify-center mb-10">
-          <div className="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center">
-            <Compass size={17} className="text-black" />
-          </div>
-          <span className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>PathShashtra</span>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", padding: 20 }}>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "#2cbb5d", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 12 }}>P</div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", margin: "8px 0 4px" }}>Create your account</h1>
+          <p style={{ fontSize: 14, color: "var(--text-muted)" }}>Join students building their future</p>
         </div>
 
-        <div className="card p-8">
-          <h1 className="text-2xl font-bold text-white mb-1.5" style={{ fontFamily: "Space Grotesk" }}>
-            Create account
-          </h1>
-          <p className="text-[#71717a] text-sm mb-7">Join students building their future</p>
-
-          <form onSubmit={handleRegister} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-[#a1a1aa] mb-2">Full Name</label>
-              <input type="text" name="name" value={form.name}
-                onChange={handleChange} placeholder="Rahul Sharma"
-                required className="input-dark" maxLength={100} />
+        <div className="lc-card" style={{ padding: 24 }}>
+          <form onSubmit={handleRegister}>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Full Name</label>
+              <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Rahul Sharma" required className="lc-input" maxLength={100} />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[#a1a1aa] mb-2">Email</label>
-              <input type="email" name="email" value={form.email}
-                onChange={handleChange} placeholder="rahul@college.edu"
-                required className="input-dark" />
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Email</label>
+              <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="rahul@college.edu" required className="lc-input" />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[#a1a1aa] mb-2">Password</label>
-              <div className="relative">
-                <input type={showPassword ? "text" : "password"} name="password"
-                  value={form.password} onChange={handleChange}
-                  placeholder="Min. 8 characters" required className="input-dark pr-12" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#52525b] hover:text-[#a1a1aa] transition-colors">
-                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Password</label>
+              <div style={{ position: "relative" }}>
+                <input type={showPassword ? "text" : "password"} name="password" value={form.password} onChange={handleChange}
+                  placeholder="Min. 8 characters" required className="lc-input" style={{ paddingRight: 40 }} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{
+                  position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                  background: "none", border: "none", cursor: "pointer", color: "var(--text-light)", padding: 4,
+                }}>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {/* FIX: Inline password strength rules shown as user types */}
               {form.password.length > 0 && (
-                <div className="mt-3 space-y-1.5 px-1">
+                <div style={{ marginTop: 8 }}>
                   {PASSWORD_RULES.map((rule, i) => (
-                    <PasswordRule key={i} label={rule.label} met={rule.test(form.password)} />
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, marginBottom: 2 }}>
+                      {rule.test(form.password)
+                        ? <Check size={12} style={{ color: "var(--green)" }} />
+                        : <X size={12} style={{ color: "var(--text-light)" }} />}
+                      <span style={{ color: rule.test(form.password) ? "var(--green)" : "var(--text-muted)" }}>{rule.label}</span>
+                    </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <button type="submit"
-              disabled={loading || !form.name.trim() || !form.email.trim() || !passwordValid}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40">
-              {loading
-                ? <Loader size={16} className="animate-spin" />
-                : <><span>Create Account</span><ArrowRight size={15} /></>}
+            <button type="submit" disabled={loading || !form.name.trim() || !form.email.trim() || !passwordValid}
+              className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 20px", opacity: (!passwordValid || !form.name.trim()) ? 0.4 : 1 }}>
+              {loading ? <div style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> : "Create Account"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-[#71717a] mt-7">
-            Already have an account?{" "}
-            <Link to="/login" className="text-amber-500 font-semibold hover:text-amber-400 transition-colors">Sign in</Link>
+          <p style={{ textAlign: "center", fontSize: 13, color: "var(--text-muted)", marginTop: 20 }}>
+            Already have an account? <Link to="/login" style={{ color: "var(--green)", fontWeight: 600, textDecoration: "none" }}>Sign in</Link>
           </p>
         </div>
       </div>

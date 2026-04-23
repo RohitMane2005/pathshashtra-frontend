@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Compass, Eye, EyeOff, Loader, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, AlertTriangle } from "lucide-react";
 import API from "../api/axios";
 import toast from "react-hot-toast";
 
@@ -8,8 +8,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
-
-  const [tokenValid, setTokenValid] = useState(null); // null=checking
+  const [tokenValid, setTokenValid] = useState(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPwd, setShowPwd] = useState(false);
@@ -37,59 +36,53 @@ const ResetPassword = () => {
   };
 
   return (
-    <div style={{ background: "var(--bg)", minHeight: "100vh" }} className="flex items-center justify-center p-6">
-      <div className="w-full max-w-md animate-fade-up">
-        <div className="flex items-center gap-2.5 justify-center mb-10">
-          <div className="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center">
-            <Compass size={17} className="text-black" />
-          </div>
-          <span className="text-lg font-bold text-white" style={{ fontFamily: "Space Grotesk" }}>PathShashtra</span>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", padding: 20 }}>
+      <div style={{ width: "100%", maxWidth: 400 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "#2cbb5d", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 12 }}>P</div>
         </div>
 
-        <div className="card p-8">
+        <div className="lc-card" style={{ padding: 24 }}>
           {tokenValid === null && (
-            <div className="text-center py-8">
-              <Loader size={24} className="animate-spin text-amber-500 mx-auto" />
-              <p className="text-[#71717a] text-sm mt-3">Validating link...</p>
+            <div style={{ textAlign: "center", padding: "24px 0" }}>
+              <div style={{ width: 24, height: 24, border: "3px solid #e5e5e5", borderTopColor: "var(--green)", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
+              <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Validating link...</p>
             </div>
           )}
 
           {tokenValid === false && (
-            <div className="text-center py-4">
-              <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/15 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle size={20} className="text-rose-500" />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2" style={{ fontFamily: "Space Grotesk" }}>Link expired or invalid</h2>
-              <p className="text-[#71717a] text-sm mb-6">Reset links are valid for 30 minutes. Please request a new one.</p>
-              <Link to="/forgot-password" className="btn-primary inline-flex items-center gap-2 text-sm">Request new link</Link>
+            <div style={{ textAlign: "center", padding: "16px 0" }}>
+              <AlertTriangle size={32} style={{ color: "var(--red)", marginBottom: 12 }} />
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>Link expired or invalid</h2>
+              <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>Reset links are valid for 30 minutes.</p>
+              <Link to="/forgot-password" className="btn-primary" style={{ textDecoration: "none" }}>Request new link</Link>
             </div>
           )}
 
           {tokenValid === true && (
             <>
-              <h1 className="text-2xl font-bold text-white mb-1.5" style={{ fontFamily: "Space Grotesk" }}>Set new password</h1>
-              <p className="text-[#71717a] text-sm mb-7">Choose a strong password for your account</p>
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-[#a1a1aa] mb-2">New password</label>
-                  <div className="relative">
-                    <input type={showPwd ? "text" : "password"} value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      placeholder="Min. 8 characters" required className="input-dark pr-12" />
-                    <button type="button" onClick={() => setShowPwd(!showPwd)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#52525b] hover:text-[#a1a1aa] transition-colors">
-                      {showPwd ? <EyeOff size={17} /> : <Eye size={17} />}
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>Set new password</h1>
+              <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>Choose a strong password</p>
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>New password</label>
+                  <div style={{ position: "relative" }}>
+                    <input type={showPwd ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                      placeholder="Min. 8 characters" required className="lc-input" style={{ paddingRight: 40 }} />
+                    <button type="button" onClick={() => setShowPwd(!showPwd)} style={{
+                      position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                      background: "none", border: "none", cursor: "pointer", color: "var(--text-light)", padding: 4,
+                    }}>
+                      {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#a1a1aa] mb-2">Confirm password</label>
-                  <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)}
-                    placeholder="Repeat password" required className="input-dark" />
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Confirm password</label>
+                  <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Repeat password" required className="lc-input" />
                 </div>
-                <button type="submit" disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3">
-                  {loading ? <Loader size={15} className="animate-spin" /> : "Update Password"}
+                <button type="submit" disabled={loading} className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 20px" }}>
+                  {loading ? <div style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} /> : "Update Password"}
                 </button>
               </form>
             </>

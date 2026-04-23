@@ -2,863 +2,340 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import {
-  Code2, Lightbulb, Map, Loader, CheckCircle, XCircle,
-  List, Zap, Play, RotateCcw, Clock, HardDrive,
-  Compass, Menu, X, Maximize2, Minimize2, AlignLeft, RefreshCw
-} from "lucide-react";
 import CodeEditor, { BOILERPLATE } from "../components/CodeEditor";
+import {
+  Code2, Loader, List, Map, Lightbulb, Play, RotateCcw,
+  Maximize2, Minimize2, CheckCircle, Circle, X, Menu, Home
+} from "lucide-react";
 
-/* ─── constants ──────────────────────────────── */
-const DIFF_COLOR = { EASY: "#34d399", MEDIUM: "#fbbf24", HARD: "#f43f5e" };
-const DIFF_BG = { EASY: "rgba(52,211,153,0.12)", MEDIUM: "rgba(251,191,36,0.12)", HARD: "rgba(248,113,113,0.12)" };
-const TOPICS = [
-  "Arrays", "Linked Lists", "Stacks", "Queues", "Binary Trees", "BST", "Graphs",
-  "Dynamic Programming", "Sorting", "Searching", "Recursion", "Hashing",
-  "Bit Manipulation", "Strings", "Two Pointers", "Sliding Window",
-];
-const LANGS = ["Java", "Python", "C++", "JavaScript", "C", "Kotlin"];
-
-function fmtTime(s) {
-  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-}
-
-const Badge = ({ children, color = "#71717a", bg }) => (
-  <span style={{
-    display: "inline-flex", alignItems: "center", padding: "2px 10px",
-    borderRadius: 100, fontSize: 11, fontWeight: 700,
-    color, background: bg || `${color}18`, border: `1px solid ${color}30`
-  }}>{children}</span>
+/* ── Generate Bar ── */
+const GenBar = ({ form, setForm, generating, onGenerate }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderBottom: "1px solid var(--border)", background: "var(--bg)", flexWrap: "wrap" }}>
+    <select value={form.topic} onChange={e => setForm({ ...form, topic: e.target.value })} className="lc-input" style={{ width: 140, padding: "6px 10px", fontSize: 13 }}>
+      {["Arrays", "Strings", "LinkedList", "Trees", "Graphs", "DP", "Sorting", "Searching", "Stack", "Queue", "Recursion", "HashMap", "Greedy", "Backtracking", "Math"].map(t => <option key={t}>{t}</option>)}
+    </select>
+    <select value={form.difficulty} onChange={e => setForm({ ...form, difficulty: e.target.value })} className="lc-input" style={{ width: 110, padding: "6px 10px", fontSize: 13 }}>
+      {["Easy", "Medium", "Hard"].map(d => <option key={d}>{d}</option>)}
+    </select>
+    <select value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} className="lc-input" style={{ width: 120, padding: "6px 10px", fontSize: 13 }}>
+      {["Java", "Python", "C++", "JavaScript", "C", "Kotlin"].map(l => <option key={l}>{l}</option>)}
+    </select>
+    <button onClick={onGenerate} disabled={generating} className="btn-primary" style={{ padding: "6px 14px", fontSize: 13 }}>
+      {generating ? <Loader size={13} className="animate-spin" /> : "Generate"}
+    </button>
+  </div>
 );
 
-function useSplit(init = 42) {
-  const [pct, setPct] = useState(init);
-  const dragging = useRef(false);
-  const onDown = useCallback(e => {
-    e.preventDefault();
-    dragging.current = true;
-    const move = ev => {
-      if (!dragging.current) return;
-      const el = document.getElementById("ct-split");
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      setPct(Math.min(75, Math.max(25, ((ev.clientX - r.left) / r.width) * 100)));
-    };
-    const up = () => {
-      dragging.current = false;
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-    };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-  }, []);
-  return [pct, onDown];
-}
+/* ── Left Pane: problem description ── */
+const LeftPane = ({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, feedback, form }) => (
+  <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "var(--bg)", overflow: "hidden" }}>
+    {/* tabs */}
+    <div className="lc-tabs" style={{ margin: 0, padding: "0 12px" }}>
+      {["Description", "Hints", "Feedback"].map(t => (
+        <button key={t} onClick={() => setLeftTab(t.toLowerCase())} className={`lc-tab ${leftTab === t.toLowerCase() ? "active" : ""}`} style={{ fontSize: 13, padding: "8px 10px" }}>
+          {t} {t === "Hints" && hintsUsed > 0 && <span style={{ fontSize: 11, color: "var(--text-muted)" }}>({hintsUsed})</span>}
+        </button>
+      ))}
+    </div>
+    <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
+      {leftTab === "description" && (
+        generating ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+            <div><Loader size={24} className="animate-spin" style={{ color: "var(--green)", display: "block", margin: "0 auto 12px" }} /><p style={{ fontSize: 13, color: "var(--text-muted)" }}>Generating problem...</p></div>
+          </div>
+        ) : problem ? (
+          <>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <span className={`lc-tag lc-tag-${problem.difficulty === "EASY" || form.difficulty === "Easy" ? "green" : problem.difficulty === "MEDIUM" || form.difficulty === "Medium" ? "orange" : "red"}`}>
+                {problem.difficulty || form.difficulty}
+              </span>
+              <span className="lc-tag">{problem.topic || form.topic}</span>
+            </div>
+            <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{problem.title}</h2>
+            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{problem.description}</div>
+            {problem.examples && (
+              <div style={{ marginTop: 16 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Examples:</h4>
+                <pre style={{ background: "var(--bg-secondary)", padding: 12, borderRadius: 6, fontSize: 13, whiteSpace: "pre-wrap", border: "1px solid var(--border)" }}>{typeof problem.examples === "string" ? problem.examples : JSON.stringify(problem.examples, null, 2)}</pre>
+              </div>
+            )}
+            {problem.constraints && (
+              <div style={{ marginTop: 12 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Constraints:</h4>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{problem.constraints}</p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-muted)", fontSize: 14 }}>
+            Click "Generate" to create a new problem
+          </div>
+        )
+      )}
+      {leftTab === "hints" && (
+        hints.length === 0 ? (
+          <p style={{ color: "var(--text-muted)", fontSize: 14, textAlign: "center", paddingTop: 40 }}>Click the hint button in the editor to get hints</p>
+        ) : hints.map((h, i) => (
+          <div key={i} style={{ marginBottom: 12, padding: 12, background: "var(--bg-secondary)", borderRadius: 6, border: "1px solid var(--border)" }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--orange)", marginBottom: 4 }}>Hint {i + 1}</p>
+            <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>{h}</p>
+          </div>
+        ))
+      )}
+      {leftTab === "feedback" && (
+        !feedback ? (
+          <p style={{ color: "var(--text-muted)", fontSize: 14, textAlign: "center", paddingTop: 40 }}>Submit your code to see AI feedback</p>
+        ) : (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <span className={`lc-tag lc-tag-${feedback.verdict === "PASS" ? "green" : feedback.verdict === "PARTIAL" ? "orange" : "red"}`}>{feedback.verdict}</span>
+              {feedback.score != null && <span style={{ fontWeight: 700, fontSize: 16 }}>{feedback.score}/100</span>}
+            </div>
+            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{feedback.review || feedback.explanation}</div>
+          </div>
+        )
+      )}
+    </div>
+  </div>
+);
 
-/* ══════════════════════════════════════════════
-   GENERATE BAR
-══════════════════════════════════════════════ */
-function GenBar({ form, setForm, generating, onGenerate }) {
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8,
-      padding: "10px 14px", borderBottom: "1px solid var(--border)",
-      flexShrink: 0, background: "var(--bg2)"
-    }}>
-      <select value={form.topic} onChange={e => setForm(f => ({ ...f, topic: e.target.value }))}
-        style={{
-          flex: "1 1 120px", background: "rgba(255,255,255,0.07)",
-          border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
-          color: "white", fontSize: 12, padding: "6px 10px", outline: "none", cursor: "pointer"
-        }}>
-        {TOPICS.map(t => <option key={t} style={{ background: "#0f0f12" }}>{t}</option>)}
-      </select>
-
-      <div style={{ display: "flex", gap: 5 }}>
-        {["EASY", "MEDIUM", "HARD"].map(d => (
-          <button key={d} onClick={() => setForm(f => ({ ...f, difficulty: d }))} style={{
-            padding: "5px 11px", borderRadius: 7, fontSize: 11, fontWeight: 700, cursor: "pointer",
-            color: form.difficulty === d ? "white" : DIFF_COLOR[d],
-            background: form.difficulty === d ? DIFF_BG[d] : "transparent",
-            border: `1px solid ${form.difficulty === d ? DIFF_COLOR[d] : "rgba(255,255,255,0.12)"}`,
-          }}>{d}</button>
-        ))}
+/* ── Editor Pane ── */
+const EditorPane = ({ form, code, setCode, submitting, fullEd, setFullEd, onReset, onHint, onSubmit }) => (
+  <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#1e1e2e" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 10px", background: "#1a1a2e", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{form.language}</span>
       </div>
-
-      <select value={form.language} onChange={e => setForm(f => ({ ...f, language: e.target.value }))}
-        style={{
-          background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-          borderRadius: 8, color: "white", fontSize: 12, padding: "6px 10px", outline: "none", cursor: "pointer"
-        }}>
-        {LANGS.map(l => <option key={l} style={{ background: "#0f0f12" }}>{l}</option>)}
-      </select>
-
-      <button onClick={onGenerate} disabled={generating} style={{
-        display: "flex", alignItems: "center", gap: 6, padding: "7px 18px",
-        borderRadius: 8, fontSize: 13, fontWeight: 700, border: "none", whiteSpace: "nowrap",
-        background: generating ? "rgba(255,107,0,0.5)" : "linear-gradient(135deg,#f59e0b,#fbbf24)",
-        color: "white", cursor: generating ? "not-allowed" : "pointer"
+      <div style={{ display: "flex", gap: 4 }}>
+        <button onClick={onReset} title="Reset" style={{ background: "rgba(255,255,255,0.06)", border: "none", borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+          <RotateCcw size={12} />
+        </button>
+        <button onClick={onHint} title="Hint" disabled={submitting} style={{ background: "rgba(255,255,255,0.06)", border: "none", borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: "rgba(255,161,22,0.8)", fontSize: 12 }}>
+          <Lightbulb size={12} />
+        </button>
+        <button onClick={() => setFullEd(!fullEd)} title={fullEd ? "Split" : "Full"} style={{ background: "rgba(255,255,255,0.06)", border: "none", borderRadius: 4, padding: "4px 8px", cursor: "pointer", color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+          {fullEd ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+        </button>
+      </div>
+    </div>
+    <div style={{ flex: 1, overflow: "hidden" }}>
+      <CodeEditor value={code} onChange={setCode} language={form.language} disabled={submitting} onSubmit={onSubmit} />
+    </div>
+    <div style={{ padding: "6px 10px", background: "#1a1a2e", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", justifyContent: "flex-end" }}>
+      <button onClick={onSubmit} disabled={submitting} style={{
+        background: "var(--green)", color: "#fff", border: "none", borderRadius: 4, padding: "6px 16px",
+        fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, opacity: submitting ? 0.5 : 1,
       }}>
-        {generating
-          ? <><Loader size={13} style={{ animation: "spin 0.8s linear infinite" }} /> Generating...</>
-          : <><Zap size={13} /> Generate Problem</>}
+        {submitting ? <Loader size={12} className="animate-spin" /> : <Play size={12} />} Submit
       </button>
     </div>
-  );
-}
+  </div>
+);
 
-/* ══════════════════════════════════════════════
-   LEFT PANE  (Description / Hints / Feedback)
-══════════════════════════════════════════════ */
-function LeftPane({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, feedback, form }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+/* ── Problems List ── */
+const ProblemsView = ({ problems, onRetry, onLoad }) => (
+  <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
+    <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>My Problems</h2>
+    {problems.length === 0 ? (
+      <p style={{ color: "var(--text-muted)", fontSize: 14, textAlign: "center", paddingTop: 40 }}>No problems yet. Generate one to start!</p>
+    ) : (
+      <table className="lc-table">
+        <thead><tr><th>Status</th><th>Title</th><th>Difficulty</th><th>Topic</th><th>Action</th></tr></thead>
+        <tbody>
+          {problems.map((p, i) => (
+            <tr key={i}>
+              <td>{p.status === "SOLVED" ? <CheckCircle size={14} style={{ color: "var(--green)" }} /> : <Circle size={14} style={{ color: "var(--text-light)" }} />}</td>
+              <td style={{ fontWeight: 500, cursor: "pointer", color: "var(--blue)" }} onClick={() => onLoad(p)}>{p.title}</td>
+              <td><span className={`diff-${p.difficulty?.toLowerCase()}`}>{p.difficulty}</span></td>
+              <td><span className="lc-tag" style={{ fontSize: 11 }}>{p.topic}</span></td>
+              <td><button onClick={() => onRetry(p)} style={{ background: "none", border: "none", color: "var(--blue)", cursor: "pointer", fontSize: 13 }}>Retry</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+  </div>
+);
 
-      {/* Tab bar */}
-      <div style={{
-        display: "flex", gap: 2, padding: "8px 14px 0",
-        borderBottom: "1px solid var(--border)", flexShrink: 0, background: "var(--bg2)"
-      }}>
-        {[
-          { id: "description", label: "Description", icon: <AlignLeft size={12} /> },
-          { id: "hints", label: `Hints (${hintsUsed}/3)`, icon: <Lightbulb size={12} /> },
-          { id: "feedback", label: "Feedback", icon: <CheckCircle size={12} /> },
-        ].map(t => (
-          <button key={t.id} onClick={() => setLeftTab(t.id)} style={{
-            display: "flex", alignItems: "center", gap: 5, padding: "6px 12px",
-            background: "transparent", border: "none",
-            borderBottom: leftTab === t.id ? "2px solid #8b5cf6" : "2px solid transparent",
-            borderRadius: "6px 6px 0 0", fontSize: 12, fontWeight: 600, cursor: "pointer",
-            color: leftTab === t.id ? "#8b5cf6" : "#71717a", transition: "color 0.15s"
-          }}>{t.icon} {t.label}</button>
+/* ── Roadmap View ── */
+const RoadmapView = ({ roadmap, rmLoad, onGenerate, onReset }) => (
+  <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
+    <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>DSA Roadmap</h2>
+    {rmLoad ? (
+      <div style={{ textAlign: "center", paddingTop: 40 }}><Loader size={20} className="animate-spin" style={{ color: "var(--green)" }} /></div>
+    ) : !roadmap ? (
+      <div style={{ textAlign: "center", paddingTop: 40 }}>
+        <p style={{ color: "var(--text-muted)", fontSize: 14, marginBottom: 12 }}>Generate a personalized DSA roadmap</p>
+        <button onClick={onGenerate} className="btn-primary" style={{ fontSize: 13 }}>Generate Roadmap</button>
+      </div>
+    ) : (
+      <div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+          <button onClick={onReset} className="btn-secondary" style={{ fontSize: 12, padding: "4px 12px" }}><RotateCcw size={11} /> Reset</button>
+        </div>
+        {roadmap.phases?.map((phase, i) => (
+          <div key={i} style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--green-bg)", border: "1px solid var(--green-border)", color: "var(--green)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>{i + 1}</div>
+              {i < roadmap.phases.length - 1 && <div style={{ width: 1, flex: 1, background: "#e5e5e5", marginTop: 4 }} />}
+            </div>
+            <div className="lc-card" style={{ flex: 1, padding: 14, marginBottom: 4 }}>
+              <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{phase.title || phase.name}</p>
+              <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>{phase.description}</p>
+              {phase.topics && <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>{phase.topics.map((t, j) => <span key={j} className="lc-tag" style={{ fontSize: 11 }}>{t}</span>)}</div>}
+            </div>
+          </div>
         ))}
       </div>
+    )}
+  </div>
+);
 
-      <div style={{ flex: 1, overflowY: "auto", padding: 18 }}>
-
-        {/* ── DESCRIPTION ── */}
-        {leftTab === "description" && <>
-          {!problem && !generating && (
-            <div style={{ textAlign: "center", paddingTop: 64 }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: 16, margin: "0 auto 16px",
-                background: "rgba(155,109,255,0.1)", border: "1px solid rgba(155,109,255,0.2)",
-                display: "flex", alignItems: "center", justifyContent: "center"
-              }}><Code2 size={28} style={{ color: "#8b5cf6" }} /></div>
-              <p style={{ color: "white", fontWeight: 700, fontSize: 18, fontFamily: "Space Grotesk", marginBottom: 6 }}>
-                Ready to practice?
-              </p>
-              <p style={{ color: "#71717a", fontSize: 13, lineHeight: 1.6 }}>
-                Pick a topic and difficulty above,<br />then hit <strong style={{ color: "#fbbf24" }}>Generate Problem</strong>
-              </p>
-            </div>
-          )}
-
-          {generating && (
-            <div style={{ textAlign: "center", paddingTop: 64 }}>
-              <Loader size={32} style={{ color: "#8b5cf6", margin: "0 auto 16px", display: "block", animation: "spin 0.8s linear infinite" }} />
-              <p style={{ color: "#71717a", fontSize: 14 }}>AI is crafting your problem...</p>
-            </div>
-          )}
-
-          {problem && !generating && (
-            <div>
-              <h2 style={{ color: "white", fontSize: 19, fontWeight: 700, fontFamily: "Space Grotesk", marginBottom: 10 }}>
-                {problem.title}
-              </h2>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginBottom: 16 }}>
-                <Badge color={DIFF_COLOR[problem.difficulty]} bg={DIFF_BG[problem.difficulty]}>{problem.difficulty}</Badge>
-                <Badge color="#8b5cf6">{problem.language}</Badge>
-                <Badge color="#71717a">{problem.topic || form.topic}</Badge>
-              </div>
-              <p style={{ color: "#a1a1aa", fontSize: 14, lineHeight: 1.75, marginBottom: 16 }}>{problem.problemStatement}</p>
-              {problem.inputFormat && (
-                <div style={{ marginBottom: 12 }}>
-                  <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Input Format</p>
-                  <p style={{ color: "#71717a", fontSize: 13 }}>{problem.inputFormat}</p>
-                </div>
-              )}
-              {problem.outputFormat && (
-                <div style={{ marginBottom: 12 }}>
-                  <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Output Format</p>
-                  <p style={{ color: "#71717a", fontSize: 13 }}>{problem.outputFormat}</p>
-                </div>
-              )}
-              {problem.constraints?.length > 0 && (
-                <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>Constraints</p>
-                  {problem.constraints.map((c, i) => (
-                    <div key={i} style={{ display: "flex", gap: 8, marginBottom: 5 }}>
-                      <span style={{ color: "#8b5cf6", flexShrink: 0 }}>•</span>
-                      <span style={{ color: "#71717a", fontSize: 13 }}>{c}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {problem.examples?.length > 0 && (
-                <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: "white", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>Examples</p>
-                  {problem.examples.map((ex, i) => (
-                    <div key={i} style={{
-                      background: "rgba(0,0,0,0.35)", border: "1px solid var(--border)",
-                      borderRadius: 10, padding: "12px 14px", marginBottom: 10,
-                      fontFamily: "'JetBrains Mono',monospace", fontSize: 13
-                    }}>
-                      <div style={{ marginBottom: 5 }}>
-                        <span style={{ color: "#52525b" }}>Input: </span>
-                        <span style={{ color: "#E2E8F0" }}>{ex.input}</span>
-                      </div>
-                      <div style={{ marginBottom: ex.explanation ? 5 : 0 }}>
-                        <span style={{ color: "#52525b" }}>Output: </span>
-                        <span style={{ color: "#34d399" }}>{ex.output}</span>
-                      </div>
-                      {ex.explanation && (
-                        <div style={{ color: "#71717a", fontSize: 12, marginTop: 6, lineHeight: 1.5 }}>
-                          Explanation: {ex.explanation}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                {problem.expectedTimeComplexity && (
-                  <span style={{ color: "#10b981", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                    <Clock size={12} /> {problem.expectedTimeComplexity}
-                  </span>
-                )}
-                {problem.expectedSpaceComplexity && (
-                  <span style={{ color: "#8b5cf6", fontSize: 12, display: "flex", alignItems: "center", gap: 5 }}>
-                    <HardDrive size={12} /> {problem.expectedSpaceComplexity}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
-        </>}
-
-        {/* ── HINTS ── */}
-        {leftTab === "hints" && (
-          <div>
-            {hints.length === 0 ? (
-              <div style={{ textAlign: "center", paddingTop: 48 }}>
-                <Lightbulb size={36} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
-                <p style={{ color: "#71717a", fontSize: 13 }}>
-                  {problem ? "Click \"Hint\" below when you're stuck" : "Generate a problem first"}
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {hints.map((h, i) => (
-                  <div key={i} style={{
-                    background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.2)",
-                    borderRadius: 12, padding: 16
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <Lightbulb size={14} style={{ color: "#fbbf24" }} />
-                      <span style={{ color: "#fbbf24", fontWeight: 700, fontSize: 13 }}>Hint {i + 1} of 3</span>
-                    </div>
-                    <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{h.hint}</p>
-                    {h.encouragement && (
-                      <p style={{ color: "rgba(251,191,36,0.55)", fontSize: 12, marginTop: 8, fontStyle: "italic", marginBottom: 0 }}>
-                        {h.encouragement}
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {hintsUsed < 3 && problem && (
-                  <p style={{ color: "#52525b", fontSize: 12, textAlign: "center" }}>{3 - hintsUsed} hint{3 - hintsUsed !== 1 ? "s" : ""} remaining</p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── FEEDBACK ── */}
-        {leftTab === "feedback" && (
-          <div>
-            {!feedback ? (
-              <div style={{ textAlign: "center", paddingTop: 48 }}>
-                <CheckCircle size={36} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
-                <p style={{ color: "#71717a", fontSize: 13 }}>Submit your code to see AI feedback</p>
-              </div>
-            ) : (
-              <div>
-                <div style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "14px 18px", marginBottom: 18,
-                  background: feedback.isCorrect ? "rgba(52,211,153,0.08)" : "rgba(248,113,113,0.08)",
-                  border: `1px solid ${feedback.isCorrect ? "rgba(52,211,153,0.25)" : "rgba(248,113,113,0.25)"}`,
-                  borderRadius: 12
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    {feedback.isCorrect ? <CheckCircle size={20} style={{ color: "#34d399" }} /> : <XCircle size={20} style={{ color: "#f43f5e" }} />}
-                    <div>
-                      <p style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Space Grotesk", margin: 0 }}>
-                        {feedback.isCorrect ? "Accepted ✓" : "Needs Work"}
-                      </p>
-                      <p style={{ color: "#71717a", fontSize: 11, margin: 0 }}>AI Code Review</p>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <span style={{
-                      fontSize: 30, fontWeight: 800, fontFamily: "Space Grotesk",
-                      color: feedback.score >= 80 ? "#34d399" : feedback.score >= 60 ? "#fbbf24" : "#f43f5e"
-                    }}>{feedback.score}</span>
-                    <span style={{ color: "#52525b", fontSize: 13 }}>/100</span>
-                  </div>
-                </div>
-                <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.7, marginBottom: 16 }}>{feedback.overallFeedback}</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 16 }}>
-                  {[
-                    { label: "Your Time", value: feedback.timeComplexity, color: "#10b981" },
-                    { label: "Optimal Time", value: feedback.suggestedTimeComplexity, color: "#34d399" },
-                    { label: "Your Space", value: feedback.spaceComplexity, color: "#8b5cf6" },
-                    { label: "Optimal Space", value: feedback.suggestedSpaceComplexity, color: "#34d399" },
-                  ].map((item, i) => (
-                    <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px" }}>
-                      <p style={{ color: item.color, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 4px" }}>{item.label}</p>
-                      <p style={{ color: "white", fontFamily: "monospace", fontSize: 13, margin: 0 }}>{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-                {feedback.strengths?.length > 0 && (
-                  <div style={{ background: "rgba(52,211,153,0.06)", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 10, padding: 14, marginBottom: 12 }}>
-                    <p style={{ color: "#34d399", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>✅ STRENGTHS</p>
-                    {feedback.strengths.map((s, i) => <p key={i} style={{ color: "#a1a1aa", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
-                  </div>
-                )}
-                {feedback.improvements?.length > 0 && (
-                  <div style={{ background: "rgba(255,140,56,0.06)", border: "1px solid rgba(255,140,56,0.2)", borderRadius: 10, padding: 14, marginBottom: 12 }}>
-                    <p style={{ color: "#fbbf24", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>💡 IMPROVEMENTS</p>
-                    {feedback.improvements.map((s, i) => <p key={i} style={{ color: "#a1a1aa", fontSize: 13, margin: "0 0 4px" }}>• {s}</p>)}
-                  </div>
-                )}
-                {feedback.optimizedApproach && (
-                  <div style={{ background: "rgba(155,109,255,0.06)", border: "1px solid rgba(155,109,255,0.2)", borderRadius: 10, padding: 14 }}>
-                    <p style={{ color: "#8b5cf6", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>🚀 OPTIMAL APPROACH</p>
-                    <p style={{ color: "#a1a1aa", fontSize: 13, lineHeight: 1.65, margin: 0 }}>{feedback.optimizedApproach}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   EDITOR PANE  — wraps CodeEditor component
-══════════════════════════════════════════════ */
-function EditorPane({
-  form, setForm, code, setCode, problem, submitting,
-  hintLoad, hintsUsed, elapsed, timerOn, setTimerOn,
-  fullEd, setFullEd, onReset, onHint, onSubmit
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-
-      {/* Top bar */}
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 14px", height: 46, borderBottom: "1px solid var(--border)",
-        flexShrink: 0, background: "var(--bg2)", gap: 8
-      }}>
-        {/* Language switcher */}
-        <select value={form.language} onChange={e => setForm(f => ({ ...f, language: e.target.value }))}
-          style={{
-            background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-            borderRadius: 7, color: "white", fontSize: 12, padding: "4px 9px", outline: "none", cursor: "pointer"
-          }}>
-          {LANGS.map(l => <option key={l} style={{ background: "#0f0f12" }}>{l}</option>)}
-        </select>
-
-        {/* Timer */}
-        {problem && (
-          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-            <span style={{ fontFamily: "monospace", fontSize: 12, color: elapsed > 1800 ? "#f43f5e" : "#71717a", display: "flex", alignItems: "center", gap: 4 }}>
-              <Clock size={12} /> {fmtTime(elapsed)}
-            </span>
-            <button onClick={() => setTimerOn(t => !t)} style={{
-              background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)",
-              borderRadius: 5, padding: "2px 7px", color: "#71717a", fontSize: 11, cursor: "pointer"
-            }}>{timerOn ? "⏸" : "▶"}</button>
-          </div>
-        )}
-
-        {/* Controls */}
-        <div style={{ display: "flex", gap: 5 }}>
-          <button onClick={onReset} disabled={!problem} title="Reset to boilerplate" style={{
-            width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "transparent", border: "1px solid var(--border)",
-            color: problem ? "#71717a" : "#52525b", cursor: problem ? "pointer" : "not-allowed"
-          }}><RotateCcw size={12} /></button>
-          <button onClick={() => setFullEd(f => !f)} title="Toggle fullscreen" style={{
-            width: 28, height: 28, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "transparent", border: "1px solid var(--border)", color: "#71717a", cursor: "pointer"
-          }}>{fullEd ? <Minimize2 size={12} /> : <Maximize2 size={12} />}</button>
-        </div>
-      </div>
-
-      {/* CodeMirror editor */}
-      <div style={{ flex: 1, overflow: "hidden", position: "relative" }}>
-        <CodeEditor
-          value={code}
-          onChange={setCode}
-          language={form.language}
-          disabled={!problem}
-          onSubmit={onSubmit}
-          placeholder={problem
-            ? `// Write your ${form.language} solution here...\n// Ctrl+Enter to submit`
-            : "// Generate a problem above to start coding..."}
-        />
-      </div>
-
-      {/* Bottom bar */}
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "9px 14px", borderTop: "1px solid var(--border)",
-        flexShrink: 0, background: "var(--bg2)", gap: 10
-      }}>
-        <button onClick={onHint} disabled={!problem || hintsUsed >= 3 || hintLoad} style={{
-          display: "flex", alignItems: "center", gap: 6, padding: "7px 14px",
-          borderRadius: 9, fontSize: 13, fontWeight: 600,
-          background: "transparent", border: "1px solid var(--border)",
-          color: (!problem || hintsUsed >= 3) ? "#52525b" : "#fbbf24",
-          cursor: (!problem || hintsUsed >= 3) ? "not-allowed" : "pointer",
-          opacity: (!problem || hintsUsed >= 3) ? 0.5 : 1
-        }}>
-          {hintLoad ? <Loader size={13} style={{ animation: "spin 0.8s linear infinite" }} /> : <Lightbulb size={13} />}
-          Hint ({3 - hintsUsed} left)
-        </button>
-        <button onClick={onSubmit} disabled={!problem || submitting || !code.trim()} style={{
-          display: "flex", alignItems: "center", gap: 7, padding: "8px 20px",
-          borderRadius: 9, fontSize: 13, fontWeight: 700, border: "none",
-          background: (!problem || !code.trim()) ? "rgba(155,109,255,0.3)" : "linear-gradient(135deg,#8b5cf6,#a78bfa)",
-          color: "white", cursor: (!problem || !code.trim()) ? "not-allowed" : "pointer"
-        }}>
-          {submitting ? <Loader size={13} style={{ animation: "spin 0.8s linear infinite" }} /> : <Play size={13} />}
-          Submit
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   PROBLEMS VIEW
-══════════════════════════════════════════════ */
-function ProblemsView({ problems, setView, onRetry, onLoad }) {
-  const solved = problems.filter(p => p.status === "SOLVED").length;
-  const attempted = problems.filter(p => p.status === "ATTEMPTED" || p.status === "REVIEWED").length;
-  const inProgress = problems.filter(p => p.status === "GENERATED" || p.status === "ATTEMPTED").length;
-
-  return (
-    <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
-          My Problems ({problems.length})
-        </h2>
-
-        {/* Stats */}
-        {problems.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 }}>
-            {[
-              { label: "Solved", count: solved, color: "#34d399" },
-              { label: "In Progress", count: inProgress, color: "#fbbf24" },
-              { label: "Attempted", count: attempted, color: "#8b5cf6" },
-              { label: "Total", count: problems.length, color: "#71717a" },
-            ].map((s, i) => (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)", borderRadius: 12, padding: "12px 14px", textAlign: "center" }}>
-                <p style={{ color: s.color, fontSize: 24, fontWeight: 800, fontFamily: "Space Grotesk", margin: 0 }}>{s.count}</p>
-                <p style={{ color: "#71717a", fontSize: 11, margin: 0 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {problems.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <Code2 size={40} style={{ color: "#52525b", margin: "0 auto 12px", display: "block" }} />
-            <p style={{ color: "white", fontWeight: 600, marginBottom: 6 }}>No problems yet</p>
-            <p style={{ color: "#71717a", fontSize: 13, marginBottom: 20 }}>Generate your first problem to get started</p>
-            <button onClick={() => setView("practice")} style={{
-              padding: "8px 20px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-              background: "linear-gradient(135deg,#8b5cf6,#a78bfa)", color: "white", border: "none", cursor: "pointer"
-            }}>Start Practicing</button>
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {/* Header */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "minmax(0,1fr) 80px 90px 100px 110px",
-              padding: "6px 14px", gap: 10, color: "#52525b", fontSize: 10, fontWeight: 700,
-              textTransform: "uppercase", letterSpacing: "0.08em"
-            }}>
-              <span>Problem</span><span>Difficulty</span><span>Language</span><span>Status</span><span>Action</span>
-            </div>
-
-            {problems.map((p, i) => {
-              const statusColor = p.status === "SOLVED" ? "#34d399" : p.status === "REVIEWED" ? "#8b5cf6" : p.status === "ATTEMPTED" ? "#fbbf24" : "#71717a";
-              const canResume = p.status === "GENERATED" || p.status === "ATTEMPTED";
-              const canRetry = p.status === "SOLVED" || p.status === "REVIEWED";
-
-              return (
-                <div key={i}
-                  onClick={() => onLoad(p.id, p.language)}
-                  style={{
-                    display: "grid", gridTemplateColumns: "minmax(0,1fr) 80px 90px 100px 110px",
-                    alignItems: "center", gap: 10,
-                    background: "rgba(255,255,255,0.03)", border: "1px solid var(--border)",
-                    borderRadius: 11, padding: "12px 14px", cursor: "pointer", transition: "all 0.15s"
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(155,109,255,0.4)"; e.currentTarget.style.background = "rgba(155,109,255,0.05)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}>
-
-                  {/* Title + meta */}
-                  <div style={{ minWidth: 0 }}>
-                    <p style={{ color: "white", fontWeight: 600, fontSize: 13, margin: "0 0 3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ color: "#52525b", fontSize: 11 }}>{p.topic}</span>
-                      {p.hintsUsed > 0 && <span style={{ color: "#fbbf24", fontSize: 10 }}>💡 {p.hintsUsed} hint{p.hintsUsed !== 1 ? "s" : ""} used</span>}
-                    </div>
-                  </div>
-
-                  <Badge color={DIFF_COLOR[p.difficulty]} bg={DIFF_BG[p.difficulty]}>{p.difficulty}</Badge>
-                  <Badge color="#71717a">{p.language}</Badge>
-                  <Badge color={statusColor}>{p.status}</Badge>
-
-                  {/* Action button */}
-                  <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    {canResume && (
-                      <button onClick={() => onLoad(p.id, p.language)} style={{
-                        padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
-                        background: "rgba(255,107,0,0.12)", border: "1px solid rgba(255,107,0,0.3)",
-                        color: "#fbbf24", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
-                      }}>▶ Resume</button>
-                    )}
-                    {canRetry && (
-                      <button onClick={() => onLoad(p.id, p.language)} style={{
-                        padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
-                        background: "rgba(0,212,200,0.1)", border: "1px solid rgba(0,212,200,0.3)",
-                        color: "#10b981", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
-                      }}>👁 View</button>
-                    )}
-                    {canRetry && (
-                      <button onClick={() => onRetry(p.id, p.language)} style={{
-                        padding: "5px 12px", borderRadius: 7, fontSize: 11, fontWeight: 700,
-                        background: "rgba(155,109,255,0.12)", border: "1px solid rgba(155,109,255,0.3)",
-                        color: "#8b5cf6", cursor: "pointer", whiteSpace: "nowrap", width: "100%"
-                      }}>↺ Retry</button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   ROADMAP VIEW
-══════════════════════════════════════════════ */
-function RoadmapView({ roadmap, rmLoad, onGenerate, onReset }) {
-  return (
-    <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-      <div style={{ maxWidth: 620, margin: "0 auto" }}>
-        {!roadmap ? (
-          <div style={{ textAlign: "center", paddingTop: 64 }}>
-            <div style={{ width: 64, height: 64, borderRadius: 16, margin: "0 auto 16px", background: "rgba(155,109,255,0.1)", border: "1px solid rgba(155,109,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Map size={28} style={{ color: "#8b5cf6" }} />
-            </div>
-            <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 22, fontWeight: 700, marginBottom: 8 }}>DSA Roadmap</h2>
-            <p style={{ color: "#71717a", fontSize: 14, marginBottom: 24 }}>Personalized path for campus placements</p>
-            <button onClick={onGenerate} disabled={rmLoad} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 24px", borderRadius: 12, fontWeight: 700, fontSize: 14, border: "none", background: "linear-gradient(135deg,#8b5cf6,#a78bfa)", color: "white", cursor: rmLoad ? "not-allowed" : "pointer" }}>
-              {rmLoad ? <Loader size={15} style={{ animation: "spin 0.8s linear infinite" }} /> : <Map size={15} />}
-              {rmLoad ? "Generating..." : "Generate Roadmap"}
-            </button>
-          </div>
-        ) : (
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <h2 style={{ color: "white", fontFamily: "Space Grotesk", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{roadmap.roadmapTitle}</h2>
-              <p style={{ color: "#71717a", fontSize: 13 }}>⏱ {roadmap.estimatedDuration} · 🎯 {roadmap.dailyPracticeGoal}</p>
-            </div>
-            {roadmap.phases?.map((phase, i) => (
-              <div key={i} style={{ display: "flex", gap: 14, marginBottom: 22 }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ width: 34, height: 34, borderRadius: "50%", flexShrink: 0, background: "rgba(155,109,255,0.15)", border: "1px solid rgba(155,109,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#8b5cf6", fontSize: 13, fontWeight: 800 }}>{phase.phase}</div>
-                  {i < roadmap.phases.length - 1 && <div style={{ width: 1, flex: 1, background: "rgba(155,109,255,0.2)", marginTop: 8 }} />}
-                </div>
-                <div style={{ paddingBottom: 6 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
-                    <span style={{ color: "white", fontWeight: 700, fontSize: 14 }}>{phase.title}</span>
-                    <span style={{ color: "#52525b", fontSize: 12 }}>({phase.duration})</span>
-                    <Badge color="#8b5cf6">{phase.practiceProblems} problems</Badge>
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-                    {phase.topics?.map((t, j) => (
-                      <span key={j} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", borderRadius: 7, padding: "3px 9px", fontSize: 12, color: "#71717a" }}>{t}</span>
-                    ))}
-                  </div>
-                  <p style={{ color: "#10b981", fontSize: 12, margin: 0 }}>✓ {phase.milestone}</p>
-                </div>
-              </div>
-            ))}
-            {roadmap.recommendedResources?.length > 0 && (
-              <div style={{ background: "rgba(155,109,255,0.06)", border: "1px solid rgba(155,109,255,0.2)", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                <p style={{ color: "#8b5cf6", fontWeight: 700, fontSize: 12, margin: "0 0 8px" }}>📚 RESOURCES</p>
-                {roadmap.recommendedResources.map((r, i) => <p key={i} style={{ color: "#71717a", fontSize: 13, margin: "0 0 5px" }}>• {r}</p>)}
-              </div>
-            )}
-            <button onClick={onReset} style={{ width: "100%", padding: "9px", borderRadius: 10, fontSize: 13, fontWeight: 600, background: "transparent", border: "1px solid var(--border)", color: "#71717a", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-              <RefreshCw size={13} /> Regenerate
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   MAIN COMPONENT
-══════════════════════════════════════════════ */
+/* ── Main Coding Tutor ── */
 export default function CodingTutor() {
-
   const [view, setView] = useState("practice");
-  const [form, setForm] = useState({ topic: "Arrays", difficulty: "MEDIUM", language: "Java" });
+  const [form, setForm] = useState({ topic: "Arrays", difficulty: "Medium", language: "Java" });
   const [problem, setProblem] = useState(null);
-  const [probId, setProbId] = useState(null);
-  const [generating, setGen] = useState(false);
-  const [code, setCode] = useState(BOILERPLATE["Java"]);
-  const [submitting, setSub] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-  const [hints, setHints] = useState([]);
-  const [hintsUsed, setHUsed] = useState(0);
-  const [hintLoad, setHL] = useState(false);
+  const [code, setCode] = useState(BOILERPLATE.Java);
+  const [generating, setGenerating] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [leftTab, setLeftTab] = useState("description");
+  const [hints, setHints] = useState([]);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  const [fullEd, setFullEd] = useState(false);
   const [problems, setProblems] = useState([]);
   const [roadmap, setRoadmap] = useState(null);
   const [rmLoad, setRmLoad] = useState(false);
+  const [pct, setPct] = useState(50);
   const [navOpen, setNavOpen] = useState(false);
-  const [fullEd, setFullEd] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [timerOn, setTimerOn] = useState(false);
-  const [pct, onDivDown] = useSplit(42);
-  const timerRef = useRef(null);
+  const draggingRef = useRef(false);
 
-  /* timer */
-  useEffect(() => {
-    if (timerOn) timerRef.current = setInterval(() => setElapsed(s => s + 1), 1000);
-    else clearInterval(timerRef.current);
-    return () => clearInterval(timerRef.current);
-  }, [timerOn]);
-
-  /* reset boilerplate when language changes (only if no problem loaded) */
-  useEffect(() => {
-    if (!problem) setCode(BOILERPLATE[form.language] || "");
-  }, [form.language, problem]);
-
-  useEffect(() => {
-    if (view === "problems") fetchProblems();
-  }, [view]);
+  useEffect(() => { API.get("/coding/problems").then(r => setProblems(r.data.content || r.data)).catch(() => {}); }, []);
 
   const generateProblem = async () => {
-    setGen(true); setProblem(null); setFeedback(null);
-    setHints([]); setHUsed(0);
-    setCode(BOILERPLATE[form.language] || "");
-    setElapsed(0); setTimerOn(false); setLeftTab("description");
+    setGenerating(true);
     try {
       const res = await API.post("/coding/problem/generate", form);
-      setProblem(res.data.problem); setProbId(res.data.problemId);
-      setTimerOn(true); toast.success("Problem ready! 🧩");
+      setProblem(res.data);
+      setCode(res.data.starterCode || BOILERPLATE[form.language] || "");
+      setLeftTab("description");
+      setHints([]);
+      setHintsUsed(0);
+      setFeedback(null);
+      setFullEd(false);
     } catch (err) { if (!err.handled) toast.error("Failed to generate problem"); }
-    finally { setGen(false); }
-  };
-
-  const getHint = async () => {
-    if (hintsUsed >= 3) { toast.error("Max 3 hints per problem"); return; }
-    setHL(true);
-    try {
-      const res = await API.post("/coding/hint", { problemId: probId, currentCode: code });
-      setHints(h => [...h, res.data.hint]); setHUsed(res.data.hintsUsed);
-      setLeftTab("hints"); toast.success(`Hint ${res.data.hintsUsed}/3 unlocked 💡`);
-    } catch (err) { if (!err.handled) toast.error("Failed to get hint"); }
-    finally { setHL(false); }
+    finally { setGenerating(false); }
   };
 
   const submitCode = async () => {
-    if (!code.trim()) { toast.error("Write some code first!"); return; }
-    setSub(true); setTimerOn(false);
+    if (!problem) return;
+    setSubmitting(true);
     try {
-      const res = await API.post("/coding/submit", { problemId: probId, code, language: form.language });
-      setFeedback(res.data); setLeftTab("feedback");
-      toast.success(res.data.isCorrect ? "Correct! 🎉 +50 XP" : "Reviewed! See feedback →");
-    } catch (err) { if (!err.handled) toast.error("Failed to submit"); }
-    finally { setSub(false); }
+      const res = await API.post("/coding/submit", { problemId: problem.id, code, language: form.language });
+      setFeedback(res.data);
+      setLeftTab("feedback");
+      API.get("/coding/problems").then(r => setProblems(r.data.content || r.data)).catch(() => {});
+    } catch (err) { if (!err.handled) toast.error("Submission failed"); }
+    finally { setSubmitting(false); }
   };
 
-
-  const loadProblem = async (id, lang) => {
-    setGen(true); setFeedback(null); setHints([]); setHUsed(0);
-    setElapsed(0); setTimerOn(false); setLeftTab("description");
+  const getHint = async () => {
+    if (!problem) return;
     try {
-      const res = await API.get(`/coding/problem/${id}`);
-      const d = res.data;
-      const actualId = d.problemId || id;
-      const actualLang = d.language || lang || form.language;
+      const res = await API.post("/coding/hint", { problemId: problem.id, hintsUsed });
+      setHints(prev => [...prev, res.data.hint]);
+      setHintsUsed(prev => prev + 1);
+      setLeftTab("hints");
+    } catch (err) { if (!err.handled) toast.error("Failed to get hint"); }
+  };
 
-      // FIX: Gracefully handle old problems where problemJson may be null/missing in DB.
-      // Backend returns parsed object under "problem" key; fall back to raw string "problemJson".
-      const prob = d.problem || d.problemJson;
-      if (!prob) {
-        // Problem data missing in DB — show a friendly message instead of crashing
-        toast.error("This problem's data could not be loaded. It may be from an older session. Try generating a new problem.");
-        setView("practice");
-        setGen(false);
-        return;
-      }
+  const resetEditor = () => { setCode(problem?.starterCode || BOILERPLATE[form.language] || ""); };
 
-      setProblem(prob);
-      setProbId(actualId);
-      setCode(d.submittedCode || BOILERPLATE[actualLang] || BOILERPLATE["Java"]);
-      setHUsed(d.hintsUsed || 0);
-      setForm(f => ({ ...f, language: actualLang }));
-
-      // FIX: feedbackJson is now returned as a parsed object from the backend (not a string).
-      // Handle both object and string forms for backward compatibility.
-      if (d.feedbackJson && typeof d.feedbackJson === "object" && d.feedbackJson.score !== undefined) {
-        setFeedback(d.feedbackJson);
-        setLeftTab("feedback");
-      } else if (d.feedbackJson && typeof d.feedbackJson === "string" && d.feedbackJson !== "null") {
-        try {
-          const fb = JSON.parse(d.feedbackJson);
-          if (fb && fb.score !== undefined) { setFeedback(fb); setLeftTab("feedback"); }
-        } catch (e) { console.warn("Could not parse feedbackJson string:", e); }
-      }
-
+  const retryProblem = async (p) => {
+    try {
+      const res = await API.post(`/coding/problem/${p.id}/retry`);
+      setProblem(res.data);
+      setCode(res.data.starterCode || BOILERPLATE[form.language] || "");
+      setFeedback(null);
+      setHints([]);
+      setHintsUsed(0);
+      setLeftTab("description");
       setView("practice");
-      const isDone = d.status === "SOLVED" || d.status === "REVIEWED";
-      if (!isDone) setTimerOn(true);
-      toast.success(isDone ? "Problem loaded — see feedback →" : "Problem loaded, resume coding ▶");
-    } catch (err) {
-      console.error("loadProblem error:", err);
-      if (!err.handled) toast.error(err.message || "Failed to load problem");
-    }
-    finally { setGen(false); }
+    } catch (err) { if (!err.handled) toast.error("Failed to retry problem"); }
   };
 
-  const retryProblem = async (id, lang) => {
-    const useLang = lang || form.language;
-    setGen(true); setFeedback(null); setHints([]); setHUsed(0);
-    setCode(BOILERPLATE[useLang] || BOILERPLATE["Java"]); setElapsed(0);
-    setTimerOn(false); setLeftTab("description");
+  const loadProblem = async (p) => {
     try {
-      const res = await API.post(`/coding/problem/${id}/retry`);
-      setProblem(res.data.problem); setProbId(res.data.problemId);
-      setForm(f => ({ ...f, language: useLang }));
-      setView("practice"); setTimerOn(true);
-      toast.success("Problem reset — attempt it fresh! 🔄");
-    } catch (err) {
-      console.error("retryProblem error:", err);
-      if (!err.handled) toast.error("Failed to retry problem");
-    }
-    finally { setGen(false); }
-  };
-
-  const fetchProblems = async () => {
-    try {
-      const res = await API.get("/coding/problems?page=0&size=50");
-      setProblems(res.data.content || res.data);
-    } catch { }
+      const res = await API.get(`/coding/problem/${p.id}`);
+      setProblem(res.data);
+      setCode(res.data.lastSubmittedCode || res.data.starterCode || BOILERPLATE[form.language] || "");
+      setFeedback(null);
+      setHints([]);
+      setHintsUsed(0);
+      setLeftTab("description");
+      setView("practice");
+    } catch (err) { if (!err.handled) toast.error("Failed to load problem"); }
   };
 
   const fetchRoadmap = async () => {
     setRmLoad(true);
-    try {
-      const res = await API.get("/coding/roadmap?goal=Campus Placement");
-      setRoadmap(res.data.roadmap);
-    } catch (err) { if (!err.handled) toast.error("Failed to generate roadmap"); }
+    try { const res = await API.get("/coding/roadmap"); setRoadmap(res.data); }
+    catch (err) { if (!err.handled) toast.error("Failed to load roadmap"); }
     finally { setRmLoad(false); }
   };
 
-  const resetEditor = () => {
-    setCode(BOILERPLATE[form.language] || "");
-    setFeedback(null); setHints([]); setHUsed(0);
-    setElapsed(0); setTimerOn(false); setLeftTab("description");
-  };
+  const onDivDown = useCallback((e) => {
+    e.preventDefault();
+    draggingRef.current = true;
+    const container = document.getElementById("ct-split");
+    const onMove = (ev) => { if (!draggingRef.current || !container) return; const rect = container.getBoundingClientRect(); const newPct = ((ev.clientX - rect.left) / rect.width) * 100; setPct(Math.min(80, Math.max(20, newPct))); };
+    const onUp = () => { draggingRef.current = false; document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, []);
 
-  const sharedEditorProps = {
-    form, setForm, code, setCode, problem, submitting,
-    hintLoad, hintsUsed, elapsed, timerOn, setTimerOn,
-    fullEd, setFullEd, onReset: resetEditor, onHint: getHint, onSubmit: submitCode
-  };
+  const sharedEditorProps = { form, code, setCode, submitting, fullEd, setFullEd, onReset: resetEditor, onHint: getHint, onSubmit: submitCode };
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg)" }}>
-
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg-secondary)" }}>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex" style={{
-        width: 56, background: "var(--bg2)", borderRight: "1px solid var(--border)",
-        flexDirection: "column", alignItems: "center", paddingTop: 14, gap: 6, flexShrink: 0
-      }}>
-        <Link to="/dashboard" title="Dashboard" style={{ width: 36, height: 36, borderRadius: 10, marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,107,0,0.15)" }}>
-          <Compass size={18} style={{ color: "#fbbf24" }} />
+      <aside className="hide-mobile" style={{ width: 48, background: "var(--bg)", borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 12, gap: 4, flexShrink: 0 }}>
+        <Link to="/dashboard" title="Dashboard" style={{ width: 32, height: 32, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", marginBottom: 8 }}>
+          <Home size={16} />
         </Link>
-        {[
-          { id: "practice", icon: <Code2 size={18} />, tip: "Practice" },
-          { id: "problems", icon: <List size={18} />, tip: "My Problems" },
-          { id: "roadmap", icon: <Map size={18} />, tip: "Roadmap" },
-        ].map(item => (
+        {[{ id: "practice", icon: <Code2 size={16} />, tip: "Practice" }, { id: "problems", icon: <List size={16} />, tip: "My Problems" }, { id: "roadmap", icon: <Map size={16} />, tip: "Roadmap" }].map(item => (
           <button key={item.id} title={item.tip} onClick={() => setView(item.id)} style={{
-            width: 36, height: 36, borderRadius: 10, border: "none", cursor: "pointer",
+            width: 32, height: 32, borderRadius: 6, border: "none", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: view === item.id ? "rgba(155,109,255,0.2)" : "transparent",
-            color: view === item.id ? "#8b5cf6" : "#52525b",
-            outline: view === item.id ? "1px solid rgba(155,109,255,0.4)" : "none",
-            transition: "all 0.15s"
+            background: view === item.id ? "var(--bg-secondary)" : "transparent",
+            color: view === item.id ? "var(--text)" : "var(--text-muted)", transition: "all 0.15s",
           }}>{item.icon}</button>
         ))}
       </aside>
 
-      {/* Main column */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
-
         {/* Mobile top bar */}
-        <div className="md:hidden" style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "10px 16px", background: "var(--bg2)",
-          borderBottom: "1px solid var(--border)", flexShrink: 0
-        }}>
-          <Link to="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
-              <Compass size={13} style={{ color: "white" }} />
-            </div>
-            <span style={{ color: "white", fontWeight: 700, fontSize: 14, fontFamily: "Space Grotesk" }}>Coding Tutor</span>
+        <div className="mobile-only" style={{ display: "none", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "var(--bg)", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
+          <Link to="/dashboard" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none" }}>
+            <div style={{ width: 24, height: 24, borderRadius: 6, background: "var(--green)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700 }}>P</div>
+            <span style={{ fontWeight: 600, fontSize: 14, color: "var(--text)" }}>Coding Tutor</span>
           </Link>
-          <button onClick={() => setNavOpen(o => !o)} style={{ background: "none", border: "none", color: "#71717a", cursor: "pointer" }}>
-            {navOpen ? <X size={20} /> : <Menu size={20} />}
+          <button onClick={() => setNavOpen(o => !o)} style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}>
+            {navOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
-
-        {/* Mobile nav overlay */}
         {navOpen && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.65)" }} onClick={() => setNavOpen(false)}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, background: "var(--bg2)", borderBottom: "1px solid var(--border)", padding: "56px 12px 12px" }} onClick={e => e.stopPropagation()}>
-              {[["practice", "🧩 Practice"], ["problems", "📋 My Problems"], ["roadmap", "🗺️ Roadmap"]].map(([id, label]) => (
-                <button key={id} onClick={() => { setView(id); setNavOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600, background: view === id ? "rgba(155,109,255,0.15)" : "transparent", color: view === id ? "#8b5cf6" : "#71717a", border: "none", cursor: "pointer", marginBottom: 3 }}>{label}</button>
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.3)" }} onClick={() => setNavOpen(false)}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, background: "var(--bg)", borderBottom: "1px solid var(--border)", padding: "48px 12px 12px" }} onClick={e => e.stopPropagation()}>
+              {[["practice", "Practice"], ["problems", "My Problems"], ["roadmap", "Roadmap"]].map(([id, label]) => (
+                <button key={id} onClick={() => { setView(id); setNavOpen(false); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", borderRadius: 6, fontSize: 14, fontWeight: 500, background: view === id ? "var(--bg-secondary)" : "transparent", color: view === id ? "var(--text)" : "var(--text-muted)", border: "none", cursor: "pointer", marginBottom: 2 }}>{label}</button>
               ))}
             </div>
           </div>
         )}
 
-        {/* PRACTICE */}
+        {/* Practice view */}
         {view === "practice" && (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <GenBar form={form} setForm={setForm} generating={generating} onGenerate={generateProblem} />
@@ -871,10 +348,10 @@ export default function CodingTutor() {
                 <div style={{ width: `${pct}%`, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   <LeftPane problem={problem} generating={generating} leftTab={leftTab} setLeftTab={setLeftTab} hints={hints} hintsUsed={hintsUsed} feedback={feedback} form={form} />
                 </div>
-                <div onMouseDown={onDivDown} style={{ width: 4, flexShrink: 0, cursor: "col-resize", background: "var(--border)", transition: "background 0.15s", position: "relative" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#8b5cf6"}
+                <div onMouseDown={onDivDown} style={{ width: 4, flexShrink: 0, cursor: "col-resize", background: "var(--border)", position: "relative" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "var(--blue)"}
                   onMouseLeave={e => e.currentTarget.style.background = "var(--border)"}>
-                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 10, height: 28, borderRadius: 5, background: "rgba(255,255,255,0.1)", pointerEvents: "none" }} />
+                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 6, height: 24, borderRadius: 3, background: "rgba(0,0,0,0.1)", pointerEvents: "none" }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   <EditorPane {...sharedEditorProps} />
@@ -887,6 +364,8 @@ export default function CodingTutor() {
         {view === "problems" && <ProblemsView problems={problems} setView={setView} onRetry={retryProblem} onLoad={loadProblem} />}
         {view === "roadmap" && <RoadmapView roadmap={roadmap} rmLoad={rmLoad} onGenerate={fetchRoadmap} onReset={() => setRoadmap(null)} />}
       </div>
+
+      <style>{`@media (max-width: 768px) { .mobile-only { display: flex !important; } }`}</style>
     </div>
   );
 }
