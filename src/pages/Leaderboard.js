@@ -43,7 +43,7 @@ const Leaderboard = () => {
         ) : (
           <div className="lc-card" style={{ padding: 0, overflow: "hidden" }}>
             {board.map((entry, i) => {
-              const isMe = entry.email === user?.email;
+              const isMe = entry.userId === user?.id;
               return (
                 <div key={i} style={{
                   display: "flex", alignItems: "center", gap: 12, padding: "10px 16px",
