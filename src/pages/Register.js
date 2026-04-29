@@ -129,7 +129,7 @@ const Register = () => {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Rahul Sharma"
+                placeholder="Your Name"
                 required
                 className="lc-input"
                 maxLength={100}
@@ -144,7 +144,7 @@ const Register = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="rahul@college.edu"
+                placeholder="you@example.edu"
                 required
                 className="lc-input"
               />
