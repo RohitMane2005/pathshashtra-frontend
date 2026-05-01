@@ -40,18 +40,18 @@ const Dashboard = () => {
   const xpInLevel = xpInCurrentLevel(xp);
 
   const modules = [
-    { icon: <Brain size={18} />, title: "Career Quiz", desc: "AI psychometric assessment", path: "/quiz", stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now" },
-    { icon: <BookOpen size={18} />, title: "Study Planner", desc: "Adaptive study schedule", path: "/study", stat: progress ? `${progress.completedTopics}/${progress.totalTopics}` : "No plan" },
-    { icon: <Code2 size={18} />, title: "Coding Tutor", desc: "DSA practice with AI review", path: "/coding", stat: `${solvedProblems} solved` },
-    { icon: <Map size={18} />, title: "Roadmap", desc: "Step-by-step learning path", path: "/roadmap", stat: "Any goal" },
-    { icon: <Target size={18} />, title: "Career AI", desc: "Deep career analysis", path: "/career", stat: "Explore" },
-    { icon: <MessageSquare size={18} />, title: "Discussions", desc: "Community forum", path: "/discussions", stat: "Join" },
-    { icon: <Trophy size={18} />, title: "Contests", desc: "Competitive coding", path: "/contests", stat: "Compete" },
-    { icon: <Bot size={18} />, title: "AI Chat", desc: "Ask anything about DSA", path: "/chat", stat: "Chat now" },
-    { icon: <FileText size={18} />, title: "Notes", desc: "Personal study notes", path: "/notes", stat: "Write" },
-    { icon: <Users size={18} />, title: "Social", desc: "Follow & compare", path: "/social", stat: "Connect" },
-    { icon: <Award size={18} />, title: "Achievements", desc: "Badges & milestones", path: "/achievements", stat: "Earn" },
-    { icon: <BarChart3 size={18} />, title: "Reports", desc: "Weekly progress", path: "/reports", stat: "View" },
+    { icon: <Brain size={18} />, title: "Career Quiz", desc: "AI psychometric assessment", path: "/quiz", stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now", color: "#6366f1", bg: "#eef2ff" },
+    { icon: <BookOpen size={18} />, title: "Study Planner", desc: "Adaptive study schedule", path: "/study", stat: progress ? `${progress.completedTopics}/${progress.totalTopics}` : "No plan", color: "#0ea5e9", bg: "#e0f2fe" },
+    { icon: <Code2 size={18} />, title: "Coding Tutor", desc: "DSA practice with AI review", path: "/coding", stat: `${solvedProblems} solved`, color: "#10b981", bg: "#d1fae5" },
+    { icon: <Map size={18} />, title: "Roadmap", desc: "Step-by-step learning path", path: "/roadmap", stat: "Any goal", color: "#f59e0b", bg: "#fef3c7" },
+    { icon: <Target size={18} />, title: "Career AI", desc: "Deep career analysis", path: "/career", stat: "Explore", color: "#ec4899", bg: "#fce7f3" },
+    { icon: <MessageSquare size={18} />, title: "Discussions", desc: "Community forum", path: "/discussions", stat: "Join", color: "#8b5cf6", bg: "#ede9fe" },
+    { icon: <Trophy size={18} />, title: "Contests", desc: "Competitive coding", path: "/contests", stat: "Compete", color: "#f97316", bg: "#fff7ed" },
+    { icon: <Bot size={18} />, title: "AI Chat", desc: "Ask anything about DSA", path: "/chat", stat: "Chat now", color: "#14b8a6", bg: "#ccfbf1" },
+    { icon: <FileText size={18} />, title: "Notes", desc: "Personal study notes", path: "/notes", stat: "Write", color: "#64748b", bg: "#f1f5f9" },
+    { icon: <Users size={18} />, title: "Social", desc: "Follow & compare", path: "/social", stat: "Connect", color: "#3b82f6", bg: "#dbeafe" },
+    { icon: <Award size={18} />, title: "Achievements", desc: "Badges & milestones", path: "/achievements", stat: "Earn", color: "#eab308", bg: "#fefce8" },
+    { icon: <BarChart3 size={18} />, title: "Reports", desc: "Weekly progress", path: "/reports", stat: "View", color: "#06b6d4", bg: "#cffafe" },
   ];
 
   if (loading) return (
@@ -122,15 +122,15 @@ const Dashboard = () => {
           {/* Modules */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
             {modules.map((mod, i) => (
-              <Link key={i} to={mod.path} className="lc-card" style={{ textDecoration: "none", display: "block", transition: "border-color 0.15s" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <span style={{ color: "var(--text-muted)" }}>{mod.icon}</span>
+              <Link key={i} to={mod.path} className="lc-card module-card" style={{ textDecoration: "none", display: "block", borderLeft: `3px solid ${mod.color}`, transition: "transform 0.18s, box-shadow 0.18s" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, background: mod.bg, color: mod.color }}>{mod.icon}</span>
                   <span style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{mod.title}</span>
                 </div>
-                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 12 }}>{mod.desc}</p>
+                <p style={{ fontSize: 12.5, color: "var(--text-muted)", marginBottom: 14, lineHeight: 1.4 }}>{mod.desc}</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "var(--green)" }}>{mod.stat}</span>
-                  <ArrowRight size={14} style={{ color: "var(--text-light)" }} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: mod.color }}>{mod.stat}</span>
+                  <ArrowRight size={14} style={{ color: mod.color, opacity: 0.5 }} />
                 </div>
               </Link>
             ))}
