@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import OAuth2RedirectHandler from "./pages/OAuth2RedirectHandler";
 import Dashboard from "./pages/Dashboard";
 import Quiz from "./pages/Quiz";
 import StudyPlanner from "./pages/StudyPlanner";
@@ -51,6 +52,7 @@ function App() {
           <Route path="/register"        element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

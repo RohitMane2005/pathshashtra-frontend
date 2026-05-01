@@ -31,7 +31,12 @@ const Login = () => {
   };
 
   const handleSocialLogin = (provider) => {
-    toast(`${provider} login coming soon!`, { icon: "🚀" });
+    if (provider === "Google") {
+      const backendUrl = API.defaults.baseURL ? API.defaults.baseURL.replace('/api', '') : 'http://localhost:8080';
+      window.location.href = `${backendUrl}/oauth2/authorization/google`;
+    } else {
+      toast(`${provider} login coming soon!`, { icon: "🚀" });
+    }
   };
 
   return (
