@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
+import { Menu, X, LogOut, User, ChevronDown, Bell } from "lucide-react";
+import API from "../api/axios";
 
 const NAV_ITEMS = [
   { path: "/dashboard", label: "Dashboard" },
@@ -10,8 +11,10 @@ const NAV_ITEMS = [
   { path: "/study", label: "Study" },
   { path: "/coding", label: "Coding" },
   { path: "/roadmap", label: "Roadmap" },
-  { path: "/leaderboard", label: "Leaderboard" },
-  { path: "/bookmarks", label: "Bookmarks" },
+  { path: "/leaderboard", label: "Board" },
+  { path: "/discussions", label: "Forum" },
+  { path: "/contests", label: "Contests" },
+  { path: "/chat", label: "AI Chat" },
 ];
 
 const Navbar = () => {
@@ -20,6 +23,17 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
+      const interval = setInterval(() => {
+        API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
+      }, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -57,8 +71,14 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* User Section */}
-        <div style={{ marginLeft: "auto", position: "relative" }}>
+        {/* Notification Bell + User Section */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 4 }}>
+          <Link to="/notifications" style={{ position: "relative", padding: 6, borderRadius: 6, color: isActive("/notifications") ? "var(--text)" : "var(--text-muted)", transition: "color 0.15s" }}>
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span style={{ position: "absolute", top: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: "#ef4444", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid var(--bg)" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>
+            )}
+          </Link>
           <button onClick={() => setProfileOpen(!profileOpen)} style={{
             display: "flex", alignItems: "center", gap: 8,
             background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 6,

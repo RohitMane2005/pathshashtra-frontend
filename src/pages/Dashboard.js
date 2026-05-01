@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import QuotaBar from "../components/QuotaBar";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
-import { Brain, BookOpen, Code2, ArrowRight, Map, Target, CheckCircle, TrendingUp } from "lucide-react";
+import { Brain, BookOpen, Code2, ArrowRight, Map, Target, CheckCircle, TrendingUp, MessageSquare, Trophy, Bot, FileText, Users, Award, BarChart3 } from "lucide-react";
 import { calculateXP, calculateLevel, xpInCurrentLevel } from "../utils/xp";
 
 const Dashboard = () => {
@@ -45,6 +45,13 @@ const Dashboard = () => {
     { icon: <Code2 size={18} />, title: "Coding Tutor", desc: "DSA practice with AI review", path: "/coding", stat: `${solvedProblems} solved` },
     { icon: <Map size={18} />, title: "Roadmap", desc: "Step-by-step learning path", path: "/roadmap", stat: "Any goal" },
     { icon: <Target size={18} />, title: "Career AI", desc: "Deep career analysis", path: "/career", stat: "Explore" },
+    { icon: <MessageSquare size={18} />, title: "Discussions", desc: "Community forum", path: "/discussions", stat: "Join" },
+    { icon: <Trophy size={18} />, title: "Contests", desc: "Competitive coding", path: "/contests", stat: "Compete" },
+    { icon: <Bot size={18} />, title: "AI Chat", desc: "Ask anything about DSA", path: "/chat", stat: "Chat now" },
+    { icon: <FileText size={18} />, title: "Notes", desc: "Personal study notes", path: "/notes", stat: "Write" },
+    { icon: <Users size={18} />, title: "Social", desc: "Follow & compare", path: "/social", stat: "Connect" },
+    { icon: <Award size={18} />, title: "Achievements", desc: "Badges & milestones", path: "/achievements", stat: "Earn" },
+    { icon: <BarChart3 size={18} />, title: "Reports", desc: "Weekly progress", path: "/reports", stat: "View" },
   ];
 
   if (loading) return (
@@ -113,7 +120,7 @@ const Dashboard = () => {
           </div>
 
           {/* Modules */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
             {modules.map((mod, i) => (
               <Link key={i} to={mod.path} className="lc-card" style={{ textDecoration: "none", display: "block", transition: "border-color 0.15s" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>

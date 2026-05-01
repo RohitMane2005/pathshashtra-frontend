@@ -17,6 +17,14 @@ import Leaderboard from "./pages/Leaderboard";
 import Bookmarks from "./pages/Bookmarks";
 import SharedResult from "./pages/SharedResult";
 import Career from "./pages/Career";
+import Discussion from "./pages/Discussion";
+import Contests from "./pages/Contests";
+import ChatAssistant from "./pages/ChatAssistant";
+import Notes from "./pages/Notes";
+import Notifications from "./pages/Notifications";
+import Achievements from "./pages/Achievements";
+import Social from "./pages/Social";
+import WeeklyReports from "./pages/WeeklyReports";
 
 function App() {
   return (
@@ -55,6 +63,14 @@ function App() {
           <Route path="/bookmarks"   element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
           <Route path="/share/:token" element={<SharedResult />} />
           <Route path="/career" element={<ProtectedRoute><Career /></ProtectedRoute>} />
+          <Route path="/discussions" element={<ProtectedRoute><Discussion /></ProtectedRoute>} />
+          <Route path="/contests" element={<ProtectedRoute><Contests /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><ChatAssistant /></ProtectedRoute>} />
+          <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+          <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+          <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><WeeklyReports /></ProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
