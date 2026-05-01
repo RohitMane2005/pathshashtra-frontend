@@ -43,9 +43,11 @@ const Register = () => {
   };
 
   const handleSocialLogin = (provider) => {
+    const backendUrl = API.defaults.baseURL ? API.defaults.baseURL.replace('/api', '') : 'http://localhost:8080';
     if (provider === "Google") {
-      const backendUrl = API.defaults.baseURL ? API.defaults.baseURL.replace('/api', '') : 'http://localhost:8080';
       window.location.href = `${backendUrl}/oauth2/authorization/google`;
+    } else if (provider === "GitHub") {
+      window.location.href = `${backendUrl}/oauth2/authorization/github`;
     } else {
       toast(`${provider} sign-up coming soon!`, { icon: "🚀" });
     }
