@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
@@ -11,6 +11,22 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // FIX: Show OAuth error messages from ?error= param or location.state
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const urlError = params.get("error");
+    const stateError = location.state?.error;
+    const errorMsg = urlError || stateError;
+    if (errorMsg) {
+      toast.error(errorMsg);
+      // Clean the URL to prevent showing the error on refresh
+      if (urlError) {
+        window.history.replaceState({}, "", "/login");
+      }
+    }
+  }, [location]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 

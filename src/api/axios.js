@@ -28,7 +28,7 @@ API.interceptors.request.use((config) => {
 });
 
 // Public routes that should never trigger a redirect to /login
-const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password"];
+const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/oauth2/redirect"];
 
 // ─── Response interceptor: global error handling ─────────────────────────────
 API.interceptors.response.use(

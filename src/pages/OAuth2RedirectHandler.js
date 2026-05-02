@@ -6,16 +6,23 @@ import API from "../api/axios";
 const OAuth2RedirectHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth(); // Assume login takes a token and saves it
+  const { login } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
+    const error = params.get("error");
+
+    // FIX: Handle OAuth error redirects (from failure handler or missing email)
+    if (error) {
+      navigate("/login", { state: { error } });
+      return;
+    }
 
     if (token) {
       // Save token temporarily to fetch user data
       localStorage.setItem("token", token);
-      
+
       API.get("/users/me", {
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -26,11 +33,11 @@ const OAuth2RedirectHandler = () => {
       .catch(err => {
         console.error(err);
         localStorage.removeItem("token");
-        navigate("/login", { state: { error: "Failed to load user profile." } });
+        navigate("/login", { state: { error: "Failed to load user profile. Please try again." } });
       });
     } else {
-      // Handle error, redirect to login
-      navigate("/login", { state: { error: "Google login failed. Please try again." } });
+      // FIX: Generic message — not hardcoded to "Google"
+      navigate("/login", { state: { error: "Login failed. Please try again." } });
     }
   }, [location, navigate, login]);
 
