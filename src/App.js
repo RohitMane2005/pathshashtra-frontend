@@ -9,7 +9,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OAuth2RedirectHandler from "./pages/OAuth2RedirectHandler";
 import Dashboard from "./pages/Dashboard";
-import Quiz from "./pages/Quiz";
+
 import StudyPlanner from "./pages/StudyPlanner";
 import CodingTutor from "./pages/CodingTutor";
 import Profile from "./pages/Profile";
@@ -56,7 +56,7 @@ function App() {
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/quiz"      element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+          <Route path="/quiz"      element={<Navigate to="/career" />} />
           <Route path="/study"     element={<ProtectedRoute><StudyPlanner /></ProtectedRoute>} />
           <Route path="/coding"    element={<ProtectedRoute><CodingTutor /></ProtectedRoute>} />
           <Route path="/roadmap"   element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />

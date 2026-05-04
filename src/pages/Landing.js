@@ -56,7 +56,7 @@ export default function Landing() {
         <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 32 }}>Each built around real problems Indian students face.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {[
-            { icon: <Brain size={20} />, title: "AI Career Quiz", desc: "10 psychometric questions → top career matches, skill gaps, and roadmap.", color: "var(--orange)" },
+            { icon: <Brain size={20} />, title: "AI Career Quiz", desc: "12 psychometric questions → personality profile, top career matches, salary insights, and action plan.", color: "var(--orange)" },
             { icon: <BookOpen size={20} />, title: "Smart Study Planner", desc: "Enter your exam date. AI builds a week-by-week schedule that adapts.", color: "var(--green)" },
             { icon: <Code2 size={20} />, title: "DSA Coding Tutor", desc: "Generate problems, get hints, submit code, get AI review.", color: "var(--purple)" },
             { icon: <Map size={20} />, title: "Career Roadmap", desc: "Step-by-step learning path with resources and milestones.", color: "var(--blue)" },

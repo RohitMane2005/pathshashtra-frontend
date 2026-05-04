@@ -7,7 +7,7 @@ import { Bookmark, Code2, Map, Brain, Trash2, Loader } from "lucide-react";
 
 const typeIcon = { problem: <Code2 size={14} />, roadmap: <Map size={14} />, quiz: <Brain size={14} /> };
 const typeColor = { problem: "var(--purple)", roadmap: "var(--green)", quiz: "var(--orange)" };
-const typeLink = { problem: "/coding", roadmap: "/roadmap", quiz: "/quiz" };
+const typeLink = { problem: "/coding", roadmap: "/roadmap", quiz: "/career" };
 
 const Bookmarks = () => {
   const [items, setItems] = useState([]);

@@ -40,11 +40,10 @@ const Dashboard = () => {
   const xpInLevel = xpInCurrentLevel(xp);
 
   const modules = [
-    { icon: <Brain size={18} />, title: "Career Quiz", desc: "AI psychometric assessment", path: "/quiz", stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now" },
+    { icon: <Brain size={18} />, title: "Career Quiz", desc: "AI psychometric assessment", path: "/career", stat: quizResults.length > 0 ? `${quizResults.length} done` : "Start now" },
     { icon: <BookOpen size={18} />, title: "Study Planner", desc: "Adaptive study schedule", path: "/study", stat: progress ? `${progress.completedTopics}/${progress.totalTopics}` : "No plan" },
     { icon: <Code2 size={18} />, title: "Coding Tutor", desc: "DSA practice with AI review", path: "/coding", stat: `${solvedProblems} solved` },
     { icon: <Map size={18} />, title: "Roadmap", desc: "Step-by-step learning path", path: "/roadmap", stat: "Any goal" },
-    { icon: <Target size={18} />, title: "Career AI", desc: "Deep career analysis", path: "/career", stat: "Explore" },
     { icon: <MessageSquare size={18} />, title: "Discussions", desc: "Community forum", path: "/discussions", stat: "Join" },
     { icon: <Trophy size={18} />, title: "Contests", desc: "Competitive coding", path: "/contests", stat: "Compete" },
     { icon: <Bot size={18} />, title: "AI Chat", desc: "Ask anything about DSA", path: "/chat", stat: "Chat now" },

@@ -6,8 +6,7 @@ import API from "../api/axios";
 
 const NAV_ITEMS = [
   { path: "/dashboard", label: "Dashboard" },
-  { path: "/quiz", label: "Quiz" },
-  { path: "/career", label: "Career" },
+  { path: "/career", label: "Career Quiz" },
   { path: "/study", label: "Study" },
   { path: "/coding", label: "Coding" },
   { path: "/roadmap", label: "Roadmap" },
