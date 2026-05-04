@@ -54,9 +54,12 @@ const Profile = () => {
 
   const deleteAccount = async () => {
     if (!window.confirm("Are you sure? This will permanently delete your account and all data.")) return;
+    // FIX H3: Require password confirmation before account deletion
+    const password = window.prompt("Enter your password to confirm account deletion:");
+    if (!password) return;
     setDeleting(true);
-    try { await API.delete("/users/me", { data: { confirm: "DELETE" } }); logout(); navigate("/login"); toast.success("Account deleted"); }
-    catch (err) { if (!err.handled) toast.error("Failed to delete account"); } finally { setDeleting(false); }
+    try { await API.delete("/users/me", { data: { confirm: "DELETE", password } }); logout(); navigate("/login"); toast.success("Account deleted"); }
+    catch (err) { if (!err.handled) toast.error(err.response?.data?.error || "Failed to delete account"); } finally { setDeleting(false); }
   };
 
   const xp = calculateXP({ solvedProblems: stats.problems, completedTopics: stats.topics, quizzes: stats.quizzes });

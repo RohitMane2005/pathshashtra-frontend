@@ -24,6 +24,8 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 8) { toast.error("Password must be at least 8 characters"); return; }
+    if (!/[A-Z]/.test(password)) { toast.error("Password must contain at least one uppercase letter"); return; }
+    if (!/[0-9]/.test(password)) { toast.error("Password must contain at least one digit"); return; }
     if (password !== confirm) { toast.error("Passwords do not match"); return; }
     setLoading(true);
     try {
