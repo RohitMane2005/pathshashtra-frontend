@@ -1,7 +1,7 @@
 import React from "react";
 
 const SkeletonBlock = ({ h = "h-4", w = "w-full", className = "" }) => (
-  <div className={`${h} ${w} ${className}`} style={{ borderRadius: 6, background: "#f0f0f0", animation: "pulse 1.5s ease-in-out infinite" }} />
+  <div className={`${h} ${w} ${className}`} style={{ borderRadius: 6, background: "var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
 );
 
 export const CardSkeleton = () => (
@@ -21,14 +21,14 @@ export const StatSkeleton = () => (
 );
 
 export const ListItemSkeleton = () => (
-  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
     <SkeletonBlock h="h-3" w="w-1/2" />
     <SkeletonBlock h="h-3" w="w-14" />
   </div>
 );
 
 export const ProblemRowSkeleton = () => (
-  <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}>
+  <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
     <SkeletonBlock h="h-3" w="w-1/2" />
     <SkeletonBlock h="h-5" w="w-14" />
   </div>

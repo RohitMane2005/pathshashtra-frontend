@@ -33,7 +33,7 @@ const SharedResult = () => {
     <div style={{ background: "var(--bg-secondary)", minHeight: "100vh" }}>
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", background: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
         <Link to="/" style={{ display: "flex", alignItems: "center", gap: 6, textDecoration: "none" }}>
-          <div style={{ width: 24, height: 24, borderRadius: 4, background: "#2cbb5d", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700 }}>P</div>
+          <div style={{ width: 24, height: 24, borderRadius: 4, background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center", color: "#111", fontSize: 11, fontWeight: 700 }}>P</div>
           <span style={{ fontWeight: 600, fontSize: 14, color: "var(--text)" }}>PathShashtra</span>
         </Link>
         <Link to="/register" className="btn-primary" style={{ textDecoration: "none", fontSize: 13, padding: "6px 14px" }}>Try it free →</Link>

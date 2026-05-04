@@ -146,7 +146,7 @@ const Dashboard = () => {
               {todayTopics.length === 0 ? (
                 <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: 20 }}>No topics for today. <Link to="/study" style={{ color: "var(--blue)" }}>Create a plan →</Link></p>
               ) : todayTopics.slice(0, 4).map((t, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 3 ? "1px solid #f0f0f0" : "none" }}>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: i < 3 ? "1px solid var(--border)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ width: 6, height: 6, borderRadius: "50%", background: t.status === "COMPLETED" ? "var(--green)" : "#d9d9d9" }} />
                     <span style={{ fontSize: 13, color: t.status === "COMPLETED" ? "var(--text-muted)" : "var(--text)", textDecoration: t.status === "COMPLETED" ? "line-through" : "none" }}>{t.topicName}</span>
@@ -163,7 +163,7 @@ const Dashboard = () => {
               {problems.length === 0 ? (
                 <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: 20 }}>No problems yet. <Link to="/coding" style={{ color: "var(--blue)" }}>Start practicing →</Link></p>
               ) : problems.slice(0, 4).map((p, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 3 ? "1px solid #f0f0f0" : "none" }}>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 3 ? "1px solid var(--border)" : "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ width: 6, height: 6, borderRadius: "50%", background: p.difficulty === "EASY" ? "var(--green)" : p.difficulty === "MEDIUM" ? "var(--orange)" : "var(--red)" }} />
                     <span style={{ fontSize: 13, color: "var(--text)", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>

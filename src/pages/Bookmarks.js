@@ -69,7 +69,7 @@ const Bookmarks = () => {
             {filtered.map((item, i) => (
               <div key={`${item.type}-${item.refId}`} style={{
                 display: "flex", alignItems: "center", gap: 10, padding: "10px 16px",
-                borderBottom: i < filtered.length - 1 ? "1px solid #f0f0f0" : "none",
+                borderBottom: i < filtered.length - 1 ? "1px solid var(--border)" : "none",
               }}>
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: "var(--bg-secondary)", display: "flex", alignItems: "center", justifyContent: "center", color: typeColor[item.type], flexShrink: 0 }}>
                   {typeIcon[item.type]}

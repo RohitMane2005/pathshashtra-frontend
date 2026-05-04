@@ -51,8 +51,8 @@ const Navbar = () => {
         <Link to="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, marginRight: 32, textDecoration: "none" }}>
           <div style={{
             width: 28, height: 28, borderRadius: 6,
-            background: "#2cbb5d", display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontSize: 13, fontWeight: 700
+            background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#111", fontSize: 13, fontWeight: 700
           }}>P</div>
           <span style={{ fontWeight: 700, fontSize: 16, color: "var(--text)" }}>PathShashtra</span>
         </Link>
@@ -84,7 +84,7 @@ const Navbar = () => {
             background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 6,
           }}>
             <div style={{
-              width: 28, height: 28, borderRadius: "50%", background: "#e8e8e8",
+              width: 28, height: 28, borderRadius: "50%", background: "#333",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 12, fontWeight: 600, color: "var(--text-secondary)"
             }}>

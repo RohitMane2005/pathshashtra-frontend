@@ -138,7 +138,7 @@ const StudyPlanner = () => {
                     {todayTopics.map((topic, i) => (
                       <div key={topic.id || i} style={{
                         display: "flex", alignItems: "center", justifyContent: "space-between",
-                        padding: "12px 16px", borderBottom: i < todayTopics.length - 1 ? "1px solid #f0f0f0" : "none",
+                        padding: "12px 16px", borderBottom: i < todayTopics.length - 1 ? "1px solid var(--border)" : "none",
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
                           <button onClick={() => handleProgress(topic.id, topic.status === "COMPLETED" ? "PENDING" : "COMPLETED")} style={{
@@ -170,7 +170,7 @@ const StudyPlanner = () => {
                     {weakTopics.map((topic, i) => (
                       <div key={i} style={{
                         display: "flex", alignItems: "center", justifyContent: "space-between",
-                        padding: "12px 16px", borderBottom: i < weakTopics.length - 1 ? "1px solid #f0f0f0" : "none",
+                        padding: "12px 16px", borderBottom: i < weakTopics.length - 1 ? "1px solid var(--border)" : "none",
                       }}>
                         <div>
                           <p style={{ fontSize: 14, color: "var(--text)" }}>{topic.topicName || topic.topic}</p>

@@ -73,7 +73,7 @@ const Profile = () => {
         {/* Header */}
         <div className="lc-card" style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 700, color: "var(--text-secondary)", flexShrink: 0 }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#333", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 700, color: "var(--green)", flexShrink: 0 }}>
               {user?.name?.charAt(0)?.toUpperCase()}
             </div>
             <div>

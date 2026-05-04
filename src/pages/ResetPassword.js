@@ -41,7 +41,7 @@ const ResetPassword = () => {
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-secondary)", padding: 20 }}>
       <div style={{ width: "100%", maxWidth: 400 }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: "#2cbb5d", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, marginBottom: 12 }}>P</div>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "#89E900", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#111", fontWeight: 700, fontSize: 16, marginBottom: 12 }}>P</div>
         </div>
 
         <div className="lc-card" style={{ padding: 24 }}>

@@ -35,13 +35,13 @@ function App() {
           position="top-right"
           toastOptions={{
             style: {
-              background: "#fff",
-              color: "#262626",
-              border: "1px solid #e5e5e5",
+              background: "var(--bg)",
+              color: "var(--text)",
+              border: "1px solid var(--border)",
               borderRadius: "8px",
               fontFamily: "Inter, sans-serif",
               fontSize: "14px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
             },
           }}
         />

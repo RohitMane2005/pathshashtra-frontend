@@ -55,7 +55,7 @@ const Notifications = () => {
               return (
                 <div key={n.id} onClick={() => !n.read && markRead(n.id)} style={{
                   display: "flex", gap: 12, padding: "12px 16px", cursor: n.read ? "default" : "pointer",
-                  borderBottom: i < notifications.length - 1 ? "1px solid #f0f0f0" : "none",
+                  borderBottom: i < notifications.length - 1 ? "1px solid var(--border)" : "none",
                   background: n.read ? "transparent" : "var(--bg-secondary)",
                 }}>
                   <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: `${TYPE_COLORS[n.type]}15`, color: TYPE_COLORS[n.type] }}><Icon size={15} /></div>

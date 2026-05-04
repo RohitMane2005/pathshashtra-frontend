@@ -146,7 +146,7 @@ const Discussion = () => {
                 {posts.map((p, i) => (
                   <div key={p.id} style={{
                     display: "flex", gap: 12, padding: "14px 16px", cursor: "pointer",
-                    borderBottom: i < posts.length - 1 ? "1px solid #f0f0f0" : "none",
+                    borderBottom: i < posts.length - 1 ? "1px solid var(--border)" : "none",
                     transition: "background 0.15s",
                   }} onClick={() => openPost(p.id)}
                     onMouseEnter={e => e.currentTarget.style.background = "var(--bg-secondary)"}

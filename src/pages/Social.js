@@ -101,7 +101,7 @@ const Social = () => {
   ) : (
     <div className="lc-card" style={{ padding: 0, overflow: "hidden" }}>
       {list.map((u, i) => (
-        <div key={u.userId} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: i < list.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+        <div key={u.userId} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: i < list.length - 1 ? "1px solid var(--border)" : "none" }}>
           <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--bg-secondary)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14, color: "var(--text-muted)" }}>{u.name?.[0]}</div>
           <div style={{ flex: 1, cursor: "pointer" }} onClick={() => viewProfile(u.userId)}><p style={{ fontSize: 14, fontWeight: 500 }}>{u.name}</p></div>
           <button onClick={() => toggleFollow(u.userId)} style={{

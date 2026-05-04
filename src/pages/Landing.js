@@ -7,7 +7,7 @@ export default function Landing() {
       {/* Navbar */}
       <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 6, background: "#2cbb5d", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700 }}>P</div>
+          <div style={{ width: 28, height: 28, borderRadius: 6, background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center", color: "#111", fontSize: 13, fontWeight: 700 }}>P</div>
           <span style={{ fontWeight: 700, fontSize: 16, color: "var(--text)" }}>PathShashtra</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -107,7 +107,7 @@ export default function Landing() {
       <footer style={{ borderTop: "1px solid var(--border)", padding: "20px 24px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, color: "var(--text-muted)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 4, background: "#2cbb5d", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 700 }}>P</div>
+            <div style={{ width: 20, height: 20, borderRadius: 4, background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center", color: "#111", fontSize: 10, fontWeight: 700 }}>P</div>
             <span style={{ fontWeight: 600, color: "var(--text)" }}>PathShashtra</span>
           </div>
           <span>Built for India's students</span>

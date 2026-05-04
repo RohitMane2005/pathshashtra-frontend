@@ -26,11 +26,11 @@ const Leaderboard = () => {
         {loading ? (
           <div className="lc-card" style={{ padding: 0, overflow: "hidden" }}>
             {[1,2,3,4,5].map(i => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                <div style={{ width: 28, height: 14, background: "#f0f0f0", borderRadius: 4 }} />
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#f0f0f0" }} />
-                <div style={{ flex: 1 }}><div style={{ width: 100, height: 12, background: "#f0f0f0", borderRadius: 4, marginBottom: 4 }} /><div style={{ width: 60, height: 10, background: "#f0f0f0", borderRadius: 4 }} /></div>
-                <div style={{ width: 40, height: 16, background: "#f0f0f0", borderRadius: 4 }} />
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
+                <div style={{ width: 28, height: 14, background: "var(--border)", borderRadius: 4 }} />
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--border)" }} />
+                <div style={{ flex: 1 }}><div style={{ width: 100, height: 12, background: "var(--border)", borderRadius: 4, marginBottom: 4 }} /><div style={{ width: 60, height: 10, background: "var(--border)", borderRadius: 4 }} /></div>
+                <div style={{ width: 40, height: 16, background: "var(--border)", borderRadius: 4 }} />
               </div>
             ))}
           </div>
@@ -47,13 +47,13 @@ const Leaderboard = () => {
               return (
                 <div key={i} style={{
                   display: "flex", alignItems: "center", gap: 12, padding: "10px 16px",
-                  borderBottom: i < board.length - 1 ? "1px solid #f0f0f0" : "none",
+                  borderBottom: i < board.length - 1 ? "1px solid var(--border)" : "none",
                   background: isMe ? "var(--green-bg)" : "transparent",
                 }}>
                   <div style={{ width: 28, textAlign: "center", flexShrink: 0 }}>
                     {i < 3 ? <span style={{ fontSize: 16 }}>{medal[i]}</span> : <span style={{ color: "var(--text-muted)", fontWeight: 600, fontSize: 13 }}>#{i + 1}</span>}
                   </div>
-                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", flexShrink: 0 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#333", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, color: "var(--green)", flexShrink: 0 }}>
                     {entry.name?.charAt(0)?.toUpperCase()}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
