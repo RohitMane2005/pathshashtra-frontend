@@ -52,7 +52,7 @@ const LeftPane = ({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
               <span className="lc-tag">{problem.topic || form.topic}</span>
             </div>
             <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{problem.title}</h2>
-            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{problem.description}</div>
+            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{problem.problemStatement || problem.description}</div>
             {problem.examples && (
               <div style={{ marginTop: 16 }}>
                 <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Examples:</h4>
@@ -62,7 +62,7 @@ const LeftPane = ({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
             {problem.constraints && (
               <div style={{ marginTop: 12 }}>
                 <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Constraints:</h4>
-                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{problem.constraints}</p>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{Array.isArray(problem.constraints) ? problem.constraints.join(", ") : problem.constraints}</p>
               </div>
             )}
           </>
@@ -217,8 +217,9 @@ export default function CodingTutor() {
     setGenerating(true);
     try {
       const res = await API.post("/coding/problem/generate", form);
-      setProblem(res.data);
-      setCode(res.data.starterCode || BOILERPLATE[form.language] || "");
+      const p = { id: res.data.problemId, ...(res.data.problem || res.data) };
+      setProblem(p);
+      setCode(p.starterCode || BOILERPLATE[form.language] || "");
       setLeftTab("description");
       setHints([]);
       setHintsUsed(0);
@@ -229,7 +230,7 @@ export default function CodingTutor() {
   };
 
   const submitCode = async () => {
-    if (!problem) return;
+    if (!problem || !problem.id) return;
     setSubmitting(true);
     try {
       const res = await API.post("/coding/submit", { problemId: problem.id, code, language: form.language });
@@ -241,11 +242,13 @@ export default function CodingTutor() {
   };
 
   const getHint = async () => {
-    if (!problem) return;
+    if (!problem || !problem.id) return;
     try {
-      const res = await API.post("/coding/hint", { problemId: problem.id, hintsUsed });
-      setHints(prev => [...prev, res.data.hint]);
-      setHintsUsed(prev => prev + 1);
+      const res = await API.post("/coding/hint", { problemId: problem.id, currentCode: code });
+      const hintData = res.data.hint;
+      const hintText = typeof hintData === 'object' ? (hintData.hint || hintData.text || JSON.stringify(hintData)) : hintData;
+      setHints(prev => [...prev, hintText]);
+      setHintsUsed(res.data.hintsUsed || (prev => prev + 1));
       setLeftTab("hints");
     } catch (err) { if (!err.handled) toast.error("Failed to get hint"); }
   };
@@ -255,8 +258,9 @@ export default function CodingTutor() {
   const retryProblem = async (p) => {
     try {
       const res = await API.post(`/coding/problem/${p.id}/retry`);
-      setProblem(res.data);
-      setCode(res.data.starterCode || BOILERPLATE[form.language] || "");
+      const prob = { id: res.data.problemId, ...(res.data.problem || res.data) };
+      setProblem(prob);
+      setCode(prob.starterCode || BOILERPLATE[form.language] || "");
       setFeedback(null);
       setHints([]);
       setHintsUsed(0);
@@ -268,11 +272,12 @@ export default function CodingTutor() {
   const loadProblem = async (p) => {
     try {
       const res = await API.get(`/coding/problem/${p.id}`);
-      setProblem(res.data);
-      setCode(res.data.lastSubmittedCode || res.data.starterCode || BOILERPLATE[form.language] || "");
-      setFeedback(null);
+      const prob = { id: res.data.problemId, ...(res.data.problem || res.data) };
+      setProblem(prob);
+      setCode(res.data.submittedCode || prob.starterCode || BOILERPLATE[form.language] || "");
+      setFeedback(res.data.feedbackJson || null);
       setHints([]);
-      setHintsUsed(0);
+      setHintsUsed(res.data.hintsUsed || 0);
       setLeftTab("description");
       setView("practice");
     } catch (err) { if (!err.handled) toast.error("Failed to load problem"); }
