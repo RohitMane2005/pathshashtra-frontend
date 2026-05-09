@@ -59,7 +59,7 @@ const PhaseCard = ({ phase, index }) => {
           {phase.resources?.length > 0 && (
             <div style={{ marginBottom: 12 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>Resources</p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              <div className="roadmap-resources-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                 {phase.resources.map((r, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: 8, borderRadius: 6, border: "1px solid var(--border)", fontSize: 12 }}>
                     <span style={{ color: "var(--text-muted)" }}>{resourceIcon[r.type] || <BookOpen size={12} />}</span>
@@ -169,7 +169,7 @@ const Roadmap = () => {
                       ))}
                     </div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                  <div className="roadmap-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
                     <div><label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Level</label>
                       <select value={form.currentLevel} onChange={e => setForm({ ...form, currentLevel: e.target.value })} className="lc-input">{["Beginner", "Intermediate", "Advanced"].map(l => <option key={l}>{l}</option>)}</select></div>
                     <div><label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Timeframe</label>
@@ -233,6 +233,12 @@ const Roadmap = () => {
           </>
         )}
       </div></div>
+      <style>{`
+        @media (max-width: 480px) {
+          .roadmap-resources-grid { grid-template-columns: 1fr !important; }
+          .roadmap-form-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

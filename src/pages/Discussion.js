@@ -97,7 +97,7 @@ const Discussion = () => {
 
         {view === "list" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
               <div>
                 <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>Discussions</h1>
                 <p style={{ color: "var(--text-muted)", fontSize: 14 }}>Ask questions, share solutions, help others</p>

@@ -89,7 +89,7 @@ const Profile = () => {
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 16 }}>
+        <div className="profile-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 16 }}>
           {[
             { icon: <Code2 size={14} />, label: "Problems", value: stats.problems, color: "var(--purple)" },
             { icon: <BookOpen size={14} />, label: "Topics", value: stats.topics, color: "var(--green)" },
@@ -143,6 +143,11 @@ const Profile = () => {
           }}>{deleting ? <Loader size={12} className="animate-spin" /> : <Trash2 size={12} />} Delete account</button>
         </div>
       </div></div>
+      <style>{`
+        @media (max-width: 480px) {
+          .profile-stats-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

@@ -39,7 +39,7 @@ const Bookmarks = () => {
     <div style={{ background: "var(--bg-secondary)", minHeight: "100vh" }}>
       <Navbar />
       <div className="page-content"><div className="page-inner" style={{ maxWidth: 640 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>Bookmarks</h1>
             <p style={{ color: "var(--text-muted)", fontSize: 14 }}>{items.length} saved item{items.length !== 1 ? "s" : ""}</p>

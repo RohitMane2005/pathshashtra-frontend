@@ -101,7 +101,7 @@ const Dashboard = () => {
           <QuotaBar />
 
           {/* Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+          <div className="dash-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
             {[
               { label: "Topics Done", value: progress?.completedTopics || 0, icon: <CheckCircle size={14} />, color: "var(--green)" },
               { label: "Problems Solved", value: solvedProblems, icon: <Code2 size={14} />, color: "var(--purple)" },
@@ -119,7 +119,7 @@ const Dashboard = () => {
           </div>
 
           {/* Modules */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+          <div className="dash-modules-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
             {modules.map((mod, i) => (
               <Link key={i} to={mod.path} className="lc-card" style={{ textDecoration: "none", display: "block", transition: "border-color 0.15s" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
@@ -136,7 +136,7 @@ const Dashboard = () => {
           </div>
 
           {/* Today + Recent */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="dash-bottom-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div className="lc-card">
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
                 <span style={{ fontSize: 14, fontWeight: 600 }}>Today's Topics</span>
@@ -174,6 +174,16 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 768px) {
+          .dash-stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .dash-modules-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+          .dash-bottom-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .dash-modules-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

@@ -10,7 +10,7 @@ import {
 
 /* ── Generate Bar ── */
 const GenBar = ({ form, setForm, generating, onGenerate }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderBottom: "1px solid var(--border)", background: "var(--bg)", flexWrap: "wrap" }}>
+  <div className="genbar" style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderBottom: "1px solid var(--border)", background: "var(--bg)", flexWrap: "wrap" }}>
     <select value={form.topic} onChange={e => setForm({ ...form, topic: e.target.value })} className="lc-input" style={{ width: 140, padding: "6px 10px", fontSize: 13 }}>
       {["Arrays", "Strings", "LinkedList", "Trees", "Graphs", "DP", "Sorting", "Searching", "Stack", "Queue", "Recursion", "HashMap", "Greedy", "Backtracking", "Math"].map(t => <option key={t}>{t}</option>)}
     </select>
@@ -344,7 +344,7 @@ export default function CodingTutor() {
                 <EditorPane {...sharedEditorProps} />
               </div>
             ) : (
-              <div id="ct-split" style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+              <div id="ct-split" className="ct-split" style={{ flex: 1, display: "flex", overflow: "hidden" }}>
                 <div style={{ width: `${pct}%`, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                   <LeftPane problem={problem} generating={generating} leftTab={leftTab} setLeftTab={setLeftTab} hints={hints} hintsUsed={hintsUsed} feedback={feedback} form={form} />
                 </div>
@@ -365,7 +365,17 @@ export default function CodingTutor() {
         {view === "roadmap" && <RoadmapView roadmap={roadmap} rmLoad={rmLoad} onGenerate={fetchRoadmap} onReset={() => setRoadmap(null)} />}
       </div>
 
-      <style>{`@media (max-width: 768px) { .mobile-only { display: flex !important; } }`}</style>
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-only { display: flex !important; }
+          .genbar { gap: 6px !important; }
+          .genbar select.lc-input { width: 100px !important; font-size: 12px !important; }
+          .ct-split { flex-direction: column !important; }
+          .ct-split > div:first-child { width: 100% !important; max-height: 45vh !important; min-height: 200px !important; }
+          .ct-split > div:last-child { flex: 1 !important; min-height: 250px !important; }
+          .ct-split > div[style*="cursor: col-resize"] { display: none !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -59,7 +59,7 @@ const Notes = () => {
   return (
     <div style={{ background: "var(--bg-secondary)", minHeight: "100vh" }}><Navbar />
       <div className="page-content"><div className="page-inner" style={{ maxWidth: 800 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
           <div><h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>Notes</h1><p style={{ color: "var(--text-muted)", fontSize: 14 }}>Your personal study notebook</p></div>
           <button onClick={() => { setForm({ title: "", content: "", category: "GENERAL", tags: "" }); setModal("create"); }} className="btn-primary" style={{ fontSize: 13 }}><Plus size={14} /> New Note</button>
         </div>

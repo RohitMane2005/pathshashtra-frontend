@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { MessageSquare, Send, Plus, Trash2, Loader, Bot, User } from "lucide-react";
+import { MessageSquare, Send, Plus, Trash2, Loader, Bot, User, Menu, X } from "lucide-react";
 
 const ChatAssistant = () => {
   const [sessions, setSessions] = useState([]);
@@ -10,6 +10,7 @@ const ChatAssistant = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEnd = useRef(null);
 
   useEffect(() => { fetchSessions(); }, []);
@@ -49,9 +50,17 @@ const ChatAssistant = () => {
 
   return (
     <div style={{ background: "var(--bg-secondary)", minHeight: "100vh", display: "flex", flexDirection: "column" }}><Navbar />
-      <div style={{ flex: 1, display: "flex", maxWidth: 1100, margin: "0 auto", width: "100%", padding: "80px 16px 16px", gap: 12 }}>
+      <div style={{ flex: 1, display: "flex", maxWidth: 1100, margin: "0 auto", width: "100%", padding: "80px 16px 16px", gap: 12, position: "relative" }}>
+        {/* Mobile sidebar toggle */}
+        <button className="chat-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} style={{
+          display: "none", position: "absolute", top: 86, left: 20, zIndex: 30,
+          background: "var(--bg)", border: "1px solid var(--border)", borderRadius: 8,
+          padding: "6px 10px", cursor: "pointer", color: "var(--text-muted)", fontSize: 13,
+          alignItems: "center", gap: 6,
+        }}>{sidebarOpen ? <X size={14} /> : <Menu size={14} />} Chats</button>
+
         {/* Sidebar */}
-        <div style={{ width: 240, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className={`chat-sidebar${sidebarOpen ? ' open' : ''}`} style={{ width: 240, flexShrink: 0, display: "flex", flexDirection: "column", gap: 8 }}>
           <button onClick={newSession} className="btn-primary" style={{ width: "100%", justifyContent: "center", fontSize: 13 }}><Plus size={14} /> New Chat</button>
           <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
             {sessions.map(s => (
@@ -65,6 +74,9 @@ const ChatAssistant = () => {
             ))}
           </div>
         </div>
+
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && <div className="chat-sidebar-overlay" onClick={() => setSidebarOpen(false)} style={{ display: "none", position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 19 }} />}
 
         {/* Chat */}
         <div className="lc-card" style={{ flex: 1, display: "flex", flexDirection: "column", padding: 0, overflow: "hidden" }}>
@@ -103,6 +115,29 @@ const ChatAssistant = () => {
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 768px) {
+          .chat-sidebar-toggle { display: flex !important; }
+          .chat-sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 260px !important;
+            z-index: 20 !important;
+            background: var(--bg) !important;
+            border-right: 1px solid var(--border) !important;
+            padding: 70px 12px 12px !important;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+          }
+          .chat-sidebar.open,
+          .chat-sidebar-open .chat-sidebar {
+            transform: translateX(0) !important;
+          }
+          .chat-sidebar-overlay { display: block !important; }
+        }
+      `}</style>
     </div>
   );
 };

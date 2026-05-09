@@ -5,7 +5,7 @@ export default function Landing() {
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       {/* Navbar */}
-      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <nav className="landing-nav" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: 6, background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center", color: "#111", fontSize: 13, fontWeight: 700 }}>P</div>
           <span style={{ fontWeight: 700, fontSize: 16, color: "var(--text)" }}>PathShashtra</span>
@@ -17,11 +17,11 @@ export default function Landing() {
       </nav>
 
       {/* Hero */}
-      <section style={{ textAlign: "center", padding: "80px 24px 60px", maxWidth: 700, margin: "0 auto" }}>
+      <section className="landing-hero" style={{ textAlign: "center", padding: "80px 24px 60px", maxWidth: 700, margin: "0 auto" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: "var(--bg-secondary)", border: "1px solid var(--border)", fontSize: 13, color: "var(--text-secondary)", marginBottom: 24 }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--green)" }} /> AI-Powered Career Platform
         </div>
-        <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.15, color: "var(--text)", marginBottom: 16 }}>
+        <h1 className="landing-h1" style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.15, color: "var(--text)", marginBottom: 16 }}>
           Find your path.<br /><span style={{ color: "var(--green)" }}>Build your future.</span>
         </h1>
         <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 32, maxWidth: 520, margin: "0 auto 32px" }}>
@@ -31,7 +31,7 @@ export default function Landing() {
           <Link to="/register" className="btn-primary" style={{ textDecoration: "none", fontSize: 16, padding: "12px 28px" }}>Start for free <ArrowRight size={16} /></Link>
           <Link to="/login" className="btn-secondary" style={{ textDecoration: "none", fontSize: 16, padding: "12px 28px" }}>Sign in</Link>
         </div>
-        <div style={{ display: "flex", gap: 24, justifyContent: "center", marginTop: 32, fontSize: 14, color: "var(--text-muted)" }}>
+        <div className="landing-trust" style={{ display: "flex", gap: 24, justifyContent: "center", marginTop: 32, fontSize: 14, color: "var(--text-muted)", flexWrap: "wrap" }}>
           {[{ icon: <Users size={14} />, t: "200+ students" }, { icon: <Zap size={14} />, t: "Free to use" }, { icon: <Shield size={14} />, t: "No credit card" }].map((item, i) => (
             <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>{item.icon} {item.t}</span>
           ))}
@@ -40,7 +40,7 @@ export default function Landing() {
 
       {/* Stats */}
       <section style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 60px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid var(--border)" }}>
+        <div className="landing-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid var(--border)" }}>
           {[{ v: "200+", l: "Students" }, { v: "4", l: "AI Tools" }, { v: "38M", l: "Students in India" }, { v: "100%", l: "Free" }].map((s, i) => (
             <div key={i} style={{ background: "var(--bg)", padding: "24px 16px", textAlign: "center" }}>
               <p style={{ fontSize: 28, fontWeight: 800, color: "var(--text)" }}>{s.v}</p>
@@ -54,7 +54,7 @@ export default function Landing() {
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px 60px" }}>
         <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>Four tools. One platform.</h2>
         <p style={{ fontSize: 16, color: "var(--text-muted)", marginBottom: 32 }}>Each built around real problems Indian students face.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        <div className="landing-features-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {[
             { icon: <Brain size={20} />, title: "AI Career Quiz", desc: "12 psychometric questions → personality profile, top career matches, salary insights, and action plan.", color: "var(--orange)" },
             { icon: <BookOpen size={20} />, title: "Smart Study Planner", desc: "Enter your exam date. AI builds a week-by-week schedule that adapts.", color: "var(--green)" },
@@ -75,7 +75,7 @@ export default function Landing() {
       {/* Testimonials */}
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px 60px" }}>
         <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", marginBottom: 32 }}>What students say.</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+        <div className="landing-testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
           {[
             { q: "PathShashtra's quiz pointed me to Product Management with an 89% match — I've been preparing ever since.", n: "Priya M.", r: "B.Tech IT, Pune" },
             { q: "The study planner built a 4-week GATE schedule automatically. Followed it strictly and cleared GATE 2025.", n: "Arjun R.", r: "M.Tech, Hyderabad" },
@@ -105,7 +105,7 @@ export default function Landing() {
 
       {/* Footer */}
       <footer style={{ borderTop: "1px solid var(--border)", padding: "20px 24px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, color: "var(--text-muted)" }}>
+        <div className="landing-footer-inner" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 13, color: "var(--text-muted)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: 20, height: 20, borderRadius: 4, background: "#89E900", display: "flex", alignItems: "center", justifyContent: "center", color: "#111", fontSize: 10, fontWeight: 700 }}>P</div>
             <span style={{ fontWeight: 600, color: "var(--text)" }}>PathShashtra</span>
@@ -113,6 +113,22 @@ export default function Landing() {
           <span>Built for India's students</span>
         </div>
       </footer>
+      <style>{`
+        @media (max-width: 768px) {
+          .landing-hero { padding: 40px 16px 40px !important; }
+          .landing-h1 { font-size: 28px !important; }
+          .landing-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .landing-features-grid { grid-template-columns: 1fr !important; }
+          .landing-testimonials-grid { grid-template-columns: 1fr !important; }
+          .landing-trust { gap: 12px !important; font-size: 12px !important; }
+          .landing-nav { padding: 10px 14px !important; }
+          .landing-footer-inner { flex-direction: column; gap: 8px; text-align: center; }
+        }
+        @media (max-width: 480px) {
+          .landing-h1 { font-size: 24px !important; }
+          .landing-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -65,7 +65,7 @@ const SharedResult = () => {
         {result.salaryInfo && (
           <div className="lc-card" style={{ marginBottom: 16 }}>
             <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}><TrendingUp size={13} style={{ color: "var(--green)" }} /> Salary Outlook</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            <div className="shared-salary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
               {[{ l: "Entry", v: result.salaryInfo.entryLevel }, { l: "Mid", v: result.salaryInfo.midLevel }, { l: "Senior", v: result.salaryInfo.seniorLevel }].map((s, i) => (
                 <div key={i} style={{ textAlign: "center", padding: 10, background: "var(--bg-secondary)", borderRadius: 6 }}>
                   <p style={{ color: "var(--green)", fontWeight: 600, fontSize: 14 }}>{s.v}</p>
@@ -83,6 +83,11 @@ const SharedResult = () => {
           <Link to="/register" className="btn-primary" style={{ textDecoration: "none" }}>Start free assessment →</Link>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 480px) {
+          .shared-salary-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

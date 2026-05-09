@@ -332,10 +332,70 @@ textarea.lc-input { resize: vertical; min-height: 80px; }
   white-space: nowrap;
 }
 
-/* ─── Mobile ─── */
+/* ─── Mobile & Responsive ─── */
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) {
+  :root {
+    --max-width: 100%;
+  }
+}
+
+/* Mobile breakpoint */
 @media (max-width: 768px) {
-  .page-content { padding: 16px; }
+  .page-content { padding: 12px; }
+  .page-content .page-inner { padding: 0; }
   .hide-mobile { display: none !important; }
+  .mobile-menu-btn { display: flex !important; }
+
+  /* Cards - reduce padding on mobile */
+  .lc-card { padding: 14px; border-radius: 10px; }
+  .lc-card:hover { transform: none; }
+
+  /* Buttons - full width on mobile when inside cards */
+  .btn-primary, .btn-secondary, .btn-dark {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  /* Tables - scrollable on mobile */
+  .lc-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .lc-table th, .lc-table td { padding: 8px 10px; font-size: 12px; white-space: nowrap; }
+
+  /* Tabs - horizontal scroll on mobile */
+  .lc-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+  .lc-tabs::-webkit-scrollbar { display: none; }
+  .lc-tab { white-space: nowrap; flex-shrink: 0; padding: 8px 12px; font-size: 13px; }
+
+  /* Stat cards */
+  .stat-card { padding: 12px; }
+  .stat-card .stat-value { font-size: 18px; }
+  .stat-card .stat-label { font-size: 11px; }
+
+  /* Tags */
+  .lc-tag { font-size: 11px; padding: 2px 8px; }
+
+  /* Inputs */
+  .lc-input { font-size: 16px; padding: 10px 12px; } /* 16px prevents iOS zoom */
+
+  /* Body font */
+  body { font-size: 14px; }
+
+  /* Top navbar tweaks */
+  .top-navbar { padding: 0 12px; }
+}
+
+/* Small phone breakpoint */
+@media (max-width: 480px) {
+  .page-content { padding: 8px; }
+  .lc-card { padding: 12px; border-radius: 8px; }
+  h1 { font-size: 18px !important; }
 }
 
 /* ─── Compatibility aliases for old class names ─── */

@@ -66,7 +66,7 @@ const Social = () => {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 12 }}>
+        <div className="social-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 12 }}>
           {[{ label: "Problems", val: profile.problems }, { label: "Topics", val: profile.topics }, { label: "Quizzes", val: profile.quizzes }].map(s => (
             <div key={s.label} className="lc-card" style={{ padding: 14, textAlign: "center" }}>
               <p style={{ fontSize: 20, fontWeight: 700 }}>{s.val}</p>
@@ -138,6 +138,11 @@ const Social = () => {
           tab === "following" ? renderList(following) : tab === "followers" ? renderList(followers) : renderList(results)
         )}
       </div></div>
+      <style>{`
+        @media (max-width: 480px) {
+          .social-stats-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

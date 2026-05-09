@@ -77,7 +77,7 @@ const StudyPlanner = () => {
                   <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Subjects</label>
                   <input value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} placeholder="e.g. DSA, OS, DBMS, Networks" className="lc-input" />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                <div className="study-form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                   <div>
                     <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 6 }}>Target Date</label>
                     <input type="date" value={form.targetDate} onChange={e => setForm({ ...form, targetDate: e.target.value })} className="lc-input" />
@@ -186,6 +186,11 @@ const StudyPlanner = () => {
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 480px) {
+          .study-form-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };

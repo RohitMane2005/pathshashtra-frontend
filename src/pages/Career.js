@@ -89,7 +89,7 @@ const Career = () => {
             <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>
               Answer 12 psychometric questions. AI analyzes your personality to match you with the best career paths.
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 20 }}>
+            <div className="career-info-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 20 }}>
               {[{ n: "12", l: "Questions" }, { n: "5 min", l: "Duration" }, { n: "Free", l: "Always" }].map((f, i) => (
                 <div key={i} style={{ textAlign: "center", padding: 12, background: "var(--bg-secondary)", borderRadius: 6 }}>
                   <p style={{ fontSize: 16, fontWeight: 700 }}>{f.n}</p>
@@ -176,7 +176,7 @@ const Career = () => {
                   <div className="lc-progress" style={{ marginBottom: 8 }}><div className="lc-progress-fill" style={{ width: `${career.matchPercent}%`, background: color }} /></div>
                   <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>{career.whyItFits}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>{career.keySkills.map((s, j) => <span key={j} className="lc-tag" style={{ fontSize: 11 }}>{s}</span>)}</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 12 }}>
+                  <div className="career-detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 12 }}>
                     <div style={{ display: "flex", gap: 6, padding: 8, borderRadius: 6, border: "1px solid var(--border)" }}><TrendingUp size={12} style={{ color: "var(--green)", flexShrink: 0, marginTop: 1 }} /><span style={{ color: "var(--text-muted)" }}>{career.indianMarketOutlook}</span></div>
                     <div style={{ display: "flex", gap: 6, padding: 8, borderRadius: 6, border: "1px solid var(--border)" }}><Building2 size={12} style={{ color: "var(--orange)", flexShrink: 0, marginTop: 1 }} /><span style={{ color: "var(--text-muted)" }}>{career.topCompanies}</span></div>
                   </div>
@@ -196,7 +196,7 @@ const Career = () => {
             {result.salaryInsight && (
               <div className="lc-card" style={{ marginBottom: 8 }}>
                 <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>💰 Salary Insights — {result.salaryInsight.role}</p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 8 }}>
+                <div className="career-salary-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 8 }}>
                   {[{ l: "Entry", v: result.salaryInsight.entryLevel, c: "var(--green)" }, { l: "Mid", v: result.salaryInsight.midLevel, c: "var(--orange)" }, { l: "Senior", v: result.salaryInsight.seniorLevel, c: "var(--red)" }].map((s, i) => (
                     <div key={i} style={{ textAlign: "center", padding: 10, background: "var(--bg-secondary)", borderRadius: 6 }}><p style={{ fontWeight: 600, color: s.c }}>{s.v}</p><p style={{ fontSize: 12, color: "var(--text-muted)" }}>{s.l}</p></div>
                   ))}
@@ -221,6 +221,13 @@ const Career = () => {
           </div>
         )}
       </div></div>
+      <style>{`
+        @media (max-width: 480px) {
+          .career-info-grid { grid-template-columns: 1fr !important; }
+          .career-detail-grid { grid-template-columns: 1fr !important; }
+          .career-salary-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 };
