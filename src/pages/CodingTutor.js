@@ -88,10 +88,30 @@ const LeftPane = ({ problem, generating, leftTab, setLeftTab, hints, hintsUsed, 
         ) : (
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <span className={`lc-tag lc-tag-${feedback.verdict === "PASS" ? "green" : feedback.verdict === "PARTIAL" ? "orange" : "red"}`}>{feedback.verdict}</span>
+              <span className={`lc-tag lc-tag-${feedback.isCorrect ? "green" : (feedback.score != null && feedback.score >= 50) ? "orange" : "red"}`}>
+                {feedback.isCorrect ? "PASS" : (feedback.score != null && feedback.score >= 50) ? "PARTIAL" : "FAIL"}
+              </span>
               {feedback.score != null && <span style={{ fontWeight: 700, fontSize: 16 }}>{feedback.score}/100</span>}
             </div>
-            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{feedback.review || feedback.explanation}</div>
+            <div style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{feedback.overallFeedback}</div>
+            {feedback.strengths?.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--green)" }}>Strengths:</h4>
+                <ul style={{ paddingLeft: 18, fontSize: 13, color: "var(--text-secondary)" }}>{feedback.strengths.map((s, idx) => <li key={idx} style={{ marginBottom: 4 }}>{s}</li>)}</ul>
+              </div>
+            )}
+            {feedback.improvements?.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--orange)" }}>Improvements:</h4>
+                <ul style={{ paddingLeft: 18, fontSize: 13, color: "var(--text-secondary)" }}>{feedback.improvements.map((s, idx) => <li key={idx} style={{ marginBottom: 4 }}>{s}</li>)}</ul>
+              </div>
+            )}
+            {feedback.bugs?.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--red)" }}>Bugs Found:</h4>
+                <ul style={{ paddingLeft: 18, fontSize: 13, color: "var(--text-secondary)" }}>{feedback.bugs.map((s, idx) => <li key={idx} style={{ marginBottom: 4 }}>{s}</li>)}</ul>
+              </div>
+            )}
           </div>
         )
       )}
@@ -213,6 +233,10 @@ export default function CodingTutor() {
 
   useEffect(() => { API.get("/coding/problems").then(r => setProblems(r.data.content || r.data)).catch(() => {}); }, []);
 
+  // Bug 8 fix: reset boilerplate when language changes (only if no problem is loaded)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!problem) setCode(BOILERPLATE[form.language] || ""); }, [form.language]);
+
   const generateProblem = async () => {
     setGenerating(true);
     try {
@@ -248,7 +272,7 @@ export default function CodingTutor() {
       const hintData = res.data.hint;
       const hintText = typeof hintData === 'object' ? (hintData.hint || hintData.text || JSON.stringify(hintData)) : hintData;
       setHints(prev => [...prev, hintText]);
-      setHintsUsed(res.data.hintsUsed || (prev => prev + 1));
+      setHintsUsed(res.data.hintsUsed != null ? res.data.hintsUsed : hintsUsed + 1);
       setLeftTab("hints");
     } catch (err) { if (!err.handled) toast.error("Failed to get hint"); }
   };
@@ -285,7 +309,7 @@ export default function CodingTutor() {
 
   const fetchRoadmap = async () => {
     setRmLoad(true);
-    try { const res = await API.get("/coding/roadmap"); setRoadmap(res.data); }
+    try { const res = await API.get("/coding/roadmap"); setRoadmap(res.data.roadmap || res.data); }
     catch (err) { if (!err.handled) toast.error("Failed to load roadmap"); }
     finally { setRmLoad(false); }
   };
@@ -366,7 +390,7 @@ export default function CodingTutor() {
           </div>
         )}
 
-        {view === "problems" && <ProblemsView problems={problems} setView={setView} onRetry={retryProblem} onLoad={loadProblem} />}
+        {view === "problems" && <ProblemsView problems={problems} onRetry={retryProblem} onLoad={loadProblem} />}
         {view === "roadmap" && <RoadmapView roadmap={roadmap} rmLoad={rmLoad} onGenerate={fetchRoadmap} onReset={() => setRoadmap(null)} />}
       </div>
 
