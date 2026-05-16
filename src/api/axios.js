@@ -1,75 +1,63 @@
 import axios from "axios";
-import toast from "react-hot-toast";
+
+/**
+ * CRIT-01 FIX: axios no longer reads JWT from localStorage or adds Authorization headers.
+ * 
+ * All requests now include `withCredentials: true` which causes the browser to
+ * automatically send the HttpOnly auth cookie with every request.
+ * The backend reads the cookie in JwtAuthenticationFilter.
+ * 
+ * For CORS to allow credentials:
+ *   - Backend must set Access-Control-Allow-Credentials: true
+ *   - Backend must NOT use Access-Control-Allow-Origin: * (must be explicit origin)
+ *   Both are already configured in SecurityConfig.
+ */
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8080/api",
+  baseURL: process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api`
+    : "http://localhost:8080/api",
+  withCredentials: true,   // send HttpOnly cookie on every request
+  timeout: 90000,          // 90s for AI calls
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// ─── Request interceptor: attach JWT ────────────────────────────────────────
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    // FIX: Detect expired JWT client-side before sending to avoid round-trips.
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      if (payload.exp && Date.now() / 1000 > payload.exp) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
-        return Promise.reject(new Error("Token expired"));
-      }
-    } catch {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    }
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ── Response interceptor ──────────────────────────────────────────────────────
 
-// Public routes that should never trigger a redirect to /login
-const PUBLIC_PATHS = ["/", "/login", "/register", "/forgot-password", "/reset-password", "/oauth2/redirect"];
-
-// ─── Response interceptor: global error handling ─────────────────────────────
 API.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    const status = err.response?.status;
-    const message = err.response?.data?.error;
+  (response) => response,
+  (error) => {
+    if (!error.response) {
+      // No internet / server down
+      console.error("[API] Network error:", error.message);
+      return Promise.reject({
+        ...error,
+        userMessage: "No internet connection. Please check your network.",
+      });
+    }
 
-    // FIX: Auto-logout on 401 — only when NOT already on a public page.
+    const { status } = error.response;
+
     if (status === 401) {
-      const currentPath = window.location.pathname;
-      const isPublic =
-        PUBLIC_PATHS.some((p) => currentPath === p) ||
-        currentPath.startsWith("/reset-password") ||
-        currentPath.startsWith("/share/");
-      if (!isPublic) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+      // Cookie expired or invalid — redirect to login
+      // Only redirect if we're not already on the login page
+      if (!window.location.pathname.includes("/login") &&
+          !window.location.pathname.includes("/register")) {
         window.location.href = "/login";
       }
     }
 
-    // Show rate limit toast centrally
     if (status === 429) {
-      toast.error(message || "Daily limit reached. Please try again tomorrow.", {
-        duration: 5000,
-        icon: "⏳",
-      });
-      err.handled = true;
+      console.warn("[API] Rate limit hit:", error.config?.url);
     }
 
-    // FIX: Handle AI service unavailable centrally
     if (status === 503) {
-      toast.error(message || "AI service is temporarily unavailable. Please try again in a moment.", {
-        duration: 6000,
-        icon: "🤖",
-      });
-      err.handled = true;
+      console.warn("[API] Service unavailable:", error.config?.url);
     }
 
-    return Promise.reject(err);
+    return Promise.reject(error);
   }
 );
 
