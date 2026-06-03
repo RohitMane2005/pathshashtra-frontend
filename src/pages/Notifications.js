@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
-import { Bell, Check, CheckCheck, Trophy, Users, Zap, Calendar, Loader } from "lucide-react";
+import { Bell, CheckCheck, Trophy, Users, Zap, Calendar, Loader } from "lucide-react";
 
 const TYPE_ICONS = { STREAK: Zap, ACHIEVEMENT: Trophy, CONTEST: Calendar, SOCIAL: Users, SYSTEM: Bell };
 const TYPE_COLORS = { STREAK: "var(--orange)", ACHIEVEMENT: "var(--green)", CONTEST: "var(--blue)", SOCIAL: "var(--purple, #9b59b6)", SYSTEM: "var(--text-muted)" };
@@ -10,12 +10,11 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetchNotifs(); }, []);
-
-  const fetchNotifs = async () => {
+  const fetchNotifs = useCallback(async () => {
     try { const res = await API.get("/notifications"); setNotifications(res.data.content || res.data || []); } catch {} finally { setLoading(false); }
-  };
+  }, []);
 
+  useEffect(() => { fetchNotifs(); }, [fetchNotifs]);
   const markRead = async (id) => {
     try { await API.put(`/notifications/${id}/read`); setNotifications(prev => prev.map(n => n.id === id ? {...n, read: true} : n)); } catch {}
   };

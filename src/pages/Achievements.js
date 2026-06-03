@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
-import { Trophy, Lock, Loader } from "lucide-react";
+import { Lock, Loader } from "lucide-react";
 
 const Achievements = () => {
   const [badges, setBadges] = useState([]);

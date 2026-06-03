@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
-import { MessageSquare, ThumbsUp, Send, ArrowLeft, Search, Filter, Loader, Plus, X } from "lucide-react";
+import { MessageSquare, ThumbsUp, Send, ArrowLeft, Search, Loader, Plus, X } from "lucide-react";
 
 const TAGS = ["all","arrays","dp","trees","graphs","strings","career","study","help","general"];
 
 const Discussion = () => {
-  const { user } = useAuth();
   const [view, setView] = useState("list");
   const [posts, setPosts] = useState([]);
   const [post, setPost] = useState(null);
@@ -23,9 +20,8 @@ const Discussion = () => {
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
 
-  useEffect(() => { fetchPosts(); }, [tag, sort]);
-
-  const fetchPosts = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -35,8 +31,9 @@ const Discussion = () => {
       const res = await API.get("/discussions", { params });
       setPosts(res.data.content || res.data || []);
     } catch {} finally { setLoading(false); }
-  };
+  }, [tag, sort, search]);
 
+  useEffect(() => { fetchPosts(); }, [fetchPosts]);
   const createPost = async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) { toast.error("Fill in title and content"); return; }

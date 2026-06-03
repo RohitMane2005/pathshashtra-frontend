@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { FileText, Plus, Pin, Trash2, Search, Loader, X, Edit3 } from "lucide-react";
+import { FileText, Plus, Pin, Trash2, Search, Loader, X } from "lucide-react";
 
 const CATS = ["ALL", "GENERAL", "PROBLEM", "TOPIC"];
 const CAT_COLORS = { GENERAL: "var(--blue)", PROBLEM: "var(--green)", TOPIC: "var(--orange)" };
@@ -15,9 +15,7 @@ const Notes = () => {
   const [modal, setModal] = useState(null); // null | "create" | noteObject
   const [form, setForm] = useState({ title: "", content: "", category: "GENERAL", tags: "" });
 
-  useEffect(() => { fetchNotes(); }, [category]);
-
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -26,8 +24,9 @@ const Notes = () => {
       const res = await API.get("/notes", { params });
       setNotes(res.data || []);
     } catch {} finally { setLoading(false); }
-  };
+  }, [category, search]);
 
+  useEffect(() => { fetchNotes(); }, [fetchNotes]);
   const saveNote = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) { toast.error("Title required"); return; }

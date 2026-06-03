@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import QuotaBar from "../components/QuotaBar";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
-import { Brain, BookOpen, Code2, ArrowRight, Map, Target, CheckCircle, TrendingUp, MessageSquare, Trophy, Bot, FileText, Users, Award, BarChart3 } from "lucide-react";
+import { Brain, BookOpen, Code2, ArrowRight, Map, CheckCircle, TrendingUp, MessageSquare, Trophy, Bot, FileText, Users, Award, BarChart3 } from "lucide-react";
 import { calculateXP, calculateLevel, xpInCurrentLevel } from "../utils/xp";
 
 const Dashboard = () => {

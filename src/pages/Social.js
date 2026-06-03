@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
@@ -14,14 +14,14 @@ const Social = () => {
   const [profile, setProfile] = useState(null);
   const [comparison, setComparison] = useState(null);
 
-  useEffect(() => { loadData(); }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [f1, f2] = await Promise.all([API.get("/social/following"), API.get("/social/followers")]);
       setFollowing(f1.data || []); setFollowers(f2.data || []);
     } catch {} finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
 
   const searchUsers = async () => {
     if (!searchQ.trim()) return;

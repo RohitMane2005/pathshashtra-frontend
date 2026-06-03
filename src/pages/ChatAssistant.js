@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { MessageSquare, Send, Plus, Trash2, Loader, Bot, User, Menu, X } from "lucide-react";
+import { Send, Plus, Trash2, Loader, Bot, User, Menu, X } from "lucide-react";
 
 const ChatAssistant = () => {
   const [sessions, setSessions] = useState([]);
