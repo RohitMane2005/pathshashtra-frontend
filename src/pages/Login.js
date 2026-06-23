@@ -34,11 +34,12 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      // CRIT-01 FIX: Cookie-based auth — backend sets HttpOnly cookie on login response.
+      // No need to extract token or pass Authorization header manually.
       const payload = { email: form.email.trim().toLowerCase(), password: form.password };
-      const res = await API.post("/auth/login", payload);
-      const token = res.data.token;
-      const userRes = await API.get("/users/me", { headers: { Authorization: `Bearer ${token}` } });
-      login(token, userRes.data);
+      await API.post("/auth/login", payload);
+      const userRes = await API.get("/users/me"); // Cookie sent automatically via withCredentials
+      login(userRes.data); // Pass only user data, not token
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err) {

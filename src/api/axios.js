@@ -14,9 +14,9 @@ import axios from "axios";
  */
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL
-    ? `${process.env.REACT_APP_API_URL}/api`
-    : "http://localhost:8080/api",
+  // CRIT-02 FIX: REACT_APP_API_URL already includes /api suffix — don't append again.
+  // e.g. REACT_APP_API_URL=http://localhost:8080/api
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:8080/api",
   withCredentials: true,   // send HttpOnly cookie on every request
   timeout: 90000,          // 90s for AI calls
   headers: {

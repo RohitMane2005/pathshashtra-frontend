@@ -28,10 +28,10 @@ const Register = () => {
     if (!trimmedForm.name) { toast.error("Name cannot be blank"); return; }
     setLoading(true);
     try {
-      const res = await API.post("/auth/register", trimmedForm);
-      const token = res.data.token;
-      const userRes = await API.get("/users/me", { headers: { Authorization: `Bearer ${token}` } });
-      login(token, userRes.data);
+      // CRIT-01 FIX: Cookie-based auth — backend sets HttpOnly cookie on register response.
+      await API.post("/auth/register", trimmedForm);
+      const userRes = await API.get("/users/me"); // Cookie sent automatically
+      login(userRes.data); // Pass only user data, not token
       toast.success(`Welcome, ${userRes.data.name}!`);
       navigate("/dashboard");
     } catch (err) {

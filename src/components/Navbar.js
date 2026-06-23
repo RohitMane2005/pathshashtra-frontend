@@ -29,7 +29,7 @@ const Navbar = () => {
       API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
       const interval = setInterval(() => {
         API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
-      }, 30000);
+      }, 60000);
       return () => clearInterval(interval);
     }
   }, [user]);
