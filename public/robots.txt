@@ -1,5 +1,22 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /quiz
+Disallow: /study
+Disallow: /coding
+Disallow: /roadmap
+Disallow: /profile
+Disallow: /leaderboard
+Disallow: /bookmarks
+Disallow: /career
+Disallow: /discussions
+Disallow: /contests
+Disallow: /chat
+Disallow: /notes
+Disallow: /notifications
+Disallow: /achievements
+Disallow: /social
+Disallow: /reports
 Disallow: /oauth2/redirect
 Disallow: /reset-password
 
