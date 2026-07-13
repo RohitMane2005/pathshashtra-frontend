@@ -46,6 +46,13 @@ export const AuthProvider = ({ children }) => {
         setUser(JSON.parse(cached));
       } catch {}
     }
+    // Skip server check on OAuth redirect page — the OAuth handler will
+    // call exchange-code first, then /users/me itself. Running checkAuth()
+    // here would hit /users/me before the cookie exists → 401 race condition.
+    if (window.location.pathname === "/oauth2/redirect") {
+      setLoading(false);
+      return;
+    }
     // Always verify against the server in the background
     checkAuth();
   }, [checkAuth]);

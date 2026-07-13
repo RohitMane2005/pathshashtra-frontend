@@ -42,11 +42,14 @@ API.interceptors.response.use(
 
     if (status === 401) {
       // Cookie expired or invalid — redirect to login
-      // Only redirect if we're not already on the login page
-      if (!window.location.pathname.includes("/login") &&
-          !window.location.pathname.includes("/register")) {
+      // Skip redirect on pages that handle auth themselves
+      const path = window.location.pathname;
+      const skipRedirect = ["/login", "/register", "/oauth2/redirect", "/forgot-password", "/reset-password"];
+      if (!skipRedirect.some(p => path.includes(p))) {
         window.location.href = "/login";
       }
+      // Mark as handled so page-level catch blocks don't double-toast
+      error.handled = true;
     }
 
     if (status === 429) {

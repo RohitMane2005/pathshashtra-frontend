@@ -45,9 +45,12 @@ const OAuth2RedirectHandler = () => {
       })
       .catch((err) => {
         console.error("OAuth exchange failed:", err);
-        navigate("/login", {
-          state: { error: "Login failed. Please try again." },
-        });
+        // Only navigate if the 401 interceptor hasn't already redirected
+        if (!err.handled) {
+          navigate("/login", {
+            state: { error: "Login failed. Please try again." },
+          });
+        }
       });
   }, [location, navigate, login]);
 
