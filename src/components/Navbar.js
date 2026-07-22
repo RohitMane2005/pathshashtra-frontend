@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X, LogOut, User, ChevronDown, Bell } from "lucide-react";
@@ -24,14 +24,26 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // HIGH-08 FIX: Only poll when tab is visible — prevents wasting bandwidth on hidden tabs.
+  // A user with 10 idle tabs was making 10 req/min = 14,400 unnecessary requests/day.
   useEffect(() => {
-    if (user) {
-      API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
-      const interval = setInterval(() => {
+    if (!user) return;
+
+    const fetchCount = () => {
+      if (document.visibilityState === "visible") {
         API.get("/notifications/unread-count").then(r => setUnreadCount(r.data?.count || 0)).catch(() => {});
-      }, 60000);
-      return () => clearInterval(interval);
-    }
+      }
+    };
+
+    fetchCount();
+    const interval = setInterval(fetchCount, 60000);
+    const onVisChange = () => { if (document.visibilityState === "visible") fetchCount(); };
+    document.addEventListener("visibilitychange", onVisChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisChange);
+    };
   }, [user]);
 
   const isActive = (path) => location.pathname === path;
@@ -40,6 +52,19 @@ const Navbar = () => {
     logout();
     navigate("/login");
   };
+
+  // HIGH-05 FIX: Close dropdowns on Escape key (WCAG 2.2 AA — dismissable content)
+  const handleEscape = useCallback((e) => {
+    if (e.key === "Escape") {
+      setProfileOpen(false);
+      setMobileOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [handleEscape]);
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 

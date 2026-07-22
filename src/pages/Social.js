@@ -25,7 +25,7 @@ const Social = () => {
 
   const searchUsers = async () => {
     if (!searchQ.trim()) return;
-    try { const res = await API.get(`/social/search?q=${searchQ}`); setResults(res.data || []); setTab("search"); } catch {}
+    try { const res = await API.get(`/social/search?q=${encodeURIComponent(searchQ)}`); setResults(res.data || []); setTab("search"); } catch {}
   };
 
   const toggleFollow = async (userId) => {

@@ -140,6 +140,7 @@ const Register = () => {
                 required
                 className="lc-input"
                 maxLength={100}
+                autoComplete="name"
               />
             </div>
 
@@ -170,6 +171,7 @@ const Register = () => {
                   required
                   className="lc-input"
                   style={{ paddingRight: 44 }}
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"

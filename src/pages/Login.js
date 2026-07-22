@@ -145,6 +145,7 @@ const Login = () => {
                 required
                 className="lc-input"
                 autoComplete="email"
+                maxLength={255}
               />
             </div>
 

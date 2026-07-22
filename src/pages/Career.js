@@ -175,7 +175,7 @@ const Career = () => {
                   </div>
                   <div className="lc-progress" style={{ marginBottom: 8 }}><div className="lc-progress-fill" style={{ width: `${career.matchPercent}%`, background: color }} /></div>
                   <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8 }}>{career.whyItFits}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>{career.keySkills.map((s, j) => <span key={j} className="lc-tag" style={{ fontSize: 11 }}>{s}</span>)}</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>{career.keySkills?.map((s, j) => <span key={j} className="lc-tag" style={{ fontSize: 11 }}>{s}</span>)}</div>
                   <div className="career-detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 12 }}>
                     <div style={{ display: "flex", gap: 6, padding: 8, borderRadius: 6, border: "1px solid var(--border)" }}><TrendingUp size={12} style={{ color: "var(--green)", flexShrink: 0, marginTop: 1 }} /><span style={{ color: "var(--text-muted)" }}>{career.indianMarketOutlook}</span></div>
                     <div style={{ display: "flex", gap: 6, padding: 8, borderRadius: 6, border: "1px solid var(--border)" }}><Building2 size={12} style={{ color: "var(--orange)", flexShrink: 0, marginTop: 1 }} /><span style={{ color: "var(--text-muted)" }}>{career.topCompanies}</span></div>

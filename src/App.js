@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -26,6 +27,7 @@ import Notifications from "./pages/Notifications";
 import Achievements from "./pages/Achievements";
 import Social from "./pages/Social";
 import WeeklyReports from "./pages/WeeklyReports";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -47,35 +49,35 @@ function App() {
         />
         <Routes>
           {/* Public */}
-          <Route path="/"                element={<Landing />} />
-          <Route path="/login"           element={<Login />} />
-          <Route path="/register"        element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password"  element={<ResetPassword />} />
-          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+          <Route path="/"                element={<ErrorBoundary><Landing /></ErrorBoundary>} />
+          <Route path="/login"           element={<ErrorBoundary><Login /></ErrorBoundary>} />
+          <Route path="/register"        element={<ErrorBoundary><Register /></ErrorBoundary>} />
+          <Route path="/forgot-password" element={<ErrorBoundary><ForgotPassword /></ErrorBoundary>} />
+          <Route path="/reset-password"  element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
+          <Route path="/oauth2/redirect" element={<ErrorBoundary><OAuth2RedirectHandler /></ErrorBoundary>} />
 
           {/* Protected */}
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><ErrorBoundary><Dashboard /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/quiz"      element={<Navigate to="/career" />} />
-          <Route path="/study"     element={<ProtectedRoute><StudyPlanner /></ProtectedRoute>} />
-          <Route path="/coding"    element={<ProtectedRoute><CodingTutor /></ProtectedRoute>} />
-          <Route path="/roadmap"   element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
-          <Route path="/profile"     element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-          <Route path="/bookmarks"   element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
-          <Route path="/share/:token" element={<SharedResult />} />
-          <Route path="/career" element={<ProtectedRoute><Career /></ProtectedRoute>} />
-          <Route path="/discussions" element={<ProtectedRoute><Discussion /></ProtectedRoute>} />
-          <Route path="/contests" element={<ProtectedRoute><Contests /></ProtectedRoute>} />
-          <Route path="/chat" element={<ProtectedRoute><ChatAssistant /></ProtectedRoute>} />
-          <Route path="/notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-          <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-          <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} />
-          <Route path="/reports" element={<ProtectedRoute><WeeklyReports /></ProtectedRoute>} />
+          <Route path="/study"     element={<ProtectedRoute><ErrorBoundary><StudyPlanner /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/coding"    element={<ProtectedRoute><ErrorBoundary><CodingTutor /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/roadmap"   element={<ProtectedRoute><ErrorBoundary><Roadmap /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/profile"     element={<ProtectedRoute><ErrorBoundary><Profile /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/leaderboard" element={<ProtectedRoute><ErrorBoundary><Leaderboard /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/bookmarks"   element={<ProtectedRoute><ErrorBoundary><Bookmarks /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/share/:token" element={<ErrorBoundary><SharedResult /></ErrorBoundary>} />
+          <Route path="/career" element={<ProtectedRoute><ErrorBoundary><Career /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/discussions" element={<ProtectedRoute><ErrorBoundary><Discussion /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/contests" element={<ProtectedRoute><ErrorBoundary><Contests /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><ErrorBoundary><ChatAssistant /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/notes" element={<ProtectedRoute><ErrorBoundary><Notes /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><ErrorBoundary><Notifications /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/achievements" element={<ProtectedRoute><ErrorBoundary><Achievements /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/social" element={<ProtectedRoute><ErrorBoundary><Social /></ErrorBoundary></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><ErrorBoundary><WeeklyReports /></ErrorBoundary></ProtectedRoute>} />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* HIGH-04 FIX: Show 404 page instead of silently redirecting to landing */}
+          <Route path="*" element={<ErrorBoundary><NotFound /></ErrorBoundary>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
