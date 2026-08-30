@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
@@ -20,20 +20,31 @@ const Discussion = () => {
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
 
+  // PERF M2: fetchPosts no longer depends on 'search' directly — prevents API call per keystroke
+  const searchRef = useRef(search);
+  searchRef.current = search;
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
       if (tag !== "all") params.tag = tag;
-      if (search) params.search = search;
+      if (searchRef.current) params.search = searchRef.current;
       params.sort = sort;
       const res = await API.get("/discussions", { params });
       setPosts(res.data.content || res.data || []);
     } catch {} finally { setLoading(false); }
-  }, [tag, sort, search]);
+  }, [tag, sort]);
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
+
+  // PERF M2: Debounce search — only fires API call after 400ms of inactivity
+  useEffect(() => {
+    const timer = setTimeout(() => { fetchPosts(); }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
   const createPost = async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) { toast.error("Fill in title and content"); return; }

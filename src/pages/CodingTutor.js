@@ -260,7 +260,8 @@ export default function CodingTutor() {
       const res = await API.post("/coding/submit", { problemId: problem.id, code, language: form.language });
       setFeedback(res.data);
       setLeftTab("feedback");
-      API.get("/coding/problems").then(r => setProblems(r.data.content || r.data)).catch(() => {});
+      // PERF M1: Removed duplicate GET /coding/problems here — user is on practice view,
+      // problems list will refresh when they switch back to "problems" tab.
     } catch (err) { if (!err.handled) toast.error("Submission failed"); }
     finally { setSubmitting(false); }
   };

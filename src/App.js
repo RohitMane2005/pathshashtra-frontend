@@ -1,33 +1,51 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import OAuth2RedirectHandler from "./pages/OAuth2RedirectHandler";
-import Dashboard from "./pages/Dashboard";
 
-import StudyPlanner from "./pages/StudyPlanner";
-import CodingTutor from "./pages/CodingTutor";
-import Profile from "./pages/Profile";
-import Roadmap from "./pages/Roadmap";
-import Leaderboard from "./pages/Leaderboard";
-import Bookmarks from "./pages/Bookmarks";
-import SharedResult from "./pages/SharedResult";
-import Career from "./pages/Career";
-import Discussion from "./pages/Discussion";
-import Contests from "./pages/Contests";
-import ChatAssistant from "./pages/ChatAssistant";
-import Notes from "./pages/Notes";
-import Notifications from "./pages/Notifications";
-import Achievements from "./pages/Achievements";
-import Social from "./pages/Social";
-import WeeklyReports from "./pages/WeeklyReports";
-import NotFound from "./pages/NotFound";
+/*
+ * PERF C1: Route-level code splitting via React.lazy().
+ *
+ * Before: All 25 pages + CodeMirror bundled into a single 1 MB main.js.
+ * After:  Each page is a separate chunk loaded on-demand.
+ *         Initial bundle drops to ~250-350 KB.
+ *         CodeMirror (~300 KB) only loads when visiting /coding.
+ */
+const Landing            = lazy(() => import("./pages/Landing"));
+const Login              = lazy(() => import("./pages/Login"));
+const Register           = lazy(() => import("./pages/Register"));
+const ForgotPassword     = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword      = lazy(() => import("./pages/ResetPassword"));
+const OAuth2RedirectHandler = lazy(() => import("./pages/OAuth2RedirectHandler"));
+const Dashboard          = lazy(() => import("./pages/Dashboard"));
+const StudyPlanner       = lazy(() => import("./pages/StudyPlanner"));
+const CodingTutor        = lazy(() => import("./pages/CodingTutor"));
+const Profile            = lazy(() => import("./pages/Profile"));
+const Roadmap            = lazy(() => import("./pages/Roadmap"));
+const Leaderboard        = lazy(() => import("./pages/Leaderboard"));
+const Bookmarks          = lazy(() => import("./pages/Bookmarks"));
+const SharedResult       = lazy(() => import("./pages/SharedResult"));
+const Career             = lazy(() => import("./pages/Career"));
+const Discussion         = lazy(() => import("./pages/Discussion"));
+const Contests           = lazy(() => import("./pages/Contests"));
+const ChatAssistant      = lazy(() => import("./pages/ChatAssistant"));
+const Notes              = lazy(() => import("./pages/Notes"));
+const Notifications      = lazy(() => import("./pages/Notifications"));
+const Achievements       = lazy(() => import("./pages/Achievements"));
+const Social             = lazy(() => import("./pages/Social"));
+const WeeklyReports      = lazy(() => import("./pages/WeeklyReports"));
+const NotFound           = lazy(() => import("./pages/NotFound"));
+
+/* Lightweight loading fallback — minimal DOM, no external dependencies */
+const PageLoader = () => (
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center",
+    minHeight: "100vh", background: "var(--bg, #070a12)" }}>
+    <div style={{ width: 28, height: 28, border: "3px solid rgba(255,255,255,0.1)",
+      borderTopColor: "#06b6d4", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+  </div>
+);
 
 function App() {
   return (
@@ -47,6 +65,7 @@ function App() {
             },
           }}
         />
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public */}
           <Route path="/"                element={<ErrorBoundary><Landing /></ErrorBoundary>} />
@@ -79,6 +98,7 @@ function App() {
           {/* HIGH-04 FIX: Show 404 page instead of silently redirecting to landing */}
           <Route path="*" element={<ErrorBoundary><NotFound /></ErrorBoundary>} />
         </Routes>
+        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   );

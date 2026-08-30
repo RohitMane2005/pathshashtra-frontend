@@ -18,10 +18,26 @@ const API = axios.create({
   // e.g. REACT_APP_API_URL=http://localhost:8080/api
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:8080/api",
   withCredentials: true,   // send HttpOnly cookie on every request
-  timeout: 90000,          // 90s for AI calls
+  timeout: 15000,          // PERF M4: default 15s for quick endpoints (was 90s for everything)
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+// ── PERF M4: Per-endpoint timeout overrides ───────────────────────────────────
+// AI endpoints need longer timeouts (LLM calls take 5-30s).
+// All other endpoints get the 15s default set above.
+const AI_TIMEOUT_PATTERNS = [
+  "/coding/problem/generate", "/coding/submit", "/coding/hint",
+  "/roadmap/generate", "/career/", "/study/plan/generate", "/chat/",
+];
+
+API.interceptors.request.use((config) => {
+  const url = config.url || "";
+  if (AI_TIMEOUT_PATTERNS.some(p => url.includes(p))) {
+    config.timeout = 90000; // 90s for AI calls
+  }
+  return config;
 });
 
 // ── Response interceptor ──────────────────────────────────────────────────────
