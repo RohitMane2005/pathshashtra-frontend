@@ -63,9 +63,9 @@ API.interceptors.response.use(
       const skipRedirect = ["/login", "/register", "/oauth2/redirect", "/forgot-password", "/reset-password"];
       if (!skipRedirect.some(p => path.includes(p))) {
         window.location.href = "/login";
+        // Mark as handled so page-level catch blocks don't double-toast
+        error.handled = true;
       }
-      // Mark as handled so page-level catch blocks don't double-toast
-      error.handled = true;
     }
 
     if (status === 429) {

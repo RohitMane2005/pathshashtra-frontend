@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../api/axios";
+import toast from "react-hot-toast";
 
 /**
  * SEC-01 FIX: OAuth2 code exchange handler.
@@ -9,7 +10,7 @@ import API from "../api/axios";
  * Old flow:  /oauth2/redirect?token=JWT  → stored in localStorage (XSS vulnerable + URL logged)
  * New flow:  /oauth2/redirect?code=CODE  → exchange with backend → HttpOnly cookie set
  *
- * The code is a one-time, 30-second Redis token that maps to the user's email.
+ * The code is a one-time, 30-second token that maps to the user's email.
  * POST /api/auth/exchange-code consumes the code and sets the HttpOnly auth cookie.
  * We then call /users/me to get the user object for React state.
  */
@@ -17,21 +18,31 @@ const OAuth2RedirectHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    if (processedRef.current) return;
+
     const params = new URLSearchParams(location.search);
     const code = params.get("code");
     const error = params.get("error");
 
     if (error) {
-      navigate("/login", { state: { error } });
+      processedRef.current = true;
+      toast.error(error);
+      navigate("/login", { state: { error }, replace: true });
       return;
     }
 
     if (!code) {
-      navigate("/login", { state: { error: "Login failed. Please try again." } });
+      processedRef.current = true;
+      const msg = "Login failed: No authorization code received. Please try again.";
+      toast.error(msg);
+      navigate("/login", { state: { error: msg }, replace: true });
       return;
     }
+
+    processedRef.current = true;
 
     // Exchange the one-time code for an HttpOnly cookie
     API.post("/auth/exchange-code", { code })
@@ -41,18 +52,22 @@ const OAuth2RedirectHandler = () => {
       })
       .then((res) => {
         login(res.data);       // store user in React state (no JWT in JS!)
-        navigate("/dashboard");
+        toast.success("Welcome back!");
+        navigate("/dashboard", { replace: true });
       })
       .catch((err) => {
         console.error("OAuth exchange failed:", err);
-        // Only navigate if the 401 interceptor hasn't already redirected
-        if (!err.handled) {
-          navigate("/login", {
-            state: { error: "Login failed. Please try again." },
-          });
-        }
+        const errorMsg =
+          err.response?.data?.error ||
+          err.userMessage ||
+          "Sign-in failed. Please try logging in again.";
+        toast.error(errorMsg);
+        navigate("/login", {
+          replace: true,
+          state: { error: errorMsg },
+        });
       });
-  }, [location, navigate, login]);
+  }, [location.search, navigate, login]);
 
   return (
     <div style={{
