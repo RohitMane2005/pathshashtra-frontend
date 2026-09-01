@@ -29,16 +29,16 @@ const OAuth2RedirectHandler = () => {
 
     if (error) {
       processedRef.current = true;
-      toast.error(error);
-      navigate("/login", { state: { error }, replace: true });
+      toast.error(decodeURIComponent(error));
+      // Don't pass state.error — Login.js would show a second toast for the same message
+      navigate("/login", { replace: true });
       return;
     }
 
     if (!code) {
       processedRef.current = true;
-      const msg = "Login failed: No authorization code received. Please try again.";
-      toast.error(msg);
-      navigate("/login", { state: { error: msg }, replace: true });
+      toast.error("Login failed: No authorization code received. Please try again.");
+      navigate("/login", { replace: true });
       return;
     }
 
@@ -57,15 +57,17 @@ const OAuth2RedirectHandler = () => {
       })
       .catch((err) => {
         console.error("OAuth exchange failed:", err);
+        // err.response?.data?.error   — backend JSON {error: ...}
+        // err.response?.data?.message — Spring Security default format
+        // err.userMessage             — axios network error wrapper
         const errorMsg =
           err.response?.data?.error ||
+          err.response?.data?.message ||
           err.userMessage ||
           "Sign-in failed. Please try logging in again.";
         toast.error(errorMsg);
-        navigate("/login", {
-          replace: true,
-          state: { error: errorMsg },
-        });
+        // Don't pass state.error — Login.js would show a second toast
+        navigate("/login", { replace: true });
       });
   }, [location.search, navigate, login]);
 
