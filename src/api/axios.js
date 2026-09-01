@@ -57,11 +57,20 @@ API.interceptors.response.use(
     const { status } = error.response;
 
     if (status === 401) {
-      // Cookie expired or invalid — redirect to login
-      // Skip redirect on pages that handle auth themselves
+      // Cookie expired or invalid — redirect to login only from protected pages.
+      // Public pages (landing, auth pages, share links) must NOT be redirected:
+      //   - "/" landing page calls /users/me on mount for unauthenticated users
+      //     which legitimately returns 401 — don't boot them to /login.
+      //   - Auth pages handle their own 401 flows.
       const path = window.location.pathname;
-      const skipRedirect = ["/login", "/register", "/oauth2/redirect", "/forgot-password", "/reset-password"];
-      if (!skipRedirect.some(p => path.includes(p))) {
+      const publicRoutes = [
+        "/", "/login", "/register", "/oauth2/redirect",
+        "/forgot-password", "/reset-password", "/share/",
+      ];
+      const isPublicPage = publicRoutes.some(p =>
+        p === "/" ? path === "/" : path.startsWith(p)
+      );
+      if (!isPublicPage) {
         window.location.href = "/login";
         // Mark as handled so page-level catch blocks don't double-toast
         error.handled = true;
