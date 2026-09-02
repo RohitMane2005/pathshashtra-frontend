@@ -20,11 +20,12 @@ const Discussion = () => {
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
 
-  // PERF M2: fetchPosts no longer depends on 'search' directly — prevents API call per keystroke
+  // FIX-11: searchRef keeps a stable reference to the current search string so
+  // fetchPosts doesn't need 'search' in its useCallback dep array (which would
+  // cause a new function reference on every keystroke and defeat the debounce).
   const searchRef = useRef(search);
   searchRef.current = search;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
@@ -35,16 +36,18 @@ const Discussion = () => {
       const res = await API.get("/discussions", { params });
       setPosts(res.data.content || res.data || []);
     } catch {} finally { setLoading(false); }
-  }, [tag, sort]);
+  }, [tag, sort]); // searchRef is a ref — stable, doesn't need to be a dep
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
-  // PERF M2: Debounce search — only fires API call after 400ms of inactivity
+  // Debounce search — fires API call after 400ms of inactivity.
+  // fetchPosts is included in the dep array (it's stable via useCallback)
+  // so this effect correctly re-subscribes when tag/sort change too.
   useEffect(() => {
     const timer = setTimeout(() => { fetchPosts(); }, 400);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [search, fetchPosts]);
+
   const createPost = async (e) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) { toast.error("Fill in title and content"); return; }
@@ -80,14 +83,23 @@ const Discussion = () => {
     finally { setSending(false); }
   };
 
+  // FIX-11: upvote() previously made two API calls for every click:
+  //   - openPost(post.id) to refresh the detail view
+  //   - fetchPosts() to refresh the list
+  // Now it only refetches what's actually visible (detail OR list, not both).
+  // This halves the API traffic on upvote and avoids a race between two
+  // concurrent requests both writing to the same state.
   const upvote = async (type, id) => {
     try {
       const url = type === "POST" ? `/discussions/${id}/upvote` : `/discussions/reply/${id}/upvote`;
       await API.post(url);
-      if (type === "POST" && post) {
+      if (view === "detail" && post) {
+        // In detail view: reload the post+replies to show updated vote count
         openPost(post.id);
+      } else {
+        // In list view: reload the post list
+        fetchPosts();
       }
-      fetchPosts();
     } catch {}
   };
 

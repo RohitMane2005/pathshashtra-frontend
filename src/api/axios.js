@@ -58,21 +58,30 @@ API.interceptors.response.use(
 
     if (status === 401) {
       // Cookie expired or invalid — redirect to login only from protected pages.
-      // Public pages (landing, auth pages, share links) must NOT be redirected:
-      //   - "/" landing page calls /users/me on mount for unauthenticated users
-      //     which legitimately returns 401 — don't boot them to /login.
-      //   - Auth pages handle their own 401 flows.
+      // Public pages (landing, auth pages) must NOT be redirected.
+      // Share pages: show a toast but don't redirect — the page is publicly accessible
+      // and the 401 just means some personalized content (e.g. "did you bookmark this?")
+      // won't be available, not that the whole page is blocked.
       const path = window.location.pathname;
+      const isSharePage = path.startsWith("/share/");
       const publicRoutes = [
         "/", "/login", "/register", "/oauth2/redirect",
-        "/forgot-password", "/reset-password", "/share/",
+        "/forgot-password", "/reset-password",
       ];
       const isPublicPage = publicRoutes.some(p =>
         p === "/" ? path === "/" : path.startsWith(p)
       );
-      if (!isPublicPage) {
+
+      if (isSharePage) {
+        // FIX-6: Don't silently swallow 401 on share pages. Show a soft warning
+        // so the user knows some features need them to be logged in.
+        // Import toast lazily to avoid circular dependency issues.
+        import("react-hot-toast").then(({ default: toast }) => {
+          toast("Log in to access all features on this page.", { icon: "🔒" });
+        }).catch(() => {});
+        error.handled = true;
+      } else if (!isPublicPage) {
         window.location.href = "/login";
-        // Mark as handled so page-level catch blocks don't double-toast
         error.handled = true;
       }
     }

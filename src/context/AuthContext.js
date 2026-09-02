@@ -82,7 +82,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, logout, checkAuth }}>
+    // FIX-11: checkAuth is intentionally NOT in the context value.
+    // Exposing it allowed any component to call /users/me arbitrarily.
+    // It is only used internally: on mount and after OAuth redirect.
+    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
