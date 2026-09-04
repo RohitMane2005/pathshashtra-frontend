@@ -1,9 +1,126 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
-import { Send, Plus, Trash2, Loader, Bot, User, Menu, X } from "lucide-react";
+import { Send, Plus, Trash2, Loader, Bot, User, Menu, X, Copy, Check } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+/* ─── Copy-button for code blocks ─── */
+const CopyButton = ({ code }) => {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <button onClick={copy} title="Copy code" style={{
+      position: "absolute", top: 8, right: 8, background: "rgba(255,255,255,0.08)",
+      border: "1px solid rgba(255,255,255,0.15)", borderRadius: 6, cursor: "pointer",
+      padding: "3px 8px", display: "flex", alignItems: "center", gap: 4,
+      color: copied ? "#4ade80" : "#aaa", fontSize: 11, transition: "all 0.2s",
+    }}>
+      {copied ? <Check size={11} /> : <Copy size={11} />}
+      {copied ? "Copied!" : "Copy"}
+    </button>
+  );
+};
+
+/* ─── Markdown renderer config ─── */
+const markdownComponents = {
+  code({ node, inline, className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || "");
+    const codeString = String(children).replace(/\n$/, "");
+    if (!inline && match) {
+      return (
+        <div style={{ position: "relative", margin: "10px 0" }}>
+          <div style={{
+            background: "#1a1b26", borderRadius: "8px 8px 0 0",
+            padding: "5px 12px", display: "flex", alignItems: "center", justifyContent: "space-between",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}>
+            <span style={{ fontSize: 11, color: "#7c8db5", fontFamily: "monospace" }}>{match[1]}</span>
+            <CopyButton code={codeString} />
+          </div>
+          <SyntaxHighlighter
+            style={oneDark}
+            language={match[1]}
+            PreTag="div"
+            customStyle={{ margin: 0, borderRadius: "0 0 8px 8px", fontSize: 13, padding: "14px 16px" }}
+            {...props}
+          >
+            {codeString}
+          </SyntaxHighlighter>
+        </div>
+      );
+    }
+    if (!inline) {
+      return (
+        <div style={{ position: "relative", margin: "10px 0" }}>
+          <div style={{
+            background: "#1a1b26", borderRadius: "8px 8px 0 0",
+            padding: "5px 12px", display: "flex", justifyContent: "flex-end",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}>
+            <CopyButton code={codeString} />
+          </div>
+          <SyntaxHighlighter
+            style={oneDark}
+            PreTag="div"
+            customStyle={{ margin: 0, borderRadius: "0 0 8px 8px", fontSize: 13, padding: "14px 16px" }}
+            {...props}
+          >
+            {codeString}
+          </SyntaxHighlighter>
+        </div>
+      );
+    }
+    return (
+      <code style={{
+        background: "var(--bg-secondary)", color: "var(--green)",
+        padding: "1px 6px", borderRadius: 4, fontSize: "0.88em",
+        fontFamily: "monospace", border: "1px solid var(--border)",
+      }} {...props}>{children}</code>
+    );
+  },
+  table({ children }) {
+    return (
+      <div style={{ overflowX: "auto", margin: "12px 0" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", fontSize: 13 }}>{children}</table>
+      </div>
+    );
+  },
+  thead({ children }) { return <thead style={{ background: "var(--bg-secondary)" }}>{children}</thead>; },
+  th({ children }) {
+    return <th style={{ border: "1px solid var(--border)", padding: "7px 12px", fontWeight: 600, color: "var(--text-primary)", textAlign: "left", whiteSpace: "nowrap" }}>{children}</th>;
+  },
+  td({ children }) {
+    return <td style={{ border: "1px solid var(--border)", padding: "6px 12px", color: "var(--text-secondary)", verticalAlign: "top" }}>{children}</td>;
+  },
+  tr({ children }) { return <tr style={{ borderBottom: "1px solid var(--border)" }}>{children}</tr>; },
+  h1({ children }) { return <h1 style={{ fontSize: 18, fontWeight: 700, margin: "16px 0 6px", color: "var(--text-primary)", borderBottom: "1px solid var(--border)", paddingBottom: 6 }}>{children}</h1>; },
+  h2({ children }) { return <h2 style={{ fontSize: 16, fontWeight: 700, margin: "14px 0 5px", color: "var(--text-primary)" }}>{children}</h2>; },
+  h3({ children }) { return <h3 style={{ fontSize: 14, fontWeight: 600, margin: "12px 0 4px", color: "var(--text-primary)" }}>{children}</h3>; },
+  p({ children }) { return <p style={{ margin: "6px 0", lineHeight: 1.75 }}>{children}</p>; },
+  ul({ children }) { return <ul style={{ margin: "6px 0", paddingLeft: 20, lineHeight: 1.9 }}>{children}</ul>; },
+  ol({ children }) { return <ol style={{ margin: "6px 0", paddingLeft: 20, lineHeight: 1.9 }}>{children}</ol>; },
+  li({ children }) { return <li style={{ marginBottom: 2 }}>{children}</li>; },
+  blockquote({ children }) {
+    return <blockquote style={{
+      borderLeft: "3px solid var(--green)", paddingLeft: 12, margin: "10px 0",
+      color: "var(--text-muted)", fontStyle: "italic",
+    }}>{children}</blockquote>;
+  },
+  strong({ children }) { return <strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>{children}</strong>; },
+  a({ href, children }) { return <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 3 }}>{children}</a>; },
+  hr() { return <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "14px 0" }} />; },
+};
+
+/* ─── Main component ─── */
 const ChatAssistant = () => {
   const [sessions, setSessions] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
@@ -25,9 +142,9 @@ const ChatAssistant = () => {
     try { const res = await API.get(`/chat/sessions/${id}`); setMessages(res.data || []); } catch { toast.error("Failed to load chat"); }
   };
 
-  const newSession = async () => {
-    try { const res = await API.post("/chat/sessions"); setSessions([res.data, ...sessions]); openSession(res.data.id); } catch { toast.error("Failed to create chat"); }
-  };
+  const newSession = useCallback(async () => {
+    try { const res = await API.post("/chat/sessions"); setSessions(prev => [res.data, ...prev]); openSession(res.data.id); return res.data.id; } catch { toast.error("Failed to create chat"); }
+  }, []);
 
   const deleteSession = async (id, e) => {
     e.stopPropagation();
@@ -36,12 +153,13 @@ const ChatAssistant = () => {
 
   const sendMessage = async () => {
     if (!input.trim() || sending) return;
-    if (!activeSession) { await newSession(); return; }
+    let sessionId = activeSession;
+    if (!sessionId) { sessionId = await newSession(); if (!sessionId) return; }
     const userMsg = { role: "USER", content: input, createdAt: new Date().toISOString() };
     setMessages(prev => [...prev, userMsg]);
     setInput(""); setSending(true);
     try {
-      const res = await API.post("/chat/send", { sessionId: activeSession, content: userMsg.content });
+      const res = await API.post("/chat/send", { sessionId, content: userMsg.content });
       setMessages(prev => [...prev, res.data]);
       fetchSessions();
     } catch (err) { if (!err.handled) toast.error("Failed to send message"); }
@@ -87,7 +205,7 @@ const ChatAssistant = () => {
               <p style={{ fontSize: 14, color: "var(--text-muted)", textAlign: "center", maxWidth: 400 }}>Ask me about DSA, competitive programming, career guidance, study planning, or placement prep!</p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginTop: 8 }}>
                 {["Explain binary search", "DP roadmap for beginners", "FAANG interview tips", "Time complexity of QuickSort"].map(q => (
-                  <button key={q} onClick={() => { setInput(q); newSession(); }} style={{
+                  <button key={q} onClick={() => { setInput(q); }} style={{
                     padding: "6px 14px", borderRadius: 8, fontSize: 12, border: "1px solid var(--border)", background: "var(--bg-secondary)", cursor: "pointer", color: "var(--text-secondary)", transition: "all 0.15s",
                   }}>{q}</button>
                 ))}
@@ -95,20 +213,57 @@ const ChatAssistant = () => {
             </div>
           ) : (
             <>
-              <div style={{ flex: 1, overflow: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ flex: 1, overflow: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
                 {messages.map((m, i) => (
                   <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: m.role === "USER" ? "var(--blue-bg)" : "var(--green-bg)", color: m.role === "USER" ? "var(--blue)" : "var(--green)" }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      background: m.role === "USER" ? "var(--blue-bg)" : "var(--green-bg)",
+                      color: m.role === "USER" ? "var(--blue)" : "var(--green)",
+                      marginTop: 2,
+                    }}>
                       {m.role === "USER" ? <User size={14} /> : <Bot size={14} />}
                     </div>
-                    <div style={{ flex: 1, fontSize: 14, lineHeight: 1.7, color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>{m.content}</div>
+                    <div style={{
+                      flex: 1, fontSize: 14, lineHeight: 1.75, color: "var(--text-secondary)",
+                      ...(m.role === "USER" ? {} : {
+                        background: "var(--bg)", border: "1px solid var(--border)",
+                        borderRadius: 10, padding: "10px 14px",
+                      }),
+                    }}>
+                      {m.role === "USER" ? (
+                        <span style={{ whiteSpace: "pre-wrap" }}>{m.content}</span>
+                      ) : (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={markdownComponents}
+                        >
+                          {m.content}
+                        </ReactMarkdown>
+                      )}
+                    </div>
                   </div>
                 ))}
-                {sending && <div style={{ display: "flex", gap: 10, alignItems: "center" }}><div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--green-bg)", color: "var(--green)" }}><Bot size={14} /></div><Loader size={14} className="animate-spin" style={{ color: "var(--green)" }} /></div>}
+                {sending && (
+                  <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--green-bg)", color: "var(--green)" }}><Bot size={14} /></div>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center", color: "var(--text-muted)", fontSize: 13 }}>
+                      <Loader size={13} className="animate-spin" style={{ color: "var(--green)" }} />
+                      <span>Thinking…</span>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEnd} />
               </div>
               <div style={{ padding: "12px 16px", borderTop: "1px solid var(--border)", display: "flex", gap: 8 }}>
-                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendMessage()} placeholder="Ask anything about DSA, coding, career..." className="lc-input" style={{ flex: 1 }} />
+                <input
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
+                  placeholder="Ask anything about DSA, coding, career…"
+                  className="lc-input"
+                  style={{ flex: 1 }}
+                />
                 <button onClick={sendMessage} disabled={sending || !input.trim()} className="btn-primary" style={{ padding: "8px 14px" }}><Send size={14} /></button>
               </div>
             </>
@@ -119,22 +274,12 @@ const ChatAssistant = () => {
         @media (max-width: 768px) {
           .chat-sidebar-toggle { display: flex !important; }
           .chat-sidebar {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            bottom: 0 !important;
-            width: 260px !important;
-            z-index: 20 !important;
-            background: var(--bg) !important;
-            border-right: 1px solid var(--border) !important;
-            padding: 70px 12px 12px !important;
-            transform: translateX(-100%);
-            transition: transform 0.25s ease;
+            position: fixed !important; top: 0 !important; left: 0 !important; bottom: 0 !important;
+            width: 260px !important; z-index: 20 !important; background: var(--bg) !important;
+            border-right: 1px solid var(--border) !important; padding: 70px 12px 12px !important;
+            transform: translateX(-100%); transition: transform 0.25s ease;
           }
-          .chat-sidebar.open,
-          .chat-sidebar-open .chat-sidebar {
-            transform: translateX(0) !important;
-          }
+          .chat-sidebar.open, .chat-sidebar-open .chat-sidebar { transform: translateX(0) !important; }
           .chat-sidebar-overlay { display: block !important; }
         }
       `}</style>
