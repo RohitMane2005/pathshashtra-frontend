@@ -326,7 +326,7 @@ const ChatAssistant = () => {
         }
         /* Input bar */
         .chat-input-bar {
-          padding: 12px 24px 20px;
+          padding: 12px 24px 36px;
           display: flex;
           justify-content: center;
           background: linear-gradient(to top, var(--bg) 70%, transparent);
@@ -474,7 +474,7 @@ const ChatAssistant = () => {
           .chat-overlay { display: block; }
           .chat-mobile-toggle { display: flex; }
           .chat-msg-inner { padding: 0 16px; }
-          .chat-input-bar { padding: 10px 16px 16px; }
+          .chat-input-bar { padding: 10px 16px 28px; }
           .suggestion-grid { grid-template-columns: 1fr; }
           .chat-empty { padding-top: 60px; }
         }
