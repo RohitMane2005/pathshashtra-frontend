@@ -104,7 +104,11 @@ const Discussion = () => {
   };
 
   const timeAgo = (date) => {
-    const mins = Math.floor((Date.now() - new Date(date)) / 60000);
+    // Ensure the timestamp is parsed as UTC — backend returns ISO strings without
+    // a timezone suffix, so JS would treat them as local time causing a ±5:30h offset.
+    const iso = date && !date.endsWith("Z") && !date.includes("+") ? date + "Z" : date;
+    const mins = Math.floor((Date.now() - new Date(iso)) / 60000);
+    if (mins < 1) return "just now";
     if (mins < 60) return `${mins}m ago`;
     if (mins < 1440) return `${Math.floor(mins / 60)}h ago`;
     return `${Math.floor(mins / 1440)}d ago`;
