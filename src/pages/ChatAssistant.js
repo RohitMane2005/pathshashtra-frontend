@@ -271,6 +271,7 @@ const ChatAssistant = () => {
         /* ── Main chat area ── */
         .chat-main {
           flex: 1;
+          min-height: 0;
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -278,9 +279,10 @@ const ChatAssistant = () => {
         }
         .chat-messages {
           flex: 1;
+          min-height: 0;
           overflow-y: auto;
           overflow-x: hidden;
-          padding: 24px 0;
+          padding: 20px 0 10px;
           display: flex;
           flex-direction: column;
           gap: 0;
@@ -324,12 +326,16 @@ const ChatAssistant = () => {
           word-break: break-word;
           padding-top: 2px;
         }
-        /* Input bar */
+        /* Input bar — pinned at bottom, never pushed off-screen */
         .chat-input-bar {
-          padding: 12px 24px 36px;
+          flex-shrink: 0;
+          width: 100%;
+          padding: 10px 24px 22px;
           display: flex;
-          justify-content: center;
-          background: linear-gradient(to top, var(--bg) 70%, transparent);
+          flex-direction: column;
+          align-items: center;
+          background: linear-gradient(to top, var(--bg) 85%, transparent);
+          z-index: 10;
         }
         .chat-input-wrap {
           width: 100%;
@@ -401,43 +407,51 @@ const ChatAssistant = () => {
           color: var(--text-light);
         }
 
-        /* Suggestion chips */
+        /* Suggestion chips & empty state */
         .chat-empty {
           flex: 1;
+          min-height: 0;
+          overflow-y: auto;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 40px 24px;
+          padding: 24px 20px 12px;
           gap: 0;
         }
         .suggestion-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
-          max-width: 560px;
+          max-width: 580px;
           width: 100%;
-          margin-top: 28px;
+          margin-top: 18px;
         }
         .suggestion-chip {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 10px;
-          padding: 12px 14px;
+          padding: 10px 14px;
           cursor: pointer;
           text-align: left;
           font-family: inherit;
           font-size: 13px;
           color: var(--text-muted);
-          line-height: 1.4;
+          line-height: 1.35;
           transition: background 0.15s, border-color 0.15s, color 0.15s;
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
         .suggestion-chip:hover {
           background: rgba(137,233,0,0.06);
           border-color: rgba(137,233,0,0.25);
           color: var(--text-secondary);
         }
-        .suggestion-chip .chip-icon { display: block; margin-bottom: 4px; font-size: 16px; }
+        .suggestion-chip .chip-icon {
+          font-size: 15px;
+          flex-shrink: 0;
+        }
 
         /* Mobile sidebar overlay */
         .chat-overlay {
@@ -474,9 +488,9 @@ const ChatAssistant = () => {
           .chat-overlay { display: block; }
           .chat-mobile-toggle { display: flex; }
           .chat-msg-inner { padding: 0 16px; }
-          .chat-input-bar { padding: 10px 16px 28px; }
+          .chat-input-bar { padding: 8px 16px 18px; }
           .suggestion-grid { grid-template-columns: 1fr; }
-          .chat-empty { padding-top: 60px; }
+          .chat-empty { padding-top: 50px; }
         }
       `}</style>
 
@@ -528,16 +542,16 @@ const ChatAssistant = () => {
           {!activeSession && messages.length === 0 ? (
             <div className="chat-empty">
               <div style={{
-                width: 52, height: 52, borderRadius: "50%",
+                width: 44, height: 44, borderRadius: "50%",
                 background: "rgba(137,233,0,0.12)", border: "1px solid rgba(137,233,0,0.3)",
-                display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18,
+                display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12,
               }}>
-                <Sparkles size={22} style={{ color: "#89E900" }} />
+                <Sparkles size={20} style={{ color: "#89E900" }} />
               </div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#f8fafc", textAlign: "center", marginBottom: 8 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: "#f8fafc", textAlign: "center", marginBottom: 6 }}>
                 PathShashtra AI
               </h2>
-              <p style={{ fontSize: 14, color: "var(--text-muted)", textAlign: "center", maxWidth: 380, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", maxWidth: 420, lineHeight: 1.5 }}>
                 Ask me anything about DSA, system design, competitive programming, or placement prep.
               </p>
               <div className="suggestion-grid">
