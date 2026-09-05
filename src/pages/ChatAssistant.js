@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 import {
   Send, Plus, Trash2, Loader, Bot, User, Menu, X,
-  Copy, Check, Sparkles, MessageSquare,
+  Copy, Check, Sparkles, MessageSquare, Zap, Crown,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -131,19 +133,30 @@ const SUGGESTIONS = [
    Main Component
 ───────────────────────────────────────────────── */
 const ChatAssistant = () => {
+  const { user } = useAuth();
+  const isPro = user?.plan === "PRO";
+
   const [sessions, setSessions] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chatQuota, setChatQuota] = useState(null); // { used, remaining, limit }
   const messagesEnd = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => { fetchSessions(); }, []);
+  useEffect(() => { fetchSessions(); fetchQuota(); }, []);
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, sending]);
+
+  const fetchQuota = async () => {
+    try {
+      const r = await API.get("/quota");
+      setChatQuota(r.data.chat || null);
+    } catch {}
+  };
 
   const fetchSessions = async () => {
     try { const r = await API.get("/chat/sessions"); setSessions(r.data || []); } catch {}
@@ -194,7 +207,15 @@ const ChatAssistant = () => {
       const r = await API.post("/chat/send", { sessionId, content });
       setMessages(prev => [...prev, r.data]);
       fetchSessions();
-    } catch (err) { if (!err.handled) toast.error("Failed to send message"); }
+      fetchQuota(); // refresh quota count after each message
+    } catch (err) {
+      if (err.response?.status === 429) {
+        toast.error("Daily limit reached. Upgrade to Pro for unlimited chat.");
+        setChatQuota(prev => prev ? { ...prev, remaining: 0 } : prev);
+      } else if (!err.handled) {
+        toast.error("Failed to send message");
+      }
+    }
     finally { setSending(false); }
   };
 
@@ -606,6 +627,53 @@ const ChatAssistant = () => {
 
           {/* ── Input bar ── */}
           <div className="chat-input-bar">
+            {/* Quota warning banner */}
+            {!isPro && chatQuota && chatQuota.remaining <= 3 && (
+              <div style={{
+                width: "100%", maxWidth: 760,
+                padding: "6px 12px", marginBottom: 8, borderRadius: 10,
+                background: chatQuota.remaining === 0
+                  ? "rgba(244,63,94,0.1)" : "rgba(245,158,11,0.08)",
+                border: `1px solid ${chatQuota.remaining === 0
+                  ? "rgba(244,63,94,0.3)" : "rgba(245,158,11,0.25)"}`,
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                gap: 12, flexWrap: "wrap",
+              }}>
+                <span style={{
+                  fontSize: 12, color: chatQuota.remaining === 0 ? "#f43f5e" : "#f59e0b",
+                  fontWeight: 500,
+                }}>
+                  {chatQuota.remaining === 0
+                    ? "⛔ Daily limit reached — no messages left today"
+                    : `⚠️ ${chatQuota.remaining} of ${chatQuota.limit} messages left today`}
+                </span>
+                <Link to="/pricing" style={{
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  background: "#89E900", color: "#06080c",
+                  fontSize: 11, fontWeight: 700, padding: "4px 12px",
+                  borderRadius: 8, textDecoration: "none",
+                  transition: "background 0.15s",
+                }}>
+                  <Zap size={10} /> Upgrade to Pro
+                </Link>
+              </div>
+            )}
+
+            {/* Pro badge in footer */}
+            {isPro && (
+              <div style={{
+                width: "100%", maxWidth: 760, marginBottom: 6,
+                display: "flex", justifyContent: "flex-end",
+              }}>
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  fontSize: 11, color: "#89E900", fontWeight: 600,
+                }}>
+                  <Crown size={10} /> Pro — Unlimited messages
+                </span>
+              </div>
+            )}
+
             <div className="chat-input-wrap">
               <textarea
                 ref={inputRef}
@@ -618,12 +686,15 @@ const ChatAssistant = () => {
                   e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
                 }}
                 onKeyDown={handleKey}
-                placeholder="Ask anything… (Enter to send, Shift+Enter for newline)"
+                placeholder={chatQuota?.remaining === 0 && !isPro
+                  ? "Limit reached — upgrade to continue…"
+                  : "Ask anything… (Enter to send, Shift+Enter for newline)"}
                 className="chat-textarea"
+                disabled={chatQuota?.remaining === 0 && !isPro}
               />
               <button
                 onClick={() => sendMessage()}
-                disabled={sending || !input.trim()}
+                disabled={sending || !input.trim() || (chatQuota?.remaining === 0 && !isPro)}
                 className="chat-send-btn"
               >
                 {sending

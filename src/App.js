@@ -36,6 +36,7 @@ const Notifications      = lazy(() => import("./pages/Notifications"));
 const Achievements       = lazy(() => import("./pages/Achievements"));
 const Social             = lazy(() => import("./pages/Social"));
 const WeeklyReports      = lazy(() => import("./pages/WeeklyReports"));
+const Pricing            = lazy(() => import("./pages/Pricing"));
 const NotFound           = lazy(() => import("./pages/NotFound"));
 
 /* Lightweight loading fallback — minimal DOM, no external dependencies */
@@ -74,6 +75,7 @@ function App() {
           <Route path="/forgot-password" element={<ErrorBoundary><ForgotPassword /></ErrorBoundary>} />
           <Route path="/reset-password"  element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
           <Route path="/oauth2/redirect" element={<ErrorBoundary><OAuth2RedirectHandler /></ErrorBoundary>} />
+          <Route path="/pricing"         element={<ErrorBoundary><Pricing /></ErrorBoundary>} />
 
           {/* Protected */}
           <Route path="/dashboard" element={<ProtectedRoute><ErrorBoundary><Dashboard /></ErrorBoundary></ProtectedRoute>} />

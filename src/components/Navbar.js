@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X, LogOut, User, ChevronDown, Bell } from "lucide-react";
 import API from "../api/axios";
+import PlanBadge from "./PlanBadge";
 
 const NAV_ITEMS = [
   { path: "/dashboard", label: "Dashboard" },
@@ -114,8 +115,9 @@ const Navbar = () => {
             }}>
               {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </div>
-            <span className="hide-mobile" style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+            <span className="hide-mobile" style={{ fontSize: 13, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 6 }}>
               {user?.name?.split(" ")[0]}
+              <PlanBadge plan={user?.plan} />
             </span>
             <ChevronDown size={14} className="hide-mobile" style={{ color: "var(--text-light)" }} />
           </button>
