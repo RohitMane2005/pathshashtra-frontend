@@ -169,7 +169,7 @@ const pathTheme = EditorView.theme({
      placeholder string  — placeholder text
 ───────────────────────────────────────────── */
 const CodeEditor = forwardRef(function CodeEditor(
-  { value, onChange, language, disabled, onSubmit, placeholder },
+  { value, onChange, language, disabled, onSubmit, onRun, placeholder },
   ref
 ) {
   const containerRef = useRef(null);
@@ -178,10 +178,12 @@ const CodeEditor = forwardRef(function CodeEditor(
   const editComp     = useRef(new Compartment());
   const onChangeRef  = useRef(onChange);
   const onSubmitRef  = useRef(onSubmit);
+  const onRunRef     = useRef(onRun);
 
   // keep refs current without remounting
   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
   useEffect(() => { onSubmitRef.current = onSubmit; }, [onSubmit]);
+  useEffect(() => { onRunRef.current = onRun; }, [onRun]);
 
   /* expose getValue() to parent */
   useImperativeHandle(ref, () => ({
@@ -229,6 +231,11 @@ const CodeEditor = forwardRef(function CodeEditor(
             key: "Ctrl-Enter",
             mac: "Cmd-Enter",
             run: () => { onSubmitRef.current?.(); return true; },
+          },
+          {
+            key: "Ctrl-'",
+            mac: "Cmd-'",
+            run: () => { onRunRef.current?.(); return true; },
           },
         ]),
 

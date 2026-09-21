@@ -24,6 +24,7 @@ const Notifications = () => {
   };
 
   const timeAgo = (d) => {
+    if (!d) return "";
     const iso = d && !d.endsWith("Z") && !d.includes("+") ? d + "Z" : d;
     const mins = Math.floor((Date.now() - new Date(iso)) / 60000);
     if (mins < 1) return "just now";
